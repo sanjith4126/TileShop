@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Your Selection{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-8 max-w-screen-2xl mx-auto">
+
+  <!-- Header -->
+  <header class="mb-16">
+    <h1 class="font-playfair italic text-6xl text-primary mb-4">Your Selection</h1>
+    <p class="font-literary italic text-xl text-on-surface-variant">Carefully curated architectural finishes for your sovereign space.</p>
+  </header>
+
+  {% if items %}
+  <div class="flex flex-col lg:flex-row gap-12">
+
+    <!-- Left: Cart Items -->
+    <div class="lg:w-2/3 flex flex-col gap-0">
+      {% for item in items %}
+      <div class="{% cycle 'bg-surface-container-low' 'bg-surface' %} p-8 flex flex-col md:flex-row gap-8 items-start md:items-center">
+        <!-- Product Image -->
+        <div class="w-36 h-36 md:w-48 md:h-48 flex-shrink-0 bg-surface-container-highest">
+          {% if item.product.image %}
+          <img alt="{{ item.product.name }}" class="w-full h-full object-cover" src="{{ item.product.image.url }}"/>
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-4xl text-outline">crop_square</span>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div class="flex-grow space-y-3">
+          <div class="flex justify-between items-start gap-4">
+            <div>
+              <span class="font-label text-[10px] ls-luxury text-secondary uppercase bg-secondary-fixed/30 px-2 py-1 mb-2 inline-block">
+                {% if item.product.category %}{{ item.product.category.name }}{% else %}UNCATEGORIZED{% endif %}
+              </span>
+              <h3 class="font-headline text-2xl text-on-surface uppercase tracking-tight">{{ item.product.name }}</h3>
+              {% if item.product.size %}
+              <p class="text-xs text-on-surface-variant font-body mt-1">Size: {{ item.product.size }}</p>
+              {% endif %}
+            </div>
+            <!-- Remove -->
+            <form action="{% url 'cart:remove_from_cart' item.pk %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="text-on-surface-variant hover:text-error transition-colors" aria-label="Remove item">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="flex justify-between items-end pt-4">
+            <!-- Qty Control -->
+            <form action="{% url 'cart:update_cart' item.pk %}" method="post" class="flex items-center border-b border-outline/30">
+              {% csrf_token %}
+              <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="p-2 hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined" style="font-size: 18px;">remove</span>
+              </button>
+              <span class="px-6 font-body font-bold text-sm">{{ item.quantity }}</span>
+              <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="p-2 hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+              </button>
+              <span class="ml-3 font-label text-[10px] ls-luxury text-outline uppercase">Units</span>
+            </form>
+
+            <!-- Subtotal -->
+            <div class="text-right">
+              <p class="font-label text-[10px] ls-luxury text-outline uppercase mb-1">Subtotal</p>
+              <p class="font-label text-xl text-secondary">&#8377;{{ item.subtotal }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <!-- Cart Actions -->
+      <div class="mt-8 flex justify-between items-center px-4 py-4">
+        <a href="{% url 'products:product_list' %}" class="flex items-center gap-2 group text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          <span class="font-label text-xs ls-luxury uppercase">Continue Exploring</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Order Summary -->
+    <aside class="lg:w-1/3">
+      <div class="bg-surface-container-high p-10 flex flex-col sticky top-32 shadow-2xl shadow-black/5">
+        <h2 class="font-headline text-3xl text-primary uppercase mb-8 tracking-tighter">Order Summary</h2>
+
+        <div class="space-y-6 mb-8">
+          <div class="flex justify-between items-center text-sm">
+            <span class="font-body text-on-surface-variant uppercase tracking-wider">Cart Total</span>
+            <span class="font-label text-on-surface">&#8377;{{ cart.total_price }}</span>
+          </div>
+          <div class="flex justify-between items-center text-sm">
+            <span class="font-body text-on-surface-variant uppercase tracking-wider">Items</span>
+            <span class="font-label text-on-surface">{{ cart.total_items }}</span>
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-outline/20 mb-10">
+          <div class="flex justify-between items-baseline">
+            <span class="font-headline text-lg uppercase text-primary">Grand Total</span>
+            <span class="font-label text-3xl text-secondary">&#8377;{{ cart.total_price }}</span>
+          </div>
+          <p class="text-[10px] font-body text-on-surface-variant mt-2 italic">*All prices include premium packaging and our 10-year quality warranty.</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col gap-4">
+          <a href="{% url 'orders:checkout' %}" class="bg-primary-container text-on-primary font-label text-sm ls-luxury py-5 w-full uppercase text-center hover:bg-primary transition-colors">
+            PLACE ORDER
+          </a>
+          <p class="text-center text-[11px] text-on-surface-variant font-body italic">No online payment — pay on delivery.</p>
+
+          <a href="{% url 'core:inquiry' %}" class="mt-2 text-center font-literary italic text-secondary hover:text-primary-container transition-colors text-sm underline underline-offset-4 decoration-outline-variant">
+            Request a Quote Instead
+          </a>
+        </div>
+
+        <!-- Trust Badge -->
+        <div class="mt-10 flex items-center gap-4 bg-surface-container-lowest p-4">
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+          <div>
+            <p class="font-label text-[10px] ls-luxury uppercase text-on-surface">Pay on Delivery</p>
+            <p class="text-[10px] text-on-surface-variant leading-tight">UPI, Card, Cheque or Cash accepted at delivery. Backed by our 10-year warranty.</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  {% else %}
+  <!-- Empty Cart -->
+  <div class="flex flex-col items-center justify-center py-32 text-center space-y-8">
+    <span class="material-symbols-outlined text-8xl text-outline">shopping_cart</span>
+    <h2 class="font-headline text-4xl text-on-surface-variant">Your selection is empty</h2>
+    <p class="font-cormorant italic text-2xl text-on-surface-variant max-w-md">
+      Begin curating your architectural vision from our sovereign gallery of tiles.
+    </p>
+    <div class="flex gap-4 flex-wrap justify-center">
+      <a href="{% url 'products:product_list' %}" class="bg-primary-container text-on-primary px-12 py-5 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
+        EXPLORE COLLECTION
+      </a>
+      <a href="{% url 'core:inquiry' %}" class="border-b-2 border-secondary text-secondary px-8 py-4 font-label text-xs tracking-widest uppercase hover:opacity-80 transition-opacity">
+        REQUEST A QUOTE
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+</main>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Place Your Order{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-6 min-h-screen">
+  <div class="max-w-screen-xl mx-auto">
+
+    <!-- Header -->
+    <header class="mb-12">
+      <nav class="flex items-center gap-2 mb-4 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
+        <a class="hover:text-secondary transition-colors" href="{% url 'cart:cart_detail' %}">Cart</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <span class="text-secondary">Place Order</span>
+      </nav>
+      <span class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase block mb-2">Order Portal</span>
+      <h1 class="text-5xl md:text-6xl font-headline font-bold text-primary leading-tight">Place Your Order</h1>
+      <p class="font-cormorant italic text-xl text-on-surface-variant mt-3">
+        No online payment needed — pay conveniently at the time of delivery.
+      </p>
+    </header>
+
+    <form method="post" class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      {% csrf_token %}
+
+      <!-- Left: Details -->
+      <div class="lg:col-span-2 space-y-14">
+
+        <!-- Section 01: Your Details -->
+        <section>
+          <div class="flex items-baseline space-x-4 mb-8">
+            <span class="font-headline text-3xl text-primary-container/20">01</span>
+            <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Your Details</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            <div>
+              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Full Name *</label>
+              <input name="full_name" type="text" required
+                     class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                     placeholder="Enter your full name"
+                     value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"/>
+            </div>
+            <div>
+              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Email Address *</label>
+              <input name="email" type="email" required
+                     class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                     placeholder="email@example.com"
+                     value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"/>
+            </div>
+            <div>
+              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Phone Number *</label>
+              <input name="phone" type="tel" required
+                     class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                     placeholder="+91 ..."/>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 02: Delivery Address -->
+        <section>
+          <div class="flex items-baseline space-x-4 mb-8">
+            <span class="font-headline text-3xl text-primary-container/20">02</span>
+            <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Delivery Address</h2>
+          </div>
+          <textarea name="shipping_address" rows="4" required
+                    class="w-full bg-transparent border border-outline/40 py-3 px-4 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                    placeholder="House / building, street, area, city, state, pincode"></textarea>
+        </section>
+
+        <!-- Section 03: Payment Method (on delivery) -->
+        <section>
+          <div class="flex items-baseline space-x-4 mb-3">
+            <span class="font-headline text-3xl text-primary-container/20">03</span>
+            <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Payment Method</h2>
+          </div>
+          <p class="font-body text-sm text-on-surface-variant mb-6 italic">
+            Choose how you'd like to pay <b>at the time of delivery</b>. Nothing is charged now.
+          </p>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {% for value, label in payment_methods %}
+            <label class="flex items-center gap-3 border border-outline/40 p-4 cursor-pointer hover:border-secondary transition-colors has-[:checked]:border-secondary has-[:checked]:bg-secondary-container/30">
+              <input type="radio" name="payment_method" value="{{ value }}" class="accent-secondary" {% if value == 'cash' %}checked{% endif %}/>
+              <span class="font-label text-[11px] tracking-widest uppercase">{{ label }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </section>
+
+        <!-- Section 04: Notes -->
+        <section>
+          <div class="flex items-baseline space-x-4 mb-8">
+            <span class="font-headline text-3xl text-primary-container/20">04</span>
+            <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Notes <span class="text-outline text-sm normal-case">(optional)</span></h2>
+          </div>
+          <textarea name="notes" rows="3"
+                    class="w-full bg-transparent border border-outline/40 py-3 px-4 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                    placeholder="Any special instructions for delivery or installation..."></textarea>
+        </section>
+      </div>
+
+      <!-- Right: Order Summary -->
+      <aside class="lg:col-span-1">
+        <div class="bg-surface-container-high p-8 sticky top-32">
+          <h2 class="font-headline text-2xl text-primary uppercase mb-6 tracking-tighter">Order Summary</h2>
+
+          <div class="space-y-4 mb-6 max-h-72 overflow-y-auto pr-2">
+            {% for item in items %}
+            <div class="flex gap-4 items-center">
+              <div class="w-14 h-14 bg-surface-container-highest flex-shrink-0 overflow-hidden">
+                {% if item.product.image %}
+                <img alt="{{ item.product.name }}" class="w-full h-full object-cover" src="{{ item.product.image.url }}"/>
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                  <span class="material-symbols-outlined text-outline text-sm">crop_square</span>
+                </div>
+                {% endif %}
+              </div>
+              <div class="flex-grow min-w-0">
+                <p class="font-label text-xs uppercase tracking-wide truncate">{{ item.product.name }}</p>
+                <p class="text-[10px] text-on-surface-variant">Qty {{ item.quantity }} &times; &#8377;{{ item.product.price }}</p>
+              </div>
+              <span class="font-label text-sm text-secondary">&#8377;{{ item.subtotal }}</span>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="pt-6 border-t border-outline/20 space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="font-body text-on-surface-variant uppercase tracking-wider">Items</span>
+              <span class="font-label">{{ cart.total_items }}</span>
+            </div>
+            <div class="flex justify-between items-baseline">
+              <span class="font-headline text-lg uppercase text-primary">Grand Total</span>
+              <span class="font-label text-3xl text-secondary">&#8377;{{ cart.total_price }}</span>
+            </div>
+          </div>
+
+          <button type="submit"
+                  class="mt-8 bg-primary-container text-on-primary font-label text-sm tracking-[0.2em] py-5 w-full uppercase text-center hover:bg-primary transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-base">check_circle</span>
+            Place Order
+          </button>
+
+          <div class="mt-6 flex items-center gap-3 bg-surface-container-lowest p-4">
+            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+            <p class="text-[10px] text-on-surface-variant leading-tight">
+              Pay on delivery via UPI, Card, Cheque or Cash. We'll call to confirm your order.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </form>
+  </div>
+</main>
+{% endblock %}

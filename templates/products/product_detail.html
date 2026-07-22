@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<main class="pt-24">
+
+  <!-- Above Fold: Product Gallery + Info -->
+  <section class="max-w-screen-2xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+    <!-- Left: Image Gallery -->
+    <div class="lg:col-span-7 flex flex-col gap-6">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase mb-2">
+        <a href="{% url 'core:home' %}" class="hover:text-secondary transition-colors">Home</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <a href="{% url 'products:product_list' %}" class="hover:text-secondary transition-colors">Products</a>
+        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <span class="text-secondary">{{ product.name }}</span>
+      </nav>
+
+      <!-- Main Image -->
+      <div class="aspect-[4/3] bg-surface-container relative group overflow-hidden">
+        {% if product.image %}
+        <img alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}" id="main-product-img"/>
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
+          <span class="material-symbols-outlined text-8xl text-outline">crop_square</span>
+        </div>
+        {% endif %}
+        <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="absolute bottom-6 left-6 bg-surface/90 backdrop-blur-sm px-6 py-3 flex items-center gap-3 font-label text-[10px] tracking-[0.2em] border-b-2 border-secondary hover:bg-secondary hover:text-white transition-all">
+          <span class="material-symbols-outlined text-sm">view_in_ar</span>
+          TRY IN ROOM VISUALIZER
+        </a>
+      </div>
+
+      <!-- Thumbnail Strip — tile image + gallery photos (only what exists) -->
+      {% if product.image or gallery %}
+      <div class="grid grid-cols-4 gap-4">
+        {% if product.image %}
+        <button type="button" onclick="swapMainImage(this, '{{ product.image.url }}')"
+                class="thumb aspect-square bg-surface-container border-2 border-secondary overflow-hidden cursor-pointer">
+          <img alt="{{ product.name }} tile" class="w-full h-full object-cover" src="{{ product.image.url }}"/>
+        </button>
+        {% endif %}
+        {% for img in gallery %}
+        <button type="button" onclick="swapMainImage(this, '{{ img.image.url }}')"
+                class="thumb aspect-square bg-surface-container border-2 border-transparent overflow-hidden cursor-pointer hover:border-outline-variant">
+          <img alt="{{ img.caption|default:product.name }}" class="w-full h-full object-cover" src="{{ img.image.url }}"/>
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Product Info -->
+    <div class="lg:col-span-5 flex flex-col">
+
+      <!-- Category Badges (primary + additional) -->
+      <div class="mb-4 flex flex-wrap gap-2">
+        {% for cat in product.all_categories %}
+        <a href="{% url 'products:product_list' %}?category={{ cat.id }}"
+           class="inline-block rounded-full bg-tertiary-container px-4 py-1 text-[10px] font-label tracking-widest text-on-tertiary-container hover:opacity-80 transition-opacity">
+          {{ cat.name|upper }}
+        </a>
+        {% empty %}
+        <span class="inline-block rounded-full bg-tertiary-container px-4 py-1 text-[10px] font-label tracking-widest text-on-tertiary-container">UNCATEGORIZED</span>
+        {% endfor %}
+      </div>
+
+      <!-- Name & Price -->
+      <h1 class="font-headline text-4xl mb-2 text-primary">{{ product.name }}</h1>
+      <div class="flex items-baseline gap-4 mb-6">
+        <span class="text-3xl font-bold text-secondary">&#8377;{{ product.price }}</span>
+        <span class="text-xs font-label text-outline tracking-tighter">/ SQ. FT (Incl. Taxes)</span>
+      </div>
+
+      <!-- Stock Status -->
+      <div class="flex items-center gap-2 mb-8">
+        {% if product.stock > 0 %}
+        <span class="w-2 h-2 rounded-full bg-green-600"></span>
+        <span class="text-xs font-medium text-on-surface-variant uppercase tracking-widest">In Stock &mdash; {{ product.stock }} units available</span>
+        {% else %}
+        <span class="w-2 h-2 rounded-full bg-error"></span>
+        <span class="text-xs font-medium text-error uppercase tracking-widest">Out of Stock</span>
+        {% endif %}
+      </div>
+
+      <!-- Description -->
+      {% if product.description %}
+      <p class="font-serif-alt text-xl text-on-surface-variant leading-relaxed italic mb-8 border-l-2 border-outline/20 pl-6">
+        "{{ product.description }}"
+      </p>
+      {% endif %}
+
+      <!-- Technical Specs -->
+      <div class="mb-10">
+        <h3 class="font-label text-[11px] tracking-[0.2em] mb-4 text-outline uppercase">Technical Specifications</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
+            <span class="text-on-surface-variant font-medium">Category</span>
+            <span class="text-on-surface font-semibold text-right">{% for cat in product.all_categories %}{{ cat.name }}{% if not forloop.last %}, {% endif %}{% empty %}General{% endfor %}</span>
+          </div>
+          {% if product.size %}
+          <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
+            <span class="text-on-surface-variant font-medium">Size</span>
+            <span class="text-on-surface font-semibold">{{ product.size }}</span>
+          </div>
+          {% endif %}
+          <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
+            <span class="text-on-surface-variant font-medium">Stock</span>
+            <span class="text-on-surface font-semibold">{{ product.stock }} units</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Toggle: BUY NOW / REQUEST QUOTE -->
+      <div class="mb-6">
+        <div class="flex border-b border-outline/20">
+          <button id="tab-buy" onclick="switchMode('buy')" class="flex-1 py-4 font-label text-[11px] tracking-[0.2em] bg-primary-container text-white transition-all">BUY NOW</button>
+          <button id="tab-quote" onclick="switchMode('quote')" class="flex-1 py-4 font-label text-[11px] tracking-[0.2em] text-outline hover:text-secondary transition-all">REQUEST QUOTE</button>
+        </div>
+
+        <!-- Buy Now Panel -->
+        <div id="panel-buy" class="mt-4 space-y-6">
+          <!-- Tile Area Calculator -->
+          <div class="bg-surface-container-low p-6 space-y-4">
+            <h4 class="font-label text-[10px] tracking-widest text-outline uppercase">Tile Area Calculator</h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="block font-label text-[10px] tracking-widest text-outline">LENGTH (FT)</label>
+                <input id="calc-length" class="w-full bg-transparent border-b border-outline py-2 focus:outline-none focus:border-secondary" type="number" value="10" min="1" oninput="calcTiles()"/>
+              </div>
+              <div class="space-y-1">
+                <label class="block font-label text-[10px] tracking-widest text-outline">WIDTH (FT)</label>
+                <input id="calc-width" class="w-full bg-transparent border-b border-outline py-2 focus:outline-none focus:border-secondary" type="number" value="12" min="1" oninput="calcTiles()"/>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between text-[10px] font-label tracking-widest text-outline">
+                <span>WASTAGE ALLOWANCE</span>
+                <span id="wastage-pct" class="text-secondary">10%</span>
+              </div>
+              <input id="wastage-range" class="w-full accent-secondary" max="20" min="0" type="range" value="10" oninput="updateWastage(this.value)"/>
+            </div>
+            <div class="bg-surface-container-highest p-4 flex justify-between items-center">
+              <div>
+                <span class="block text-[10px] font-label tracking-widest text-outline">TOTAL AREA</span>
+                <span id="calc-sqmt" class="text-xl font-headline font-bold text-primary">132 SQ.FT</span>
+              </div>
+              <div class="text-right">
+                <span class="block text-[10px] font-label tracking-widest text-outline">EST. COST</span>
+                <span id="calc-cost" class="text-xl font-headline font-bold text-secondary">&#8377;0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add to Cart -->
+          {% if product.stock > 0 %}
+          <form action="{% url 'cart:add_to_cart' product.pk %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="flex gap-4">
+              <div class="flex border border-outline items-center px-4 gap-4">
+                <button type="button" onclick="changeQty(-1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors">-</button>
+                <input type="number" id="qty-input" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold text-base"/>
+                <button type="button" onclick="changeQty(1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors">+</button>
+              </div>
+              <button type="submit" id="cart-btn" class="flex-1 bg-primary-container text-white py-4 font-label text-[12px] tracking-[0.2em] hover:bg-primary transition-all uppercase">
+                ADD TO CART
+              </button>
+            </div>
+          </form>
+          {% else %}
+          <button type="button" disabled class="w-full bg-surface-container-high text-on-surface-variant py-4 font-label text-[12px] tracking-[0.2em] uppercase cursor-not-allowed">
+            OUT OF STOCK
+          </button>
+          {% endif %}
+        </div>
+
+        <!-- Quote Panel -->
+        <div id="panel-quote" class="hidden mt-4 space-y-6">
+          <div class="bg-surface-container-low p-8 space-y-4">
+            <p class="font-cormorant italic text-xl text-on-surface-variant">
+              "Get a personalised quote for this tile including bulk pricing, installation advice, and referral discounts."
+            </p>
+            <div class="space-y-2 text-sm text-on-surface-variant">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-base">check_circle</span>
+                <span>Bulk order discounts</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-base">check_circle</span>
+                <span>Referrer tracking (Engineer / Architect / Mason)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-base">check_circle</span>
+                <span>Custom area calculations</span>
+              </div>
+            </div>
+            <a href="{% url 'core:inquiry' %}?product={{ product.pk }}&name={{ product.name|urlencode }}&price={{ product.price }}" class="block w-full bg-secondary text-on-secondary py-4 font-label text-[12px] tracking-[0.2em] uppercase text-center hover:bg-secondary-fixed transition-all">
+              REQUEST A CUSTOM QUOTE
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Room Visualizer Preview -->
+  <section class="bg-surface-container py-24">
+    <div class="max-w-screen-2xl mx-auto px-8">
+      <div class="mb-16 text-center">
+        <h2 class="font-playfair italic text-5xl text-primary mb-4">See It In Your Space</h2>
+        <p class="font-cormorant italic text-xl text-outline max-w-2xl mx-auto">Experience the {{ product.name }} in your own curated environment.</p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Room Type Selector -->
+        <div class="lg:col-span-1 space-y-3">
+          <h4 class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-6">Select Space</h4>
+          {% for room in rooms %}
+          <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}&room={{ room.key }}"
+             class="w-full text-left p-5 flex justify-between items-center group transition-all {% if forloop.first %}bg-surface-container-highest border-l-4 border-secondary{% else %}bg-surface/50 hover:bg-surface-container-highest{% endif %}">
+            <span class="font-label text-[11px] tracking-widest">{{ room.name|upper }}</span>
+            <span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+          </a>
+          {% endfor %}
+
+          <div class="pt-6 mt-6 border-t border-outline/10">
+            <div class="p-6 bg-primary-container text-white space-y-4">
+              <h5 class="font-headline italic text-lg">Upload Your Space</h5>
+              <p class="text-xs opacity-70 leading-relaxed">Visualize our tiles on your own room photographs.</p>
+              <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="block w-full border border-white/30 py-3 text-[10px] font-label tracking-widest text-center hover:bg-white hover:text-primary transition-all">
+                OPEN VISUALIZER
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Preview Image -->
+        <div class="lg:col-span-3 relative h-[500px] bg-black overflow-hidden shadow-2xl">
+          <img alt="Room visualization" class="w-full h-full object-cover opacity-90"
+               src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=80"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+          <div class="absolute bottom-8 right-8">
+            <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="px-6 h-12 bg-secondary text-white font-label text-[10px] tracking-widest shadow-lg flex items-center gap-2 hover:bg-secondary-fixed transition-all">
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+              OPEN VISUALIZER
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Products -->
+  {% if related_products %}
+  <section class="bg-surface py-24">
+    <div class="max-w-screen-2xl mx-auto px-8">
+      <div class="flex justify-between items-end mb-12">
+        <div>
+          <h4 class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-2">Curated Pairings</h4>
+          <h2 class="font-headline text-3xl text-primary">You Might Also Like</h2>
+        </div>
+        {% if product.category %}<a href="{% url 'products:product_list' %}?category={{ product.category.id }}" class="font-label text-[11px] tracking-widest text-secondary border-b border-secondary pb-1 hover:opacity-80 transition-opacity">
+          VIEW ALL {{ product.category.name|upper }}
+        </a>{% endif %}
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {% for related in related_products %}
+        <div class="group cursor-pointer">
+          <a href="{{ related.get_absolute_url }}">
+            <div class="aspect-[3/4] bg-surface-container overflow-hidden relative mb-4">
+              {% if related.image %}
+              <img alt="{{ related.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ related.image.url }}"/>
+              {% else %}
+              <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
+                <span class="material-symbols-outlined text-5xl text-outline">crop_square</span>
+              </div>
+              {% endif %}
+              {% if related.is_featured %}
+              <div class="absolute top-4 left-4 bg-secondary text-white text-[9px] px-2 py-1 font-label tracking-widest">FEATURED</div>
+              {% endif %}
+            </div>
+            <h3 class="font-headline text-lg text-on-surface mb-1">{{ related.name }}</h3>
+            <p class="text-[10px] font-label text-outline tracking-widest mb-2">{% if related.category %}{{ related.category.name|upper }}{% else %}UNCATEGORIZED{% endif %}</p>
+            <p class="text-secondary font-bold">&#8377; {{ related.price }}</p>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const pricePerSqFt = parseFloat('{{ product.price }}') || 0;
+
+  function calcTiles() {
+    const len = parseFloat(document.getElementById('calc-length').value) || 0;
+    const wid = parseFloat(document.getElementById('calc-width').value) || 0;
+    const waste = parseFloat(document.getElementById('wastage-range').value) / 100;
+    const sqFt = len * wid * (1 + waste);
+    const cost = sqFt * pricePerSqFt;
+    document.getElementById('calc-sqmt').textContent = sqFt.toFixed(1) + ' SQ.FT';
+    document.getElementById('calc-cost').textContent = '\u20B9' + Math.ceil(cost).toLocaleString('en-IN');
+  }
+
+  // Swap the main product image when a thumbnail is clicked
+  function swapMainImage(btn, url) {
+    const main = document.getElementById('main-product-img');
+    if (main) main.src = url;
+    document.querySelectorAll('.thumb').forEach(t => {
+      t.classList.remove('border-secondary');
+      t.classList.add('border-transparent');
+    });
+    btn.classList.add('border-secondary');
+    btn.classList.remove('border-transparent');
+  }
+
+  function updateWastage(val) {
+    document.getElementById('wastage-pct').textContent = val + '%';
+    calcTiles();
+  }
+
+  function changeQty(delta) {
+    const input = document.getElementById('qty-input');
+    const max = parseInt(input.max) || 999;
+    let val = parseInt(input.value) || 1;
+    val = Math.max(1, Math.min(max, val + delta));
+    input.value = val;
+  }
+
+  function switchMode(mode) {
+    const buyPanel = document.getElementById('panel-buy');
+    const quotePanel = document.getElementById('panel-quote');
+    const buyTab = document.getElementById('tab-buy');
+    const quoteTab = document.getElementById('tab-quote');
+    if (mode === 'buy') {
+      buyPanel.classList.remove('hidden');
+      quotePanel.classList.add('hidden');
+      buyTab.classList.add('bg-primary-container', 'text-white');
+      buyTab.classList.remove('text-outline');
+      quoteTab.classList.remove('bg-primary-container', 'text-white');
+      quoteTab.classList.add('text-outline');
+    } else {
+      quotePanel.classList.remove('hidden');
+      buyPanel.classList.add('hidden');
+      quoteTab.classList.add('bg-primary-container', 'text-white');
+      quoteTab.classList.remove('text-outline');
+      buyTab.classList.remove('bg-primary-container', 'text-white');
+      buyTab.classList.add('text-outline');
+    }
+  }
+
+  // Init calc
+  calcTiles();
+</script>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Our Heritage Story{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="relative min-h-[700px] flex items-center px-8 md:px-24 bg-surface pt-24">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-screen-2xl mx-auto w-full">
+    <div class="z-10">
+      <div class="flex gap-2 mb-6">
+        <span class="px-4 py-1 rounded-full bg-tertiary-container text-on-tertiary-container text-[10px] stamp font-bold">10-Year Warranty</span>
+        <span class="px-4 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] stamp font-bold">Since 2014</span>
+      </div>
+      <h1 class="hero-title text-6xl md:text-8xl text-primary leading-tight mb-8">
+        More Than Tiles.<br/>
+        <span class="text-secondary">We Build Spaces.</span>
+      </h1>
+      <p class="literary-text text-2xl text-on-surface-variant max-w-lg mb-10">
+        Crafting architectural legacies through the precision of ceramic excellence and the soul of Tamil heritage.
+      </p>
+      <div class="flex items-center gap-4">
+        <div class="w-12 bg-outline" style="height:1px;"></div>
+        <span class="stamp text-xs text-outline">The Sovereign Gallery — Bhavani, Tamil Nadu</span>
+      </div>
+    </div>
+    <div class="relative h-[500px] md:h-[700px] bg-surface-container-low">
+      <img alt="Luxury architectural showroom with high-end tiles" class="w-full h-full object-cover"
+           src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80"/>
+      <div class="absolute -bottom-8 -left-8 bg-primary-container p-12 text-on-primary hidden md:block">
+        <p class="stamp text-sm mb-2 opacity-80">Our Philosophy</p>
+        <p class="text-xl font-serif">Precision is a Point of Pride.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<section class="bg-primary text-on-primary py-16 px-8">
+  <div class="max-w-screen-2xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+    <div>
+      <p class="text-4xl md:text-5xl font-bold font-serif mb-2">10+</p>
+      <p class="stamp text-[10px] opacity-70">Years of Heritage</p>
+    </div>
+    <div>
+      <p class="text-4xl md:text-5xl font-bold font-serif mb-2">40,000+</p>
+      <p class="stamp text-[10px] opacity-70">Orders Delivered</p>
+    </div>
+    <div>
+      <p class="text-4xl md:text-5xl font-bold font-serif mb-2">10-Yr</p>
+      <p class="stamp text-[10px] opacity-70">Quality Warranty</p>
+    </div>
+    <div>
+      <p class="text-4xl md:text-5xl font-bold font-serif mb-2">100%</p>
+      <p class="stamp text-[10px] opacity-70">Natural Materials</p>
+    </div>
+  </div>
+</section>
+
+<!-- Our Story -->
+<section class="py-32 px-8 bg-surface">
+  <div class="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+    <div class="space-y-8">
+      <span class="font-label text-xs tracking-[0.4em] text-secondary font-bold uppercase">Our Heritage</span>
+      <h2 class="font-headline text-5xl leading-tight">The Bhavani<br/>Legacy</h2>
+      <div class="space-y-6 font-body text-on-surface-variant text-lg leading-relaxed">
+        <p>
+          Founded in 2014, Suwasthick Tiles was born from a singular vision — to make the artistry of natural stone accessible without compromising on quality or tradition. Located in the heart of Bhavani, opposite the historic Kalyana Mandabam, our showroom has become the go-to destination for architects, interior designers, and homeowners across Tamil Nadu.
+        </p>
+        <p>
+          We specialise exclusively in premium ceramic tiles and sanitaryware — a focused craft that lets us perfect every detail. Each piece is backed by our 10-year quality warranty, so your investment is protected for years to come.
+        </p>
+        <p>
+          With over 40,000 successful orders across residential, commercial, and restoration projects, we have built not just beautiful floors and walls, but lasting relationships. Our clients span engineers, architects, masons, and everyday homeowners who trust us to make their spaces extraordinary.
+        </p>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="absolute -top-12 -right-12 w-64 h-64 bg-surface-container-high -z-10"></div>
+      <img alt="Artisan hands working on tiles" class="w-full grayscale hover:grayscale-0 transition-all duration-700"
+           src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"/>
+      <div class="absolute -bottom-8 -right-8 bg-white p-8 shadow-2xl">
+        <span class="font-headline text-3xl text-primary block">10-Yr</span>
+        <span class="font-label text-[10px] tracking-widest text-stone-400">QUALITY WARRANTY</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Values -->
+<section class="py-32 bg-surface-container px-8">
+  <div class="max-w-screen-2xl mx-auto">
+    <div class="text-center mb-20 space-y-4">
+      <span class="font-label text-xs tracking-[0.4em] text-secondary font-bold uppercase">What We Stand For</span>
+      <h2 class="font-headline text-4xl md:text-5xl">The Suwasthick Standard</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="bg-surface-container-lowest p-12 space-y-6">
+        <span class="material-symbols-outlined text-3xl text-secondary">verified</span>
+        <h3 class="font-headline text-2xl text-primary">Quality Assured</h3>
+        <p class="font-body text-on-surface-variant leading-relaxed">
+          Every tile is hand-inspected before leaving our warehouse, and backed by our 10-year quality warranty — a promise we renew with every order.
+        </p>
+      </div>
+      <div class="bg-surface-container-lowest p-12 space-y-6">
+        <span class="material-symbols-outlined text-3xl text-secondary">architecture</span>
+        <h3 class="font-headline text-2xl text-primary">Expert Guidance</h3>
+        <p class="font-body text-on-surface-variant leading-relaxed">
+          We partner with engineers, architects, and masons to deliver not just materials but complete technical expertise — from selection to installation advice.
+        </p>
+      </div>
+      <div class="bg-surface-container-lowest p-12 space-y-6">
+        <span class="material-symbols-outlined text-3xl text-secondary">public</span>
+        <h3 class="font-headline text-2xl text-primary">Tamil Heritage</h3>
+        <p class="font-body text-on-surface-variant leading-relaxed">
+          Rooted in Bhavani but serving clients across India, we carry the spirit of Tamil craftsmanship into every project — traditional precision, modern execution.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Location & Contact CTA -->
+<section class="py-32 relative bg-primary-container overflow-hidden">
+  <div class="relative z-10 max-w-4xl mx-auto text-center space-y-10 px-8">
+    <h2 class="text-white font-playfair italic text-5xl md:text-6xl">Visit Our Showroom</h2>
+    <p class="text-on-tertiary-container font-body text-xl">
+      Opp. Kalyana Mandabam, Bhavani, Erode District, Tamil Nadu &mdash; Open Mon–Sat, 9 AM to 7 PM
+    </p>
+    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+      <a href="{% url 'core:inquiry' %}" class="w-full md:w-auto bg-secondary text-on-secondary px-12 py-5 font-label text-xs tracking-[0.2em] font-bold hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-all">
+        REQUEST A QUOTE
+      </a>
+      <a href="{% url 'products:product_list' %}" class="w-full md:w-auto border-b border-white text-white px-8 py-4 font-label text-xs tracking-widest hover:text-secondary-fixed hover:border-secondary-fixed transition-all text-center">
+        EXPLORE COLLECTION
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

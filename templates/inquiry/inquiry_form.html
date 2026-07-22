@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Request a Custom Quote{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-6 min-h-screen">
+  <div class="max-w-[800px] mx-auto">
+
+    <!-- Header -->
+    <header class="mb-12 text-left flex justify-between items-end">
+      <div>
+        <span class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase block mb-2">Inquiry Portal</span>
+        <h1 class="text-5xl md:text-6xl font-headline font-bold text-primary leading-tight">Request a Custom Quote</h1>
+      </div>
+      <div class="flex flex-col items-end hidden md:flex">
+        <div class="w-16 h-16 border-2 border-outline/20 flex items-center justify-center mb-2">
+          <span class="font-headline font-bold text-lg text-primary">10-Yr</span>
+        </div>
+        <span class="font-label text-[10px] tracking-widest text-on-surface-variant uppercase">Quality Warranty</span>
+      </div>
+    </header>
+
+    {% if success %}
+    <div class="mb-12 p-8 bg-green-50 border-l-4 border-green-700 space-y-2">
+      <p class="font-headline text-xl text-green-900">Quote Request Submitted!</p>
+      <p class="font-body text-green-800">We've received your inquiry and will contact you within 24 hours.</p>
+    </div>
+    {% endif %}
+
+    <form method="post" class="space-y-16" id="inquiry-form">
+      {% csrf_token %}
+
+      <!-- Pre-filled product info (hidden) -->
+      {% if product %}
+      <input type="hidden" name="product_id" value="{{ product.pk }}"/>
+      <input type="hidden" name="product_name" value="{{ product.name }}"/>
+      <input type="hidden" name="product_price" value="{{ product.price }}"/>
+      {% endif %}
+
+      <!-- Section 01: Your Details -->
+      <section>
+        <div class="flex items-baseline space-x-4 mb-8">
+          <span class="font-headline text-3xl text-primary-container/20">01</span>
+          <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Your Details</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+          <div class="relative group">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Full Name *</label>
+            <input name="full_name" type="text" required
+                   class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                   placeholder="Enter your full name"
+                   value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"/>
+          </div>
+          <div class="relative group">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Email Address *</label>
+            <input name="email" type="email" required
+                   class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                   placeholder="email@example.com"
+                   value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"/>
+          </div>
+          <div class="relative group">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Phone Number *</label>
+            <input name="phone" type="tel" required
+                   class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                   placeholder="+91 00000 00000"/>
+          </div>
+          <div class="relative group">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Address / Location</label>
+            <input name="address" type="text"
+                   class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                   placeholder="City, State"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 02: Referred By -->
+      <section class="bg-surface-container-low p-10 -mx-4 md:-mx-10">
+        <div class="flex items-baseline space-x-4 mb-8">
+          <span class="font-headline text-3xl text-primary-container/20">02</span>
+          <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Referred By</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div class="relative">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional Capacity</label>
+            <select name="referrer_type" id="referrer-type"
+                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary transition-all appearance-none cursor-pointer"
+                    onchange="toggleReferrerName(this.value)">
+              <option value="">Select Option</option>
+              <option value="engineer" {% if request.GET.referrer_type == 'engineer' %}selected{% endif %}>Civil Engineer</option>
+              <option value="mason" {% if request.GET.referrer_type == 'mason' %}selected{% endif %}>Mason</option>
+              <option value="layer" {% if request.GET.referrer_type == 'layer' %}selected{% endif %}>Layer (Tile Fixer)</option>
+              <option value="architect" {% if request.GET.referrer_type == 'architect' %}selected{% endif %}>Architect</option>
+              <option value="others" {% if request.GET.referrer_type == 'others' %}selected{% endif %}>Others</option>
+            </select>
+            <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+          </div>
+          <div id="referrer-name-field" class="relative {% if not request.GET.referrer_type %}hidden{% endif %}">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional's Name</label>
+            <input name="referrer_name" type="text"
+                   class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                   placeholder="Enter name of the professional"/>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 03: Your Project -->
+      <section>
+        <div class="flex items-baseline space-x-4 mb-8">
+          <span class="font-headline text-3xl text-primary-container/20">03</span>
+          <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Your Project</h2>
+        </div>
+        <div class="space-y-12">
+
+          <!-- Tile Interest (pre-fill from product if available) -->
+          <div>
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-4">Tiles Interested In</label>
+            {% if product %}
+            <div class="p-4 bg-surface-container-low border-l-4 border-secondary flex items-center gap-4">
+              {% if product.image %}
+              <img alt="{{ product.name }}" class="w-12 h-12 object-cover" src="{{ product.image.url }}"/>
+              {% endif %}
+              <div>
+                <p class="font-label text-xs tracking-widest font-bold">{{ product.name }}</p>
+                <p class="font-body text-xs text-on-surface-variant">{% if product.category %}{{ product.category.name }}{% else %}Uncategorized{% endif %} &mdash; &#8377;{{ product.price }}/sq.ft</p>
+              </div>
+              <input type="hidden" name="tile_interest" value="{{ product.name }}"/>
+            </div>
+            {% else %}
+            <input name="tile_interest" type="text"
+                   class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                   placeholder="E.g. Marble for bathroom, Granite for kitchen..."/>
+            {% endif %}
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="relative">
+              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Area Required (sq.ft)</label>
+              <input name="area_sqft" type="number" min="1"
+                     class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
+                     placeholder="e.g. 500"/>
+            </div>
+            <div class="relative">
+              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Project Type</label>
+              <select name="project_type"
+                      class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary transition-all appearance-none cursor-pointer">
+                <option value="">Select Type</option>
+                <option value="residential">Residential</option>
+                <option value="commercial">Commercial</option>
+                <option value="hospitality">Hospitality / Hotel</option>
+                <option value="restoration">Heritage Restoration</option>
+                <option value="outdoor">Outdoor / Landscaping</option>
+              </select>
+              <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+            </div>
+          </div>
+
+          <!-- Message -->
+          <div class="relative">
+            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Special Requirements / Message</label>
+            <textarea name="message" rows="5"
+                      class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all resize-none"
+                      placeholder="Describe your project, timeline, or any specific requirements..."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Submit -->
+      <div class="flex flex-col md:flex-row items-start gap-6 pt-4">
+        <button type="submit"
+                class="bg-primary-container text-on-primary px-16 py-5 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">send</span>
+          SUBMIT INQUIRY
+        </button>
+        <p class="font-body text-xs text-on-surface-variant italic self-center">
+          We respond within 24 hours. Your information is never shared.
+        </p>
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function toggleReferrerName(val) {
+    const field = document.getElementById('referrer-name-field');
+    if (val && val !== '') {
+      field.classList.remove('hidden');
+    } else {
+      field.classList.add('hidden');
+    }
+  }
+  // Init on load (in case of browser back/forward cache)
+  const sel = document.getElementById('referrer-type');
+  if (sel) toggleReferrerName(sel.value);
+</script>
+{% endblock %}

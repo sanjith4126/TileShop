@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Room Visualizer{% endblock %}
+
+{% block content %}
+<main class="pt-24 pb-12 px-8 max-w-screen-2xl mx-auto min-h-screen">
+
+  <!-- Header -->
+  <header class="mb-10">
+    <nav class="flex items-center gap-2 mb-4 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
+      <a class="hover:text-secondary transition-colors" href="{% url 'core:home' %}">Home</a>
+      <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+      <span class="text-secondary">Visualizer</span>
+    </nav>
+    <h1 class="text-5xl font-headline font-bold text-primary tracking-tight">See It In Your Space</h1>
+    <p class="font-cormorant italic text-xl text-on-surface-variant mt-2">
+      Upload your room photo, pick a tile, and our AI fits it into your space — photorealistically.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-0 border-t border-outline-variant/20">
+
+    <!-- Left Panel: Controls -->
+    <aside class="bg-surface-container-low p-8 border-r border-outline-variant/20 max-h-[calc(100vh-200px)] overflow-y-auto">
+      <div class="space-y-10">
+
+        <!-- Step 01: Upload Your Room -->
+        <section class="bg-primary-container text-white p-6 space-y-4">
+          <header class="flex justify-between items-end">
+            <span class="font-label text-[11px] tracking-[0.2em] opacity-70 uppercase">Step 01</span>
+            <h2 class="text-xl font-headline font-bold">Upload Your Room</h2>
+          </header>
+          <p class="text-xs opacity-70 leading-relaxed">
+            Use a clear photo of the room you want to re-tile.
+          </p>
+          <label class="block w-full border border-white/30 py-3 text-[10px] font-label tracking-widest text-center hover:bg-white hover:text-primary transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-sm align-middle mr-1">upload</span>
+            <span id="upload-label">UPLOAD PHOTO</span>
+            <input type="file" accept="image/*" class="hidden" onchange="onUpload(this)"/>
+          </label>
+        </section>
+
+        <!-- Step 02: Select Tile -->
+        <section>
+          <header class="flex justify-between items-end mb-2">
+            <span class="font-label text-[11px] tracking-[0.2em] text-outline uppercase">Step 02</span>
+            <h2 class="text-xl font-headline font-bold text-primary">Select Tile</h2>
+          </header>
+          <p class="font-body text-[11px] text-on-surface-variant mb-6">Pick any tile to fit into your room.</p>
+          {% if products %}
+          <div class="grid grid-cols-3 gap-3">
+            {% for p in products %}
+            <div id="tile-card-{{ p.pk }}"
+                 class="tile-card relative group cursor-pointer border-2 transition-all {% if selected_product and selected_product.pk == p.pk %}border-secondary{% else %}border-transparent hover:border-outline-variant{% endif %}"
+                 onclick="selectTile(this, '{{ p.pk }}', '{{ p.name|escapejs }}', '{{ p.category.name|default:''|escapejs }}', '{{ p.price }}')">
+              {% if p.image %}
+              <img alt="{{ p.name }}" class="w-full aspect-square object-cover" src="{{ p.image.url }}"/>
+              {% else %}
+              <div class="w-full aspect-square bg-surface-container-high flex items-center justify-center">
+                <span class="material-symbols-outlined text-outline">crop_square</span>
+              </div>
+              {% endif %}
+              <div class="tile-check absolute top-1 right-1 bg-secondary text-white p-0.5 {% if not selected_product or selected_product.pk != p.pk %}hidden{% endif %}">
+                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+              </div>
+              <div class="absolute bottom-0 inset-x-0 bg-black/60 py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <p class="text-white text-[8px] font-label tracking-widest truncate">{{ p.name }}</p>
+                <p class="text-white/70 text-[7px] font-label tracking-widest truncate">{{ p.category.name }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="font-body text-sm text-on-surface-variant italic">Add products via the admin to see tiles here.</p>
+          {% endif %}
+          <a href="{% url 'products:product_list' %}" class="mt-4 inline-flex items-center gap-2 font-label text-[10px] tracking-widest text-secondary uppercase border-b border-secondary pb-0.5 hover:opacity-80 transition-opacity">
+            <span class="material-symbols-outlined text-sm">apps</span>
+            BROWSE ALL TILES
+          </a>
+        </section>
+
+        <!-- Step 03: Generate -->
+        <section class="space-y-3">
+          <button id="generate-btn" type="button" onclick="generate()" disabled
+                  class="w-full bg-secondary text-white py-4 font-label text-[12px] tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-secondary-fixed">
+            <span class="material-symbols-outlined text-base">auto_awesome</span>
+            <span id="generate-label">Fit Tiles With AI</span>
+          </button>
+          <p class="text-[10px] text-on-surface-variant text-center">Upload a photo and pick a tile to enable.</p>
+        </section>
+
+      </div>
+    </aside>
+
+    <!-- Right Panel: Visualization -->
+    <div class="relative bg-black min-h-[500px] lg:min-h-[calc(100vh-200px)] overflow-hidden flex items-center justify-center">
+
+      <!-- Result / preview image -->
+      <img id="result-img" class="max-w-full max-h-full object-contain hidden" alt="Visualization"/>
+
+      <!-- Selected tile info -->
+      <div id="tile-info" class="absolute top-6 left-6 z-20 glass-panel px-6 py-4 {% if not selected_product %}hidden{% endif %}">
+        <p class="font-label text-[10px] tracking-widest text-on-surface-variant uppercase mb-1">Selected Tile</p>
+        <p class="font-headline text-on-surface" id="tile-info-name">
+          {% if selected_product %}{{ selected_product.name }}{% endif %}
+        </p>
+        {% if selected_product %}
+        <p class="font-body text-xs text-on-surface-variant mt-1">&#8377;{{ selected_product.price }}/sq.ft &bull; {% if selected_product.category %}{{ selected_product.category.name }}{% else %}Uncategorized{% endif %}</p>
+        {% endif %}
+      </div>
+
+      <!-- Loading overlay -->
+      <div id="loading" class="absolute inset-0 z-30 bg-black/70 flex-col items-center justify-center hidden" style="display:none;">
+        <div class="w-12 h-12 border-4 border-white/30 border-t-secondary rounded-full animate-spin mb-6"></div>
+        <p class="text-white font-label text-xs tracking-widest uppercase">Fitting tiles into your room…</p>
+        <p class="text-white/60 font-body text-[11px] mt-2">This can take 10–30 seconds</p>
+      </div>
+
+      <!-- Error banner -->
+      <div id="error-box" class="absolute top-6 right-6 z-30 max-w-sm bg-error text-white px-5 py-4 text-xs font-body hidden"></div>
+
+      <!-- Action Bar -->
+      <div class="absolute bottom-6 right-6 z-20 flex gap-3">
+        <a id="download-btn" href="#" download="room-visualization.png"
+           class="px-6 py-3 bg-surface text-on-surface font-label text-[10px] tracking-widest items-center gap-2 hover:bg-surface-container transition-all shadow-lg hidden">
+          <span class="material-symbols-outlined text-sm">download</span>
+          DOWNLOAD
+        </a>
+        <a href="{% url 'core:inquiry' %}{% if selected_product %}?product={{ selected_product.pk }}&name={{ selected_product.name|urlencode }}{% endif %}"
+           class="px-6 py-3 bg-primary-container text-white font-label text-[10px] tracking-widest flex items-center gap-2 hover:bg-primary transition-all shadow-lg">
+          <span class="material-symbols-outlined text-sm">request_quote</span>
+          GET QUOTE
+        </a>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="absolute inset-0 flex items-center justify-center px-6">
+        <div class="glass-panel px-12 py-10 text-center space-y-4 max-w-md">
+          <span class="material-symbols-outlined text-5xl text-on-surface-variant">add_photo_alternate</span>
+          <h3 class="font-headline text-2xl text-on-surface">Upload a room photo to begin</h3>
+          <p class="font-cormorant italic text-on-surface-variant">Upload your room, pick a tile, then tap <b>Fit Tiles With AI</b>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const GENERATE_URL = "{% url 'core:ai_visualize' %}";
+  const CSRF = "{{ csrf_token }}";
+
+  // State
+  let photoFile = null;
+  let selectedProductId = {% if selected_product %}'{{ selected_product.pk }}'{% else %}null{% endif %};
+
+  // Elements
+  const resultImg  = document.getElementById('result-img');
+  const emptyState = document.getElementById('empty-state');
+  const loading    = document.getElementById('loading');
+  const errorBox   = document.getElementById('error-box');
+  const genBtn     = document.getElementById('generate-btn');
+  const genLabel   = document.getElementById('generate-label');
+  const downloadBtn= document.getElementById('download-btn');
+  const infoBox    = document.getElementById('tile-info');
+  const infoName   = document.getElementById('tile-info-name');
+
+  function refreshButton() {
+    genBtn.disabled = !(photoFile && selectedProductId);
+  }
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.remove('hidden');
+    setTimeout(() => errorBox.classList.add('hidden'), 9000);
+  }
+
+  /* ── Upload ─────────────────────────────────────────────────── */
+  function onUpload(input) {
+    if (!input.files || !input.files[0]) return;
+    photoFile = input.files[0];
+    document.getElementById('upload-label').textContent = 'CHANGE PHOTO';
+
+    // Preview the raw photo immediately
+    const reader = new FileReader();
+    reader.onload = e => {
+      resultImg.src = e.target.result;
+      resultImg.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      downloadBtn.classList.add('hidden');
+      downloadBtn.style.display = 'none';
+    };
+    reader.readAsDataURL(photoFile);
+    refreshButton();
+  }
+
+  /* ── Tile selection ─────────────────────────────────────────── */
+  function selectTile(card, pk, name, categoryName, price) {
+    selectedProductId = pk;
+
+    document.querySelectorAll('.tile-card').forEach(c => {
+      c.classList.remove('border-secondary');
+      c.classList.add('border-transparent');
+      const chk = c.querySelector('.tile-check');
+      if (chk) chk.classList.add('hidden');
+    });
+    if (card) {
+      card.classList.add('border-secondary');
+      card.classList.remove('border-transparent');
+      const chk = card.querySelector('.tile-check');
+      if (chk) chk.classList.remove('hidden');
+    }
+
+    infoName.textContent = name;
+    infoBox.classList.remove('hidden');
+
+    const url = new URL(window.location);
+    url.searchParams.set('product', pk);
+    window.history.replaceState({}, '', url);
+
+    refreshButton();
+  }
+
+  /* ── Generate (call Gemini via backend) ────────────────────── */
+  async function generate() {
+    if (!photoFile || !selectedProductId) return;
+
+    loading.style.display = 'flex';
+    genBtn.disabled = true;
+    genLabel.textContent = 'Working…';
+    errorBox.classList.add('hidden');
+
+    const fd = new FormData();
+    fd.append('photo', photoFile);
+    fd.append('product_id', selectedProductId);
+
+    try {
+      const resp = await fetch(GENERATE_URL, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF },
+        body: fd,
+      });
+      const data = await resp.json();
+
+      if (!resp.ok || data.error) {
+        showError(data.error || ('Request failed (' + resp.status + ').'));
+      } else if (data.image) {
+        resultImg.src = data.image;
+        resultImg.classList.remove('hidden');
+        emptyState.classList.add('hidden');
+        downloadBtn.href = data.image;
+        downloadBtn.classList.remove('hidden');
+        downloadBtn.style.display = 'flex';
+      }
+    } catch (err) {
+      showError('Network error: ' + err.message);
+    } finally {
+      loading.style.display = 'none';
+      genLabel.textContent = 'Fit Tiles With AI';
+      refreshButton();
+    }
+  }
+
+  // Initialise button state on load
+  refreshButton();
+</script>
+{% endblock %}

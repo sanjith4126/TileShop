@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Suwasthick Tiles — Bhavani's Finest Tile Atelier{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+{% with hero=banners.0 %}
+<header class="relative h-screen w-full flex items-center overflow-hidden">
+  <div class="absolute inset-0 z-0">
+    {% if hero and hero.image %}
+    <img alt="{{ hero.title }}" class="w-full h-full object-cover" src="{{ hero.image.url }}"/>
+    {% else %}
+    <img alt="Luxury architectural tiled interior" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=80"/>
+    {% endif %}
+    <div class="absolute inset-0 bg-gradient-to-r from-primary via-primary/60 to-transparent"></div>
+  </div>
+  <div class="relative z-10 container mx-auto px-8 md:px-16">
+    <div class="max-w-3xl space-y-6">
+      <span class="inline-block text-secondary font-label text-xs tracking-[0.3em] font-bold py-2 border-b border-secondary/30 uppercase">
+        Bhavani's Finest Tile Atelier
+      </span>
+      <h1 class="text-white font-playfair italic text-6xl md:text-8xl leading-tight">
+        {% if hero %}{{ hero.title }}{% else %}Crafted for<br>Every Surface{% endif %}
+      </h1>
+      <p class="text-white/80 font-body text-lg max-w-lg leading-relaxed">
+        {% if hero and hero.subtitle %}{{ hero.subtitle }}{% else %}Elevating interiors with heritage-rich natural materials and precision craftsmanship from the heart of Tamil Nadu.{% endif %}
+      </p>
+      <div class="pt-8 flex flex-wrap gap-4">
+        <a href="{% if hero and hero.link %}{{ hero.link }}{% else %}{% url 'products:product_list' %}{% endif %}" class="bg-secondary text-on-secondary px-10 py-5 font-label text-xs tracking-[0.2em] hover:bg-secondary/90 transition-all">
+          EXPLORE COLLECTIONS
+        </a>
+        <a href="{% url 'core:inquiry' %}" class="border border-white/40 text-white px-10 py-5 font-label text-xs tracking-[0.2em] hover:bg-white/10 transition-all">
+          REQUEST A QUOTE
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+{% endwith %}
+
+<!-- Trust Bar -->
+<section class="bg-[#1a1a1a] py-12 px-8 overflow-hidden">
+  <div class="max-w-screen-2xl mx-auto flex flex-wrap justify-between items-center gap-8">
+    <div class="flex items-center gap-4">
+      <span class="text-on-tertiary-container font-headline text-4xl">10+</span>
+      <span class="text-stone-400 font-label text-[10px] tracking-widest uppercase">Years of<br/>Heritage</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-on-tertiary-container font-headline text-4xl">40,000+</span>
+      <span class="text-stone-400 font-label text-[10px] tracking-widest uppercase">Orders<br/>Delivered</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-on-tertiary-container font-headline text-4xl">10-Yr</span>
+      <span class="text-stone-400 font-label text-[10px] tracking-widest uppercase">Quality<br/>Warranty</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-on-tertiary-container font-headline text-4xl">100%</span>
+      <span class="text-stone-400 font-label text-[10px] tracking-widest uppercase">Premium<br/>Ceramic</span>
+    </div>
+  </div>
+</section>
+
+<!-- Shop by Category -->
+<section class="py-32 px-8 bg-surface">
+  <div class="max-w-screen-2xl mx-auto">
+    <div class="mb-20 text-center space-y-4">
+      <span class="font-cormorant italic text-2xl text-on-surface-variant">Our Collections</span>
+      <h2 class="font-headline text-4xl md:text-5xl uppercase tracking-tighter">Shop by Category</h2>
+    </div>
+
+    <!-- Categories grid -->
+    {% if categories %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      {% for category in categories %}
+      <a href="{% url 'products:product_list' %}?category={{ category.id }}"
+         class="group relative overflow-hidden {% cycle 'mt-12' '-mt-6' 'mt-6' '-mt-12' %} aspect-[3/4] bg-surface-container block">
+        {% if category.image %}
+        <img alt="{{ category.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+             src="{{ category.image.url }}"/>
+        {% else %}
+        <div class="w-full h-full bg-gradient-to-b from-surface-container to-surface-container-high flex items-center justify-center">
+          <span class="material-symbols-outlined text-5xl text-outline">grid_view</span>
+        </div>
+        {% endif %}
+        <div class="absolute bottom-0 left-0 p-6 bg-white w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+          <span class="font-label text-xs tracking-widest font-bold">{{ category.name|upper }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-16">
+      <a href="{% url 'products:product_list' %}" class="inline-flex items-center gap-4 text-primary font-label text-xs tracking-widest font-bold group">
+        VIEW ALL CATEGORIES
+        <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_right_alt</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Collection -->
+<section class="py-32 bg-surface-container-low px-8">
+  <div class="max-w-screen-2xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+      <div class="md:col-span-4 space-y-8">
+        <span class="font-label text-xs tracking-[0.4em] text-secondary font-bold uppercase">Curated Series</span>
+        <h2 class="font-headline text-5xl leading-tight">The Imperial Collection</h2>
+        <p class="font-body text-on-surface-variant leading-relaxed">
+          A tribute to the architectural grandeur of traditional Bhavani estates, reimagined for the contemporary dwelling.
+        </p>
+        <a href="{% url 'products:product_list' %}" class="inline-flex items-center gap-4 text-primary font-label text-xs tracking-widest font-bold group">
+          VIEW FULL COLLECTION
+          <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_right_alt</span>
+        </a>
+      </div>
+      <div class="md:col-span-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Featured products from DB -->
+          {% if featured_products %}
+            {% with fp=featured_products %}
+            <div class="relative group bg-white p-4">
+              <a href="{{ fp.0.get_absolute_url }}">
+                {% if fp.0.image %}
+                <img alt="{{ fp.0.name }}" class="w-full h-[500px] object-cover" src="{{ fp.0.image.url }}"/>
+                {% else %}
+                <div class="w-full h-[500px] bg-surface-container-high flex items-center justify-center">
+                  <span class="material-symbols-outlined text-6xl text-outline">crop_square</span>
+                </div>
+                {% endif %}
+                <div class="mt-6">
+                  <h3 class="font-headline text-xl">{{ fp.0.name }}</h3>
+                  <p class="font-cormorant italic text-stone-500 mt-1">{% if fp.0.category %}{{ fp.0.category.name }}{% else %}Uncategorized{% endif %}</p>
+                </div>
+              </a>
+            </div>
+            <div class="space-y-8 pt-12">
+              {% for product in fp|slice:"1:3" %}
+              <div class="relative group bg-white p-4">
+                <a href="{{ product.get_absolute_url }}">
+                  {% if product.image %}
+                  <img alt="{{ product.name }}" class="w-full h-[280px] object-cover" src="{{ product.image.url }}"/>
+                  {% else %}
+                  <div class="w-full h-[280px] bg-surface-container-high flex items-center justify-center">
+                    <span class="material-symbols-outlined text-4xl text-outline">crop_square</span>
+                  </div>
+                  {% endif %}
+                  <div class="mt-6">
+                    <h3 class="font-headline text-xl">{{ product.name }}</h3>
+                    <p class="font-cormorant italic text-stone-500 mt-1">{% if product.category %}{{ product.category.name }}{% else %}Uncategorized{% endif %}</p>
+                  </div>
+                </a>
+              </div>
+              {% endfor %}
+            </div>
+            {% endwith %}
+          {% else %}
+          <div class="md:col-span-2 flex items-center justify-center py-24 text-on-surface-variant font-cormorant italic text-xl">
+            Collection coming soon — add products via the admin panel.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Room Visualizer Banner -->
+<section class="bg-primary flex flex-col md:flex-row min-h-[500px]">
+  <div class="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center space-y-8 bg-gradient-to-br from-primary to-primary-container">
+    <h2 class="text-white font-playfair italic text-5xl md:text-6xl">See It In Your Space</h2>
+    <p class="text-on-primary-container font-body max-w-md text-lg">
+      Upload a photo of your room and instantly visualize any tile from our catalog on your actual walls and floors.
+    </p>
+    <div>
+      <a href="{% url 'core:room_visualizer' %}" class="inline-block bg-secondary text-on-secondary px-12 py-5 font-label text-xs tracking-widest font-bold hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-all">
+        TRY ROOM VISUALIZER
+      </a>
+    </div>
+  </div>
+  <div class="w-full md:w-1/2 h-[400px] md:h-auto relative overflow-hidden">
+    <img alt="Room visualizer mockup showing tile overlay" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80"/>
+    <div class="absolute inset-0 bg-black/20"></div>
+  </div>
+</section>
+
+<!-- Our Story -->
+<section class="py-32 px-8 bg-surface">
+  <div class="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+    <div class="relative">
+      <div class="absolute -top-12 -left-12 w-64 h-64 bg-surface-container-high -z-10"></div>
+      <img alt="Artisan hands crafting tiles" class="w-full grayscale"
+           src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"/>
+      <div class="absolute -bottom-8 -right-8 bg-white p-8 shadow-2xl">
+        <span class="font-headline text-3xl text-primary block">10-Yr</span>
+        <span class="font-label text-[10px] tracking-widest text-stone-400">QUALITY WARRANTY</span>
+      </div>
+    </div>
+    <div class="space-y-8">
+      <span class="font-label text-xs tracking-[0.4em] text-secondary font-bold uppercase">Heritage & Trust</span>
+      <h2 class="font-headline text-5xl leading-tight">The Bhavani<br/>Legacy</h2>
+      <div class="space-y-6 font-body text-on-surface-variant text-lg leading-relaxed">
+        <p>
+          Since 2014, Suwasthick Tiles has stood as a beacon of artisanal precision in Tamil Nadu. Our journey began with a simple mission: to bring world-class ceramic tiles and sanitaryware to every home, while embracing modern architectural demands.
+        </p>
+        <p>
+          Every tile is hand-selected, every finish is inspected, and every order is backed by our 10-year quality warranty. We aren't just selling tiles — we are providing the foundation for your life's most precious spaces.
+        </p>
+      </div>
+      <a href="{% url 'core:about' %}" class="inline-block border-b-2 border-primary pb-2 text-primary font-label text-xs tracking-widest font-bold hover:opacity-80 transition-opacity">
+        OUR HERITAGE STORY
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-32 bg-surface-container px-8">
+  <div class="max-w-screen-2xl mx-auto">
+    <div class="mb-20 text-center">
+      <h2 class="font-headline text-4xl uppercase tracking-tighter">Patron Voices</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="bg-surface-container-lowest p-12 space-y-8 shadow-sm">
+        <span class="bg-tertiary-container text-on-tertiary-container px-4 py-1 rounded-full text-[10px] font-label font-bold tracking-widest">RESIDENTIAL</span>
+        <p class="font-cormorant italic text-2xl text-on-surface">"The glossy ceramic floor tiles from Suwasthick transformed our living room. The finish and colour are unlike anything we found in Erode."</p>
+        <div>
+          <p class="font-label text-xs font-bold tracking-widest">RAHUL VISHWANATH</p>
+          <p class="text-stone-400 text-xs mt-1">Erode, TN</p>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-12 space-y-8 shadow-sm">
+        <span class="bg-tertiary-container text-on-tertiary-container px-4 py-1 rounded-full text-[10px] font-label font-bold tracking-widest">BATHROOM</span>
+        <p class="font-cormorant italic text-2xl text-on-surface">"We did our entire bathroom with their wall tiles and sanitaryware. Premium quality, perfect colour match, and delivered on time."</p>
+        <div>
+          <p class="font-label text-xs font-bold tracking-widest">MEERA IYER</p>
+          <p class="text-stone-400 text-xs mt-1">Coimbatore, TN</p>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-12 space-y-8 shadow-sm">
+        <span class="bg-tertiary-container text-on-tertiary-container px-4 py-1 rounded-full text-[10px] font-label font-bold tracking-widest">KITCHEN</span>
+        <p class="font-cormorant italic text-2xl text-on-surface">"From kitchen wall tiles to the floor, everything came from Suwasthick. Their guidance on choosing the right tile made all the difference."</p>
+        <div>
+          <p class="font-label text-xs font-bold tracking-widest">S. KARTHIKEYAN</p>
+          <p class="text-stone-400 text-xs mt-1">Salem, TN</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Inquiry CTA -->
+<section class="py-32 relative bg-primary-container overflow-hidden">
+  <div class="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
+    <span class="material-symbols-outlined text-white" style="font-size: 600px; font-variation-settings: 'FILL' 1;">grid_view</span>
+  </div>
+  <div class="relative z-10 max-w-4xl mx-auto text-center space-y-10 px-8">
+    <h2 class="text-white font-playfair italic text-5xl md:text-7xl">Have a Project in Mind?</h2>
+    <p class="text-on-tertiary-container font-body text-xl">
+      Consult with our tile specialists to select the perfect ceramic tiles and sanitaryware for your space.
+    </p>
+    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+      <a href="{% url 'core:inquiry' %}" class="w-full md:w-auto bg-secondary text-on-secondary px-12 py-5 font-label text-xs tracking-[0.2em] font-bold hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-all">
+        REQUEST A QUOTE
+      </a>
+      <a href="{% url 'products:product_list' %}" class="w-full md:w-auto border-b border-white text-white px-8 py-4 font-label text-xs tracking-widest hover:text-secondary-fixed hover:border-secondary-fixed transition-all text-center">
+        BROWSE CATALOG
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

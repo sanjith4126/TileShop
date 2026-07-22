@@ -1,0 +1,9 @@
+Django>=5.0,<6.0
+Pillow>=10.0.0
+django-crispy-forms>=2.0
+crispy-tailwind>=0.5.0
+whitenoise>=6.6.0
+python-dotenv>=1.0.0
+
+# Optional — only needed for the AI Room Visualizer (requires Gemini billing)
+google-genai>=1.0.0
