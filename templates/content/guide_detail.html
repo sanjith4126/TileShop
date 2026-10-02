@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-6 min-h-screen">
+  <article class="max-w-3xl mx-auto">
+    {% if preview %}
+    <p class="mb-8 p-4 bg-secondary-container text-on-secondary-container font-label text-[11px] tracking-widest uppercase" role="note">
+      Draft preview — only staff can see this page until it is published.
+    </p>
+    {% endif %}
+
+    <header class="mb-12">
+      {% include "partials/breadcrumbs.html" %}
+      {% if guide.related_category %}
+      <span class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase block mb-2">{{ guide.related_category.name }}</span>
+      {% endif %}
+      <h1 class="text-4xl md:text-5xl font-headline font-bold text-primary leading-tight">{{ guide.title }}</h1>
+      <p class="font-body text-lg text-on-surface-variant mt-6 leading-relaxed">{{ guide.summary }}</p>
+      <p class="font-label text-[10px] tracking-widest text-on-surface-variant uppercase mt-6">
+        {% if guide.author_name %}By {{ guide.author_name }} · {% endif %}Updated {{ guide.updated_at|date:"j M Y" }}
+      </p>
+      {% if guide.cover_image %}
+      <img src="{{ guide.cover_image.url }}" alt="" class="mt-10 w-full aspect-[16/9] object-cover" fetchpriority="high"/>
+      {% endif %}
+    </header>
+
+    <div class="guide-body font-body text-on-surface-variant text-lg leading-relaxed space-y-6">
+      {{ guide.body|safe }}
+    </div>
+  </article>
+
+  {% if related_products %}
+  <section class="max-w-screen-xl mx-auto mt-24 pt-12 border-t border-outline/10" aria-labelledby="related-tiles">
+    <h2 id="related-tiles" class="font-headline text-3xl text-primary mb-10">{{ guide.related_category.name }} to consider</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+      {% for product in related_products %}
+      {% include "products/_product_card.html" %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</main>
+{% endblock %}

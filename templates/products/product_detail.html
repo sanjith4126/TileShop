@@ -70,7 +70,7 @@
       </div>
 
       <!-- Name & Price -->
-      <h1 class="font-headline text-4xl mb-2 text-primary">{{ product.name }}</h1>
+      <h1 class="font-headline text-4xl mb-2 text-primary" data-event-on-load="product_view" data-event-params='{"item_id": "{{ product.pk }}", "item_name": "{{ product.name|escapejs }}", "price": {{ product.price }}, "currency": "INR"}'>{{ product.name }}</h1>
       <div class="flex items-baseline gap-4 mb-6">
         <span class="text-3xl font-bold text-secondary">&#8377;{{ product.price }}</span>
         <span class="text-xs font-label text-outline tracking-tighter">/ {{ price_unit_label|upper }} (Incl. Taxes)</span>
@@ -186,7 +186,7 @@
                 <input type="number" id="qty-input" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold text-base"/>
                 <button type="button" onclick="changeQty(1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors">+</button>
               </div>
-              <button type="submit" id="cart-btn" class="flex-1 bg-primary-container text-white py-4 font-label text-[12px] tracking-[0.2em] hover:bg-primary transition-all uppercase">
+              <button type="submit" id="cart-btn" data-event="add_to_cart" data-event-params='{"item_id": "{{ product.pk }}", "item_name": "{{ product.name|escapejs }}", "price": {{ product.price }}, "currency": "INR"}' class="flex-1 bg-primary-container text-white py-4 font-label text-[12px] tracking-[0.2em] hover:bg-primary transition-all uppercase">
                 ADD TO CART
               </button>
             </div>

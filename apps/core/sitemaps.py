@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
+from apps.content.models import Guide, Page
 from apps.core.models import Category
 from apps.products.models import Product
 from apps.products.queries import category_last_modified, category_product_counts
@@ -60,8 +61,30 @@ class ProductSitemap(SiteUrlSitemap):
         return product.updated_at
 
 
+class GuideSitemap(SiteUrlSitemap):
+    def items(self):
+        guides = list(Guide.objects.filter(is_published=True).order_by("pk"))
+        return (["content:guide_list"] if guides else []) + guides
+
+    def location(self, item):
+        return reverse(item) if isinstance(item, str) else item.get_absolute_url()
+
+    def lastmod(self, item):
+        return None if isinstance(item, str) else item.updated_at
+
+
+class InfoPageSitemap(SiteUrlSitemap):
+    def items(self):
+        return Page.objects.filter(is_published=True).order_by("pk")
+
+    def lastmod(self, page):
+        return page.updated_at
+
+
 SITEMAPS = {
     "pages": StaticPagesSitemap,
     "categories": CategorySitemap,
     "products": ProductSitemap,
+    "guides": GuideSitemap,
+    "info": InfoPageSitemap,
 }

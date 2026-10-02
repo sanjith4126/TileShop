@@ -58,10 +58,18 @@ def _build_nav():
             .order_by("-is_featured", "-created_at").values_list("image", flat=True).first()
             or ""
         )
+    from apps.content.models import Guide, Page
+
+    pages = [
+        {"title": p.title, "url": p.get_absolute_url()}
+        for p in Page.objects.filter(is_published=True, show_in_footer=True).order_by("title")
+    ]
     return {
         "categories": categories,
         "materials": [{"value": m, "label": labels.get(m, m.title())} for m in materials if m],
         "fallback_image": fallback_image,
+        "pages": pages,
+        "has_guides": Guide.objects.filter(is_published=True).exists(),
     }
 
 
@@ -109,6 +117,8 @@ def site(request):
         "price_unit_label": settings.PRICE_UNIT_LABEL,
         "nav_categories": nav["categories"],
         "nav_materials": nav["materials"],
+        "footer_pages": nav["pages"],
+        "has_guides": nav["has_guides"],
         "business": business,
         "default_title": DEFAULT_TITLE,
         "default_description": DEFAULT_DESCRIPTION,

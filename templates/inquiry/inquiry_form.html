@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Request a Custom Quote{% endblock %}
-
 {% block content %}
 <main class="pt-32 pb-24 px-6 min-h-screen">
   <div class="max-w-[800px] mx-auto">
@@ -192,6 +190,34 @@
         </p>
       </div>
     </form>
+
+    <!-- Showroom -->
+    <section id="showroom" class="mt-24 p-8 md:p-10 bg-surface-container-low grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-28" aria-labelledby="showroom-title">
+      <div>
+        <h2 id="showroom-title" class="font-headline text-2xl font-bold text-primary uppercase tracking-tight mb-4">Visit Our Showroom</h2>
+        <p class="font-body text-on-surface leading-relaxed">
+          <strong>{{ site_name }}</strong>{% if business.address %}<br/>{{ business.address }}{% endif %}
+        </p>
+        {% if business.details_confirmed and business.opening_hours %}
+        <p class="font-body text-on-surface-variant mt-3">Open {{ business.opening_hours }}</p>
+        {% endif %}
+        <p class="font-body text-sm text-on-surface-variant mt-4">See the full range of floor, wall, bathroom, kitchen and parking tiles and sanitaryware in person.</p>
+      </div>
+      <div class="flex flex-col gap-3 justify-center">
+        {% if business.maps_url %}
+        <a href="{{ business.maps_url }}" rel="noopener" data-event="showroom_direction_click" class="bg-primary-container text-on-primary px-8 py-4 font-label text-xs tracking-[0.2em] uppercase text-center hover:bg-primary transition-colors">Get Directions</a>
+        {% endif %}
+        {% if business.details_confirmed and business.phone_href %}
+        <a href="{{ business.phone_href }}" data-event="contact_click" data-event-params='{"method": "phone"}' class="border border-outline/40 px-8 py-4 font-label text-xs tracking-[0.2em] uppercase text-center hover:border-secondary transition-colors">Call {{ business.phone }}</a>
+        {% endif %}
+        {% if business.whatsapp_href %}
+        <a href="{{ business.whatsapp_href }}" rel="noopener" data-event="contact_click" data-event-params='{"method": "whatsapp"}' class="border border-outline/40 px-8 py-4 font-label text-xs tracking-[0.2em] uppercase text-center hover:border-secondary transition-colors">WhatsApp Us</a>
+        {% endif %}
+        {% if business.details_confirmed and business.email %}
+        <a href="mailto:{{ business.email }}" data-event="contact_click" data-event-params='{"method": "email"}' class="border-b border-secondary text-secondary px-8 py-3 font-label text-xs tracking-widest uppercase text-center hover:opacity-80 transition-opacity">{{ business.email }}</a>
+        {% endif %}
+      </div>
+    </section>
   </div>
 </main>
 {% endblock %}
