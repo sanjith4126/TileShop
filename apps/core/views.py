@@ -21,6 +21,7 @@ from .context_processors import DEFAULT_DESCRIPTION, DEFAULT_TITLE
 from .forms import InquiryForm
 from .notifications import notify_shop
 from .seo import absolute_url, page_meta
+from .structured_data import breadcrumb_node
 from .utils import parse_positive_int
 
 logger = logging.getLogger(__name__)
@@ -92,10 +93,14 @@ def room_visualizer(request):
             Product.objects.filter(pk=product_pk, is_active=True).select_related("category").first()
         )
 
+    breadcrumbs = [{"name": "Home", "url": reverse("core:home")},
+                   {"name": "Visualizer", "url": reverse("core:room_visualizer")}]
     context = {
         "products": products,
         "selected_product": selected_product,
         "ai_enabled": bool(settings.GEMINI_API_KEY),
+        "breadcrumbs": breadcrumbs,
+        "jsonld": [breadcrumb_node(request, breadcrumbs)],
         "seo": page_meta(
             request,
             "AI Room Visualizer – See Tiles in Your Room",

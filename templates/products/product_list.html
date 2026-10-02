@@ -10,7 +10,7 @@
 
       <!-- Filter: Category -->
       <nav aria-label="Categories">
-        <h2 class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-6">Category</h2>
+        <p class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-6">Category</p>
         <div class="grid grid-cols-2 gap-3">
           <a href="{% url 'products:product_list' %}" {% if not category %}aria-current="page"{% endif %}
              class="flex items-center gap-3 p-2 transition-colors group {% if not category %}bg-secondary-container border border-secondary{% else %}bg-surface-container hover:bg-surface-container-high{% endif %}">
@@ -74,6 +74,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
       <div {% if category %}data-event-on-load="category_view" data-event-params='{"item_list_name": "{{ category.name|escapejs }}"}'{% endif %}>
+        {% include "partials/breadcrumbs.html" %}
         <span class="font-cormorant italic text-secondary text-xl block mb-2">The Sovereign Gallery</span>
         <h1 class="text-5xl font-headline text-primary-container">{% if category %}{{ category.name }}{% else %}Our Tile Collection{% endif %}</h1>
         {% if category.description %}

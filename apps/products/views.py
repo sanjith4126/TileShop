@@ -17,6 +17,7 @@ from django.urls import reverse
 
 from apps.core.models import Category
 from apps.core.seo import INDEX, NOINDEX_FOLLOW, first_sentence, page_meta
+from apps.core.structured_data import breadcrumb_node, item_list_node, product_node
 from apps.core.utils import parse_positive_int
 
 from .models import Product
@@ -112,6 +113,7 @@ def _listing(request, category=None):
     if in_stock:
         products = products.filter(stock__gt=0)
     is_filtered = bool(material or in_stock)
+    products = list(products)
 
     summary = listing_summary(base, category)
     total = base.count()
@@ -144,6 +146,14 @@ def _listing(request, category=None):
             canonical=clean_url if is_filtered else None,
         )
 
+    breadcrumbs = [{"name": "Home", "url": reverse("core:home")},
+                   {"name": "Products", "url": reverse("products:product_list")}]
+    if category:
+        breadcrumbs.append({"name": category.name, "url": clean_url})
+    jsonld = [breadcrumb_node(request, breadcrumbs)]
+    if products:
+        jsonld.append(item_list_node(request, products, category.name if category else "Tile Collection"))
+
     counts = category_product_counts()
     related_categories = [
         c for c in Category.objects.order_by("name")
@@ -161,6 +171,8 @@ def _listing(request, category=None):
         "is_filtered": is_filtered,
         "clean_url": clean_url,
         "related_categories": related_categories,
+        "breadcrumbs": breadcrumbs,
+        "jsonld": jsonld,
         "seo": seo,
     }
     return render(request, "products/product_list.html", context)
@@ -212,11 +224,20 @@ def product_detail(request, pk, slug):
             .distinct()[:4]
         )
 
+    gallery = list(product.gallery.all())
+    breadcrumbs = [{"name": "Home", "url": reverse("core:home")},
+                   {"name": "Products", "url": reverse("products:product_list")}]
+    if product.category:
+        breadcrumbs.append({"name": product.category.name, "url": product.category.get_absolute_url()})
+    breadcrumbs.append({"name": product.name, "url": product.get_absolute_url()})
+
     context = {
         "product": product,
         "product_categories": categories,
         "related_products": related_products,
-        "gallery": product.gallery.all(),
+        "gallery": gallery,
+        "breadcrumbs": breadcrumbs,
+        "jsonld": [breadcrumb_node(request, breadcrumbs), product_node(request, product, categories, gallery)],
         "seo": page_meta(
             request,
             product_title(product),

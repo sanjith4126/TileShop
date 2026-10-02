@@ -12,13 +12,7 @@
     <!-- Left: Image Gallery -->
     <div class="lg:col-span-7 flex flex-col gap-6">
       <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase mb-2">
-        <a href="{% url 'core:home' %}" class="hover:text-secondary transition-colors">Home</a>
-        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-        <a href="{% url 'products:product_list' %}" class="hover:text-secondary transition-colors">Products</a>
-        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-        <span class="text-secondary">{{ product.name }}</span>
-      </nav>
+      {% include "partials/breadcrumbs.html" with breadcrumb_class="mb-2" %}
 
       <!-- Main Image -->
       <div class="aspect-[4/3] bg-surface-container relative group overflow-hidden">
@@ -96,7 +90,7 @@
 
       <!-- Technical Specs -->
       <div class="mb-10">
-        <h3 class="font-label text-[11px] tracking-[0.2em] mb-4 text-outline uppercase">Technical Specifications</h3>
+        <h2 class="font-label text-[11px] tracking-[0.2em] mb-4 text-outline uppercase">Technical Specifications</h2>
         <div class="space-y-3">
           <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
             <span class="text-on-surface-variant font-medium">Category</span>
@@ -126,7 +120,7 @@
         <div id="panel-buy" class="mt-4 space-y-6">
           <!-- Tile Area Calculator -->
           <div class="bg-surface-container-low p-6 space-y-4">
-            <h4 class="font-label text-[10px] tracking-widest text-outline uppercase">Tile Area Calculator</h4>
+            <h3 class="font-label text-[10px] tracking-widest text-outline uppercase">Tile Area Calculator</h3>
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1">
                 <label class="block font-label text-[10px] tracking-widest text-outline">LENGTH (FT)</label>
@@ -259,7 +253,7 @@
     <div class="max-w-screen-2xl mx-auto px-8">
       <div class="flex justify-between items-end mb-12">
         <div>
-          <h4 class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-2">Curated Pairings</h4>
+          <p class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-2">Curated Pairings</p>
           <h2 class="font-headline text-3xl text-primary">You Might Also Like</h2>
         </div>
         {% if product.category %}<a href="{{ product.category.get_absolute_url }}" class="font-label text-[11px] tracking-widest text-secondary border-b border-secondary pb-1 hover:opacity-80 transition-opacity">

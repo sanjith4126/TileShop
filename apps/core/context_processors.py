@@ -9,6 +9,7 @@ from django.core.files.storage import default_storage
 from django.db import DatabaseError
 
 from .seo import INDEX, absolute_url, site_url
+from .structured_data import organization_node, website_node
 
 NAV_CACHE_KEY = "site:nav:v2"
 BUSINESS_CACHE_KEY = "site:business:v1"
@@ -18,6 +19,13 @@ DEFAULT_TITLE = f"{settings.SITE_NAME} – Tiles & Sanitaryware Showroom in Bhav
 DEFAULT_DESCRIPTION = (
     "Tile and sanitaryware showroom in Bhavani, Erode district, Tamil Nadu. Floor, wall, bathroom, "
     "kitchen and parking tiles — order online and pay on delivery, or request a quote."
+)
+# Plain statement of who/what/where/how, shown in the footer of every page and
+# used as the Organization description (product range confirmed by the owner).
+BUSINESS_SUMMARY = (
+    f"{settings.SITE_NAME} is a tile and sanitaryware showroom in Bhavani, Erode district, Tamil Nadu. "
+    "It sells floor, wall, bathroom, kitchen and parking tiles and sanitaryware, takes orders online "
+    "with payment on delivery, and gives quotes on request."
 )
 
 
@@ -106,6 +114,8 @@ def site(request):
         "default_description": DEFAULT_DESCRIPTION,
         "default_robots": INDEX,
         "default_og_image": absolute_url(share_image, request) if share_image else "",
+        "business_summary": BUSINESS_SUMMARY,
+        "site_jsonld": [organization_node(request, business, BUSINESS_SUMMARY), website_node(request)],
         "google_site_verification": settings.GOOGLE_SITE_VERIFICATION,
         "bing_site_verification": settings.BING_SITE_VERIFICATION,
         "analytics_provider": settings.ANALYTICS_PROVIDER if analytics_ok else "",

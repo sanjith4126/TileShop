@@ -8,11 +8,7 @@
 
   <!-- Header -->
   <header class="mb-10">
-    <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-4 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
-      <a class="hover:text-secondary transition-colors" href="{% url 'core:home' %}">Home</a>
-      <span class="material-symbols-outlined text-[12px]">chevron_right</span>
-      <span class="text-secondary" aria-current="page">Visualizer</span>
-    </nav>
+    {% include "partials/breadcrumbs.html" %}
     <h1 class="text-5xl font-headline font-bold text-primary tracking-tight">See It In Your Space</h1>
     <p class="font-cormorant italic text-xl text-on-surface-variant mt-2">
       Upload your room photo, pick a tile, and our AI fits it into your space — photorealistically.

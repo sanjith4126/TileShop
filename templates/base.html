@@ -1,4 +1,4 @@
-{% load static %}<!DOCTYPE html>
+{% load static seo_tags %}<!DOCTYPE html>
 <html class="scroll-smooth" lang="en-IN">
 <head>
   <meta charset="utf-8"/>
@@ -133,6 +133,7 @@
     @media print { .no-print { display: none !important; } }
   </style>
 
+  {% json_ld %}
   {% block head %}{% endblock %}
 </head>
 
@@ -233,7 +234,7 @@
         Suwasthick<br/><span class="text-xs tracking-[0.4em] font-label text-secondary">TILES</span>
       </div>
       <p class="text-stone-400 text-xs leading-loose font-body">
-        Specializing in high-performance architectural materials for luxury residences and commercial projects. Bhavani, Tamil Nadu.
+        {{ business_summary }}
       </p>
       {% if business.social_links %}
       <ul class="flex flex-wrap gap-4 text-xs font-label tracking-widest uppercase">
@@ -244,7 +245,7 @@
       {% endif %}
     </div>
     <div class="space-y-6">
-      <h4 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Quick Links</h4>
+      <h2 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Quick Links</h2>
       <ul class="space-y-3 text-xs font-body">
         <li><a class="hover:text-secondary transition-colors" href="{% url 'core:home' %}">Home</a></li>
         <li><a class="hover:text-secondary transition-colors" href="{% url 'products:product_list' %}">Product Catalog</a></li>
@@ -254,7 +255,7 @@
       </ul>
     </div>
     <div class="space-y-6">
-      <h4 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Shop by Category</h4>
+      <h2 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Shop by Category</h2>
       <ul class="space-y-3 text-xs font-body">
         {% for cat in nav_categories %}
         <li><a class="hover:text-secondary transition-colors" href="{{ cat.url }}">{{ cat.name }}</a></li>
@@ -265,7 +266,7 @@
       </ul>
     </div>
     <div class="space-y-6">
-      <h4 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Contact</h4>
+      <h2 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Contact</h2>
       <ul class="space-y-3 text-xs font-body">
         {% if business.address %}
         <li class="flex gap-2 items-start"><span class="material-symbols-outlined text-sm text-secondary mt-0.5">location_on</span>{{ business.address }}</li>

@@ -37,7 +37,7 @@
               <span class="font-label text-[10px] ls-luxury text-secondary uppercase bg-secondary-fixed/30 px-2 py-1 mb-2 inline-block">
                 {% if item.product.category %}{{ item.product.category.name }}{% else %}UNCATEGORIZED{% endif %}
               </span>
-              <h3 class="font-headline text-2xl text-on-surface uppercase tracking-tight">{{ item.product.name }}</h3>
+              <h2 class="font-headline text-2xl text-on-surface uppercase tracking-tight"><a href="{{ item.product.get_absolute_url }}" class="hover:text-secondary transition-colors">{{ item.product.name }}</a></h2>
               {% if item.product.size %}
               <p class="text-xs text-on-surface-variant font-body mt-1">Size: {{ item.product.size }}</p>
               {% endif %}

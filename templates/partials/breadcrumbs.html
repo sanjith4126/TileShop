@@ -1,0 +1,15 @@
+{# Visible breadcrumb trail. Expects `breadcrumbs`: [{"name": ..., "url": ...}, ...]; the last item is the current page. #}
+{% if breadcrumbs %}
+<nav aria-label="Breadcrumb" class="{{ breadcrumb_class|default:'mb-4' }}">
+  <ol class="flex flex-wrap items-center gap-2 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
+    {% for crumb in breadcrumbs %}
+    {% if not forloop.last %}
+    <li><a class="hover:text-secondary transition-colors" href="{{ crumb.url }}">{{ crumb.name }}</a></li>
+    <li aria-hidden="true"><span class="material-symbols-outlined text-[12px]">chevron_right</span></li>
+    {% else %}
+    <li><span class="text-secondary" aria-current="page">{{ crumb.name }}</span></li>
+    {% endif %}
+    {% endfor %}
+  </ol>
+</nav>
+{% endif %}
