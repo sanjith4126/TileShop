@@ -15,6 +15,7 @@ from django.http import Http404, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
+from apps.cart.views import max_quantity
 from apps.core.models import Category
 from apps.core.seo import INDEX, NOINDEX_FOLLOW, first_sentence, page_meta
 from apps.core.structured_data import breadcrumb_node, item_list_node, product_node
@@ -243,6 +244,7 @@ def product_detail(request, pk, slug):
         "related_products": related_products,
         "gallery": gallery,
         "product_specs": [(label, value) for label, value in specs if value],
+        "max_quantity": max_quantity(product),
         "breadcrumbs": breadcrumbs,
         "jsonld": [breadcrumb_node(request, breadcrumbs), product_node(request, product, categories, gallery)],
         "seo": page_meta(

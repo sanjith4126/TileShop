@@ -178,7 +178,9 @@ LOGIN_REDIRECT_URL = "/accounts/dashboard/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Session settings
-SESSION_COOKIE_AGE = 86400  # 24 hours
+# Two weeks (Django's default): tile purchases often take several days, and the
+# cart lives in the session. Activity keeps extending it.
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 14
 SESSION_SAVE_EVERY_REQUEST = True
 
 # ─────────────────────────────────────────────────────────────────────

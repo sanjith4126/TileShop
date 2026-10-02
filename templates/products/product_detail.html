@@ -182,10 +182,10 @@
           <form action="{% url 'cart:add_to_cart' product.pk %}" method="post" class="space-y-4">
             {% csrf_token %}
             <div class="flex gap-4">
-              <div class="flex border border-outline items-center px-4 gap-4">
-                <button type="button" onclick="changeQty(-1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors" aria-label="Decrease quantity">-</button>
-                <input type="number" id="qty-input" name="quantity" aria-label="Quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold text-base"/>
-                <button type="button" onclick="changeQty(1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors" aria-label="Increase quantity">+</button>
+              <div class="flex border border-outline items-stretch">
+                <button type="button" onclick="changeQty(-1)" class="w-11 text-lg font-bold hover:text-secondary transition-colors" aria-label="Decrease quantity">-</button>
+                <input type="number" id="qty-input" name="quantity" aria-label="Quantity" value="1" min="1" max="{{ max_quantity }}" class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold text-base"/>
+                <button type="button" onclick="changeQty(1)" class="w-11 text-lg font-bold hover:text-secondary transition-colors" aria-label="Increase quantity">+</button>
               </div>
               <button type="submit" id="cart-btn" data-event="add_to_cart" data-event-params='{"item_id": "{{ product.pk }}", "item_name": "{{ product.name|escapejs }}", "price": {{ product.price }}, "currency": "INR"}' class="flex-1 bg-primary-container text-white py-4 font-label text-[12px] tracking-[0.2em] hover:bg-primary transition-all uppercase">
                 ADD TO CART

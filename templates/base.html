@@ -55,7 +55,10 @@
 <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-primary focus:px-4 focus:py-3 font-label text-xs tracking-widest uppercase">Skip to content</a>
 
 <!-- Top Navigation Bar -->
-<nav id="main-nav" class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-xl shadow-black/5 transition-all duration-300">
+<nav id="main-nav" class="fixed top-0 w-full z-50 shadow-xl shadow-black/5 transition-all duration-300">
+  <!-- The frosted background is its own layer: a backdrop blur on the <nav> itself would
+       confine the fixed mobile menu below to the header's 68px box. -->
+  <div class="absolute inset-0 -z-10 bg-white/90 backdrop-blur-md" aria-hidden="true"></div>
   <div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
 
     <!-- Brand Logo -->
@@ -137,7 +140,7 @@
     {% else %}bg-surface-container-lowest border-l-4 border-secondary text-on-surface{% endif %}">
     <span class="material-symbols-outlined text-sm {% if 'success' in message.tags %}text-green-700{% elif 'error' in message.tags %}text-error{% else %}text-secondary{% endif %}" data-icon="{% if 'success' in message.tags %}check_circle{% elif 'error' in message.tags %}error{% else %}info{% endif %}" aria-hidden="true"></span>
     <span class="font-body text-sm flex-1">{{ message }}</span>
-    <button onclick="this.parentElement.remove()" class="text-on-surface-variant hover:text-on-surface ml-2" aria-label="Dismiss">
+    <button type="button" onclick="this.parentElement.remove()" class="text-on-surface-variant hover:text-on-surface ml-2 p-1.5 -m-1.5" aria-label="Dismiss message">
       <span class="material-symbols-outlined text-sm" data-icon="close" aria-hidden="true"></span>
     </button>
   </div>

@@ -87,7 +87,7 @@
           <span class="material-symbols-outlined text-5xl text-outline" data-icon="grid_view" aria-hidden="true"></span>
         </div>
         {% endif %}
-        <div class="absolute bottom-0 left-0 p-6 bg-white w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+        <div class="absolute bottom-0 left-0 p-4 md:p-6 bg-white w-full transform translate-y-0 [@media(hover:hover)]:translate-y-full [@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-focus-visible:translate-y-0 transition-transform duration-500">
           <span class="font-label text-xs tracking-widest font-bold">{{ category.name|upper }}</span>
         </div>
       </a>
