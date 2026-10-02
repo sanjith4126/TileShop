@@ -30,9 +30,10 @@ class ProductAdmin(admin.ModelAdmin):
         "stock", "created_at"
     ]
     list_display_links = ["name"]
-    list_filter = ["is_featured", "is_active", "category", "additional_categories"]
+    list_filter = ["is_featured", "is_active", "category", "additional_categories", "material"]
     list_editable = ["is_featured", "is_active", "price", "stock"]
-    search_fields = ["name", "description"]
+    list_select_related = ["category"]
+    search_fields = ["name", "description", "sku", "brand"]
     readonly_fields = ["created_at", "updated_at", "image_preview"]
     filter_horizontal = ["additional_categories"]
     inlines = [ProductImageInline]
@@ -41,6 +42,11 @@ class ProductAdmin(admin.ModelAdmin):
         ("Product Info", {
             "fields": ("name", "description", "category", "additional_categories",
                        "material", "size", "price", "stock")
+        }),
+        ("Specifications (optional)", {
+            "fields": ("brand", "sku", "finish", "color", "thickness", "application",
+                       "slip_resistance", "maintenance"),
+            "description": "Fill in only what the manufacturer states. Empty fields are not shown on the site.",
         }),
         ("Main Tile Image", {
             "fields": ("image_preview", "image"),

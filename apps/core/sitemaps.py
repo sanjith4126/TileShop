@@ -35,6 +35,7 @@ class StaticPagesSitemap(SiteUrlSitemap):
             "core:about",
             "core:inquiry",
             "core:room_visualizer",
+            "core:tile_calculator",
         ]
 
     def location(self, item):

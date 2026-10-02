@@ -22,6 +22,7 @@ from apps.core.utils import parse_positive_int
 
 from .models import Product
 from .queries import active_products, category_product_counts, products_in_category
+from .search import search_products
 from .sizes import display_size
 
 
@@ -225,6 +226,11 @@ def product_detail(request, pk, slug):
         )
 
     gallery = list(product.gallery.all())
+    specs = [
+        ("Finish", product.finish), ("Colour", product.color), ("Thickness", product.thickness),
+        ("Where to use", product.application), ("Slip resistance", product.slip_resistance),
+        ("Brand", product.brand), ("Product code", product.sku),
+    ]
     breadcrumbs = [{"name": "Home", "url": reverse("core:home")},
                    {"name": "Products", "url": reverse("products:product_list")}]
     if product.category:
@@ -236,6 +242,7 @@ def product_detail(request, pk, slug):
         "product_categories": categories,
         "related_products": related_products,
         "gallery": gallery,
+        "product_specs": [(label, value) for label, value in specs if value],
         "breadcrumbs": breadcrumbs,
         "jsonld": [breadcrumb_node(request, breadcrumbs), product_node(request, product, categories, gallery)],
         "seo": page_meta(
@@ -247,3 +254,22 @@ def product_detail(request, pk, slug):
         ),
     }
     return render(request, "products/product_detail.html", context)
+
+
+def search(request):
+    """Site search: /search/?q=. Results are never indexed."""
+    query = " ".join(request.GET.get("q", "").split())[:100]
+    results, exact = search_products(query) if query else ([], True)
+    title = f"Search results for “{query}”" if query else "Search Tiles"
+    context = {
+        "query": query,
+        "results": results,
+        "exact": exact,
+        "seo": page_meta(
+            request,
+            title,
+            "Search the Suwasthick Tiles collection by name, size, material or room.",
+            robots=NOINDEX_FOLLOW,
+        ),
+    }
+    return render(request, "search.html", context)

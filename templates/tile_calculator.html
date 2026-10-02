@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-6 min-h-screen">
+  <div class="max-w-screen-xl mx-auto">
+
+    <header class="mb-12 max-w-3xl">
+      {% include "partials/breadcrumbs.html" %}
+      <span class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase block mb-2">Planning Tool</span>
+      <h1 class="text-5xl md:text-6xl font-headline font-bold text-primary leading-tight">Tile Calculator: How Many Tiles Do I Need?</h1>
+      <p class="font-body text-lg text-on-surface-variant mt-6 leading-relaxed">
+        Multiply the room's length by its width to get the area, add about 10% extra for cutting and breakage,
+        then divide by the area of one tile. For example, a 10 × 12 ft room is 120 sq.ft; with 10% extra that is
+        132 sq.ft, which is 33 tiles of 2 × 2 ft, or 35 tiles of 60 × 60 cm.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
+
+      <!-- Calculator -->
+      <section class="lg:col-span-3 bg-surface-container-low p-8 md:p-10 space-y-8" aria-labelledby="calc-title">
+        <h2 id="calc-title" class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Calculate for your room</h2>
+        <form id="tile-calc" class="space-y-8" onsubmit="return false;">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <label for="tc-length" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Length (ft)</label>
+              <input id="tc-length" type="number" min="0" step="0.1" value="10" inputmode="decimal"
+                     class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary"/>
+            </div>
+            <div>
+              <label for="tc-width" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Width (ft)</label>
+              <input id="tc-width" type="number" min="0" step="0.1" value="12" inputmode="decimal"
+                     class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary"/>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="tc-size" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Tile size</label>
+              <select id="tc-size" class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary">
+                <option value="60x60" selected>60 × 60 cm (about 2 × 2 ft)</option>
+                <option value="60.96x60.96">2 × 2 ft exactly</option>
+                <option value="60x120">60 × 120 cm (about 2 × 4 ft)</option>
+                <option value="30x60">30 × 60 cm (about 1 × 2 ft)</option>
+                <option value="30x30">30 × 30 cm (about 1 × 1 ft)</option>
+                <option value="80x80">80 × 80 cm</option>
+                <option value="custom">Other size…</option>
+              </select>
+            </div>
+            <div id="tc-custom" class="hidden grid grid-cols-2 gap-4">
+              <div>
+                <label for="tc-a" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Tile width (cm)</label>
+                <input id="tc-a" type="number" min="1" step="0.1" value="60" inputmode="decimal"
+                       class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary"/>
+              </div>
+              <div>
+                <label for="tc-b" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Tile length (cm)</label>
+                <input id="tc-b" type="number" min="1" step="0.1" value="60" inputmode="decimal"
+                       class="w-full bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary"/>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">
+              <label for="tc-waste">Extra for cutting &amp; breakage</label>
+              <output id="tc-waste-out" for="tc-waste" class="text-secondary">10%</output>
+            </div>
+            <input id="tc-waste" type="range" min="0" max="20" value="10" class="w-full accent-secondary"/>
+          </div>
+        </form>
+
+        <div class="bg-surface-container-highest p-6 grid grid-cols-1 sm:grid-cols-3 gap-6" aria-live="polite">
+          <div>
+            <span class="block text-[10px] font-label tracking-widest text-outline uppercase">Room area</span>
+            <span id="tc-area" class="text-2xl font-headline font-bold text-primary">120 sq.ft</span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-label tracking-widest text-outline uppercase">With extra</span>
+            <span id="tc-total" class="text-2xl font-headline font-bold text-primary">132 sq.ft</span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-label tracking-widest text-outline uppercase">Tiles needed</span>
+            <span id="tc-tiles" class="text-2xl font-headline font-bold text-secondary">35 tiles</span>
+          </div>
+        </div>
+        <p class="font-body text-xs text-on-surface-variant">
+          Tiles are often sold in boxes. Check how many tiles or square feet a box holds and round up to whole boxes.
+        </p>
+      </section>
+
+      <!-- How it works -->
+      <section class="lg:col-span-2 space-y-6" aria-labelledby="how-title">
+        <h2 id="how-title" class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">How the calculation works</h2>
+        <ol class="space-y-4 font-body text-on-surface-variant leading-relaxed list-decimal pl-5">
+          <li><b>Room area</b> = length × width. Measure in feet; for an L-shaped room, split it into rectangles and add them up.</li>
+          <li><b>Add extra</b>: multiply by 1.10 for 10% (1.15 for 15%). The extra covers tiles that are cut at the edges and any that break.</li>
+          <li><b>Area of one tile</b>: a 60 × 60 cm tile is about 3.88 sq.ft (1 sq.ft = 929 sq.cm).</li>
+          <li><b>Tiles needed</b> = area with extra ÷ area of one tile, rounded up.</li>
+        </ol>
+        <div class="bg-primary-container text-white p-6 space-y-4">
+          <h3 class="font-headline italic text-lg">Have your measurements?</h3>
+          <p class="text-sm opacity-80 leading-relaxed">Send them with a quote request and we'll suggest tiles and quantities.</p>
+          <div class="flex flex-col gap-3">
+            <a href="{% url 'core:inquiry' %}" class="block w-full border border-white/30 py-3 text-[10px] font-label tracking-widest text-center hover:bg-white hover:text-primary transition-all">REQUEST A QUOTE</a>
+            {% if floor_category %}
+            <a href="{{ floor_category.get_absolute_url }}" class="block w-full border border-white/30 py-3 text-[10px] font-label tracking-widest text-center hover:bg-white hover:text-primary transition-all">BROWSE FLOOR TILES</a>
+            {% endif %}
+            <a href="{% url 'core:room_visualizer' %}" class="block w-full border border-white/30 py-3 text-[10px] font-label tracking-widest text-center hover:bg-white hover:text-primary transition-all">TRY THE ROOM VISUALIZER</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Questions -->
+    <section class="mt-24 max-w-3xl" aria-labelledby="faq-title">
+      <h2 id="faq-title" class="font-headline text-4xl text-primary mb-10">Common questions</h2>
+      <div class="space-y-8">
+        {% for question, answer in faqs %}
+        <div class="border-b border-outline/20 pb-8">
+          <h3 class="font-headline text-xl text-on-surface mb-3">{{ question }}</h3>
+          <p class="font-body text-on-surface-variant leading-relaxed">{{ answer }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const SQ_CM_PER_SQ_FT = 929.0304;
+    const el = id => document.getElementById(id);
+    const fmt = n => (Math.round(n * 10) / 10).toLocaleString('en-IN');
+
+    function tileAreaSqFt() {
+      let a, b;
+      if (el('tc-size').value === 'custom') {
+        a = parseFloat(el('tc-a').value); b = parseFloat(el('tc-b').value);
+      } else {
+        [a, b] = el('tc-size').value.split('x').map(parseFloat);
+      }
+      return (a > 0 && b > 0) ? (a * b) / SQ_CM_PER_SQ_FT : 0;
+    }
+
+    function update() {
+      el('tc-custom').classList.toggle('hidden', el('tc-size').value !== 'custom');
+      const length = parseFloat(el('tc-length').value) || 0;
+      const width = parseFloat(el('tc-width').value) || 0;
+      const waste = parseFloat(el('tc-waste').value) || 0;
+      el('tc-waste-out').textContent = waste + '%';
+      const area = length * width;
+      const total = area * (1 + waste / 100);
+      const tile = tileAreaSqFt();
+      el('tc-area').textContent = area > 0 ? fmt(area) + ' sq.ft' : '—';
+      el('tc-total').textContent = area > 0 ? fmt(total) + ' sq.ft' : '—';
+      // Round to 6 decimals first so exact fits (e.g. 132 / 4) don't round up by floating-point noise.
+      el('tc-tiles').textContent = (area > 0 && tile > 0) ? Math.ceil(+(total / tile).toFixed(6)) + ' tiles' : '—';
+    }
+
+    el('tile-calc').addEventListener('input', update);
+    el('tile-calc').addEventListener('change', update);
+    update();
+  })();
+</script>
+{% endblock %}

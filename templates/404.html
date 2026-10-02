@@ -12,6 +12,13 @@
       The page may have moved, or the link may be mistyped. These might help:
     </p>
 
+    <form method="get" action="{% url 'core:search' %}" role="search" class="max-w-md mx-auto flex gap-3">
+      <label for="notfound-search" class="sr-only">Search tiles</label>
+      <input id="notfound-search" type="search" name="q" maxlength="100" placeholder="Search tiles, sizes or rooms"
+             class="flex-1 min-w-0 bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body focus:ring-0 focus:border-secondary"/>
+      <button type="submit" class="bg-primary-container text-on-primary px-6 py-3 font-label text-[11px] tracking-[0.2em] uppercase">Search</button>
+    </form>
+
     <div class="flex flex-wrap gap-4 justify-center">
       <a href="{% url 'core:home' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">Home</a>
       <a href="{% url 'products:product_list' %}" class="border border-outline/40 text-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:border-secondary transition-colors">All Tiles</a>

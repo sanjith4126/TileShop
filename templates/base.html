@@ -160,6 +160,10 @@
 
     <!-- Nav Actions -->
     <div class="flex items-center gap-6">
+      <!-- Search -->
+      <a href="{% url 'core:search' %}" class="text-[#58413e] hover:text-[#755b00] transition-colors duration-200" aria-label="Search tiles">
+        <span class="material-symbols-outlined">search</span>
+      </a>
       <!-- Cart -->
       <a href="{% url 'cart:cart_detail' %}" class="relative text-[#58413e] hover:text-[#755b00] transition-colors duration-200" aria-label="Shopping cart">
         <span class="material-symbols-outlined">shopping_cart</span>
@@ -178,7 +182,7 @@
       </a>
       {% endif %}
       <!-- Mobile Hamburger -->
-      <button id="mobile-menu-btn" class="md:hidden text-[#58413e] hover:text-[#755b00]" aria-label="Open menu">
+      <button id="mobile-menu-btn" class="md:hidden text-[#58413e] hover:text-[#755b00]" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
         <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
       </button>
     </div>
@@ -186,6 +190,11 @@
 
   <!-- Mobile Menu Overlay -->
   <div id="mobile-menu" class="hidden md:hidden fixed inset-0 top-[68px] bg-white/97 backdrop-blur-md z-40 flex flex-col items-center justify-center gap-8 pb-16">
+    <form method="get" action="{% url 'core:search' %}" role="search" class="w-64 flex border-b border-[#58413e]/40">
+      <label for="mobile-search" class="sr-only">Search tiles</label>
+      <input id="mobile-search" type="search" name="q" maxlength="100" placeholder="Search tiles" class="flex-1 min-w-0 bg-transparent border-0 py-2 px-0 text-sm focus:ring-0"/>
+      <button type="submit" class="text-[#58413e] px-2" aria-label="Search"><span class="material-symbols-outlined">search</span></button>
+    </form>
     <a href="{% url 'core:home' %}" class="text-[#58413e] font-bold text-sm tracking-[0.3em] font-label hover:text-[#755b00] transition-colors">HOME</a>
     <a href="{% url 'products:product_list' %}" class="text-[#58413e] font-bold text-sm tracking-[0.3em] font-label hover:text-[#755b00] transition-colors">PRODUCTS</a>
     <a href="{% url 'core:room_visualizer' %}" class="text-[#58413e] font-bold text-sm tracking-[0.3em] font-label hover:text-[#755b00] transition-colors">ROOM VISUALIZER</a>
@@ -308,12 +317,16 @@
   const mIcon = document.getElementById('hamburger-icon');
   if (mBtn) {
     mBtn.addEventListener('click', () => {
-      mMenu.classList.toggle('hidden');
-      mIcon.textContent = mMenu.classList.contains('hidden') ? 'menu' : 'close';
+      const open = mMenu.classList.toggle('hidden') === false;
+      mIcon.textContent = open ? 'close' : 'menu';
+      mBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      mBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     });
     mMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
       mMenu.classList.add('hidden');
       mIcon.textContent = 'menu';
+      mBtn.setAttribute('aria-expanded', 'false');
+      mBtn.setAttribute('aria-label', 'Open menu');
     }));
   }
 

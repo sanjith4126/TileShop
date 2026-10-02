@@ -21,7 +21,7 @@ from .context_processors import DEFAULT_DESCRIPTION, DEFAULT_TITLE
 from .forms import InquiryForm
 from .notifications import notify_shop
 from .seo import absolute_url, page_meta
-from .structured_data import breadcrumb_node
+from .structured_data import breadcrumb_node, faq_node
 from .utils import parse_positive_int
 
 logger = logging.getLogger(__name__)
@@ -55,6 +55,56 @@ def about(request):
         ),
     }
     return render(request, "about.html", context)
+
+
+# Questions answered on the tile calculator page (shown on the page and in FAQ markup).
+CALCULATOR_FAQS = [
+    (
+        "How much extra tile should I buy?",
+        "Most installers add about 10% for cuts, breakage and future repairs. Allow more, around 15%, "
+        "for diagonal or herringbone layouts, rooms with many corners, or large tiles that leave bigger offcuts.",
+    ),
+    (
+        "How many square feet does a 60 × 60 cm tile cover?",
+        "About 3.88 sq.ft (0.36 m²). A 2 × 2 ft tile covers exactly 4 sq.ft, a 60 × 120 cm tile about "
+        "7.75 sq.ft, and a 30 × 60 cm tile about 1.94 sq.ft.",
+    ),
+    (
+        "Why should I buy all my tiles at once?",
+        "Tiles are made in batches, and the shade can vary slightly from one batch to the next. Buying the "
+        "full quantity, including spares, at the same time keeps the colour consistent across the room.",
+    ),
+    (
+        "Can I use the calculator for walls?",
+        "Yes. Enter the wall's width and height instead of the room's length and width, and subtract "
+        "large openings such as doors and windows.",
+    ),
+    (
+        "How do I pay for tiles from Suwasthick Tiles?",
+        "Order online and pay at the time of delivery by UPI, credit or debit card, cheque or cash. "
+        "For larger projects you can also request a quote.",
+    ),
+]
+
+
+def tile_calculator(request):
+    """How many tiles do I need? A calculator plus direct answers (AEO)."""
+    breadcrumbs = [{"name": "Home", "url": reverse("core:home")},
+                   {"name": "Tile Calculator", "url": reverse("core:tile_calculator")}]
+    floor = Category.objects.filter(slug="floor-tiles").first()
+    context = {
+        "faqs": CALCULATOR_FAQS,
+        "floor_category": floor,
+        "breadcrumbs": breadcrumbs,
+        "jsonld": [breadcrumb_node(request, breadcrumbs), faq_node(CALCULATOR_FAQS)],
+        "seo": page_meta(
+            request,
+            "Tile Calculator – How Many Tiles Do I Need?",
+            "Work out how many tiles you need for a room: enter its size, pick a tile size and add wastage. "
+            "Free tile calculator from Suwasthick Tiles, Bhavani.",
+        ),
+    }
+    return render(request, "tile_calculator.html", context)
 
 
 @require_GET

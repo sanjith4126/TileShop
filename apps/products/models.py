@@ -12,6 +12,20 @@ from apps.core.models import Category
 from .sizes import display_size
 
 
+def _upload_path(folder, name, filename):
+    """Descriptive file names for new uploads, e.g. products/myglamm-grey.png."""
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "jpg"
+    return f"{folder}/{slugify(name) or 'image'}.{ext}"
+
+
+def product_image_path(instance, filename):
+    return _upload_path("products", instance.name, filename)
+
+
+def gallery_image_path(instance, filename):
+    return _upload_path("products/gallery", instance.product.name if instance.product_id else "", filename)
+
+
 class Product(models.Model):
     MATERIAL_CHOICES = [
         ("ceramic", "Ceramic"),
@@ -29,7 +43,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to="products/", null=True, blank=True)
+    image = models.ImageField(upload_to=product_image_path, null=True, blank=True)
     material = models.CharField(max_length=50, choices=MATERIAL_CHOICES, default="ceramic")
     size = models.CharField(
         max_length=50,
@@ -50,6 +64,21 @@ class Product(models.Model):
         related_name="extra_products",
         help_text="Other categories this tile should ALSO appear under (e.g. a floor tile also listed in Bathroom).",
     )
+    # Optional specifications. Fill only what the manufacturer states; empty
+    # fields are simply not shown (and never guessed).
+    sku = models.CharField("SKU / product code", max_length=64, blank=True)
+    brand = models.CharField(max_length=100, blank=True, help_text="Manufacturer or brand of this tile.")
+    finish = models.CharField(max_length=60, blank=True, help_text="E.g. Matt, Glossy, Satin, Carving.")
+    color = models.CharField("colour", max_length=60, blank=True)
+    thickness = models.CharField(max_length=30, blank=True, help_text="E.g. 9 mm.")
+    application = models.CharField(
+        "where to use", max_length=200, blank=True,
+        help_text="E.g. 'Floor and wall, indoor', 'Bathroom walls', 'Outdoor parking'.",
+    )
+    slip_resistance = models.CharField(
+        max_length=100, blank=True, help_text="Only if the manufacturer states it, e.g. 'R10' or 'Anti-skid'."
+    )
+    maintenance = models.TextField(blank=True, help_text="Cleaning and care advice.")
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     stock = models.PositiveIntegerField(default=100)
@@ -107,7 +136,7 @@ class ProductImage(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="gallery"
     )
-    image = models.ImageField(upload_to="products/gallery/")
+    image = models.ImageField(upload_to=gallery_image_path)
     caption = models.CharField(max_length=200, blank=True)
     order = models.PositiveIntegerField(default=0)
 

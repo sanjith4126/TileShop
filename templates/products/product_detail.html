@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ product.name }}{% endblock %}
-
 {% block content %}
 <main class="pt-24">
 
@@ -17,7 +15,7 @@
       <!-- Main Image -->
       <div class="aspect-[4/3] bg-surface-container relative group overflow-hidden">
         {% if product.image %}
-        <img alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}" id="main-product-img"/>
+        <img alt="{{ product.descriptive_name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}" id="main-product-img" fetchpriority="high"/>
         {% else %}
         <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
           <span class="material-symbols-outlined text-8xl text-outline">crop_square</span>
@@ -29,19 +27,27 @@
         </a>
       </div>
 
+      {% if product.image %}
+      <a id="full-size-link" href="{{ product.image.url }}" target="_blank" rel="noopener"
+         class="self-start inline-flex items-center gap-2 font-label text-[10px] tracking-widest text-secondary uppercase border-b border-secondary pb-0.5 hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined text-sm">zoom_in</span>
+        View full-size image
+      </a>
+      {% endif %}
+
       <!-- Thumbnail Strip — tile image + gallery photos (only what exists) -->
-      {% if product.image or gallery %}
+      {% if gallery %}
       <div class="grid grid-cols-4 gap-4">
         {% if product.image %}
-        <button type="button" onclick="swapMainImage(this, '{{ product.image.url }}')"
+        <button type="button" data-full="{{ product.image.url }}" data-alt="{{ product.descriptive_name }}" aria-label="Show photo 1: {{ product.name }} tile" aria-pressed="true"
                 class="thumb aspect-square bg-surface-container border-2 border-secondary overflow-hidden cursor-pointer">
-          <img alt="{{ product.name }} tile" class="w-full h-full object-cover" src="{{ product.image.url }}"/>
+          <img alt="" class="w-full h-full object-cover" src="{{ product.image.url }}" loading="lazy"/>
         </button>
         {% endif %}
         {% for img in gallery %}
-        <button type="button" onclick="swapMainImage(this, '{{ img.image.url }}')"
+        <button type="button" data-full="{{ img.image.url }}" data-alt="{{ img.caption|default:product.descriptive_name }}" aria-label="Show photo {{ forloop.counter|add:1 }}{% if img.caption %}: {{ img.caption }}{% endif %}" aria-pressed="false"
                 class="thumb aspect-square bg-surface-container border-2 border-transparent overflow-hidden cursor-pointer hover:border-outline-variant">
-          <img alt="{{ img.caption|default:product.name }}" class="w-full h-full object-cover" src="{{ img.image.url }}"/>
+          <img alt="" class="w-full h-full object-cover" src="{{ img.image.url }}" loading="lazy"/>
         </button>
         {% endfor %}
       </div>
@@ -59,7 +65,7 @@
           {{ cat.name|upper }}
         </a>
         {% empty %}
-        <span class="inline-block rounded-full bg-tertiary-container px-4 py-1 text-[10px] font-label tracking-widest text-on-tertiary-container">UNCATEGORIZED</span>
+        <span class="inline-block rounded-full bg-tertiary-container px-4 py-1 text-[10px] font-label tracking-widest text-on-tertiary-container">{{ product.get_material_display|upper }} TILE</span>
         {% endfor %}
       </div>
 
@@ -91,22 +97,42 @@
       <!-- Technical Specs -->
       <div class="mb-10">
         <h2 class="font-label text-[11px] tracking-[0.2em] mb-4 text-outline uppercase">Technical Specifications</h2>
-        <div class="space-y-3">
-          <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
-            <span class="text-on-surface-variant font-medium">Category</span>
-            <span class="text-on-surface font-semibold text-right">{% for cat in product.all_categories %}{{ cat.name }}{% if not forloop.last %}, {% endif %}{% empty %}General{% endfor %}</span>
-          </div>
-          {% if product.size %}
-          <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
-            <span class="text-on-surface-variant font-medium">Size</span>
-            <span class="text-on-surface font-semibold">{{ product.size }}</span>
+        <dl class="space-y-3">
+          {% if product_categories %}
+          <div class="flex justify-between gap-6 py-2 border-b border-outline/10 text-sm">
+            <dt class="text-on-surface-variant font-medium">Category</dt>
+            <dd class="text-on-surface font-semibold text-right">{% for cat in product_categories %}<a href="{{ cat.get_absolute_url }}" class="hover:text-secondary transition-colors">{{ cat.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
           </div>
           {% endif %}
-          <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
-            <span class="text-on-surface-variant font-medium">Availability</span>
-            <span class="text-on-surface font-semibold">{% if product.stock > 0 %}In stock{% else %}Out of stock{% endif %}</span>
+          <div class="flex justify-between gap-6 py-2 border-b border-outline/10 text-sm">
+            <dt class="text-on-surface-variant font-medium">Material</dt>
+            <dd class="text-on-surface font-semibold text-right">{{ product.get_material_display }}</dd>
           </div>
-        </div>
+          {% if product.size %}
+          <div class="flex justify-between gap-6 py-2 border-b border-outline/10 text-sm">
+            <dt class="text-on-surface-variant font-medium">Size</dt>
+            <dd class="text-on-surface font-semibold text-right">{{ product.size }}</dd>
+          </div>
+          {% endif %}
+          {% for label, value in product_specs %}
+          <div class="flex justify-between gap-6 py-2 border-b border-outline/10 text-sm">
+            <dt class="text-on-surface-variant font-medium">{{ label }}</dt>
+            <dd class="text-on-surface font-semibold text-right">{{ value }}</dd>
+          </div>
+          {% endfor %}
+          <div class="flex justify-between gap-6 py-2 border-b border-outline/10 text-sm">
+            <dt class="text-on-surface-variant font-medium">Availability</dt>
+            <dd class="text-on-surface font-semibold text-right">{% if product.stock > 0 %}In stock{% else %}Out of stock{% endif %}</dd>
+          </div>
+        </dl>
+        {% if product.maintenance %}
+        <h3 class="font-label text-[11px] tracking-[0.2em] mt-8 mb-3 text-outline uppercase">Care &amp; Maintenance</h3>
+        <p class="font-body text-sm text-on-surface-variant leading-relaxed">{{ product.maintenance|linebreaksbr }}</p>
+        {% endif %}
+        <p class="mt-6 font-body text-xs text-on-surface-variant">
+          Not sure how much you need? Use the area calculator below or our
+          <a href="{% url 'core:tile_calculator' %}" class="text-secondary underline underline-offset-2">tile calculator</a>.
+        </p>
       </div>
 
       <!-- Mode Toggle: BUY NOW / REQUEST QUOTE -->
@@ -305,16 +331,21 @@
   }
 
   // Swap the main product image when a thumbnail is clicked
-  function swapMainImage(btn, url) {
+  function swapMainImage(btn) {
     const main = document.getElementById('main-product-img');
-    if (main) main.src = url;
+    const full = document.getElementById('full-size-link');
+    if (main) { main.src = btn.dataset.full; main.alt = btn.dataset.alt; }
+    if (full) full.href = btn.dataset.full;
     document.querySelectorAll('.thumb').forEach(t => {
       t.classList.remove('border-secondary');
       t.classList.add('border-transparent');
+      t.setAttribute('aria-pressed', 'false');
     });
     btn.classList.add('border-secondary');
     btn.classList.remove('border-transparent');
+    btn.setAttribute('aria-pressed', 'true');
   }
+  document.querySelectorAll('.thumb').forEach(btn => btn.addEventListener('click', () => swapMainImage(btn)));
 
   function updateWastage(val) {
     document.getElementById('wastage-pct').textContent = val + '%';
