@@ -1,10 +1,11 @@
 {# One product in a grid. Expects `product`. The product name is an <h2> (grid pages have one <h1>). #}
+{# product.eager_image (set by mark_first_image): on phones that image is the largest thing on screen, so it must not lazy-load. #}
 {% load image_tags %}
 <article class="group transform transition-all duration-500 hover:-translate-y-1">
   <a href="{{ product.get_absolute_url }}" class="block" tabindex="-1" aria-hidden="true">
     <div class="relative overflow-hidden aspect-[4/5] mb-4 bg-surface-container">
       {% if product.image %}
-      {% responsive_img product.image alt=product.descriptive_name sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" css="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" %}
+      {% responsive_img product.image alt=product.descriptive_name sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" css="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading=product.eager_image|yesno:"eager,lazy" fetchpriority=product.eager_image|yesno:"high," %}
       {% else %}
       <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
         <span class="material-symbols-outlined text-6xl text-outline" data-icon="crop_square" aria-hidden="true"></span>

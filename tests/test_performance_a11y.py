@@ -58,6 +58,19 @@ class RenditionTests(ShopTestCase):
         self.assertIn('loading="lazy"', listing)
         self.assertIn("-64w.webp 64w", listing)
 
+    def test_first_listing_image_is_not_lazy(self):
+        """On phones the first card's image is the largest element on screen (the LCP)."""
+        for url in ("/products/", "/products/floor-tiles/", "/search/?q=grey"):
+            html = self.client.get(url).content.decode()
+            cards = re.findall(r'<article class="group[^>]*>.*?</article>', html, re.S)
+            images = [re.search(r"<img [^>]*>", card).group(0) for card in cards if "<img " in card]
+            self.assertGreater(len(images), 1, url)
+            self.assertIn('fetchpriority="high"', images[0], url)
+            self.assertNotIn('loading="lazy"', images[0], url)
+            for img in images[1:]:
+                self.assertIn('loading="lazy"', img, url)
+                self.assertNotIn("fetchpriority", img, url)
+
     def test_build_command_and_unused_media_report(self):
         name = self.product.image.name
         for _, rendition in renditions_for(name, use_cache=False):

@@ -106,8 +106,9 @@
     <!-- Right Panel: Visualization -->
     <div class="relative bg-black min-h-[500px] lg:min-h-[calc(100vh-200px)] overflow-hidden flex items-center justify-center">
 
-      <!-- Result / preview image -->
-      <img id="result-img" class="max-w-full max-h-full object-contain hidden" alt="Your room with the selected tile"/>
+      <!-- Result / preview image (src and alt are set by the script; a blank pixel until then) -->
+      <img id="result-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+           class="max-w-full max-h-full object-contain hidden" alt=""/>
 
       <!-- Selected tile info -->
       <div id="tile-info" class="absolute top-6 left-6 z-20 glass-panel px-6 py-4 {% if not selected_product %}hidden{% endif %}" aria-live="polite">
@@ -128,7 +129,7 @@
 
       <!-- Action Bar -->
       <div class="absolute bottom-6 right-6 z-20 flex gap-3">
-        <a id="download-btn" download="room-visualization.png"
+        <a id="download-btn"
            class="px-6 py-3 bg-surface text-on-surface font-label text-[10px] tracking-widest items-center gap-2 hover:bg-surface-container transition-all shadow-lg hidden">
           <span class="material-symbols-outlined text-sm" data-icon="download" aria-hidden="true"></span>
           DOWNLOAD
@@ -207,6 +208,7 @@
     const reader = new FileReader();
     reader.onload = e => {
       resultImg.src = e.target.result;
+      resultImg.alt = 'Your room photo';
       resultImg.classList.remove('hidden');
       emptyState.classList.add('hidden');
       downloadBtn.classList.add('hidden');
@@ -278,9 +280,11 @@
         showError(data.error || 'Something went wrong. Please try again.');
       } else if (data.image) {
         resultImg.src = data.image;
+        resultImg.alt = 'Your room with the selected tile';
         resultImg.classList.remove('hidden');
         emptyState.classList.add('hidden');
         downloadBtn.href = data.image;
+        downloadBtn.download = 'room-visualization.png';
         downloadBtn.classList.remove('hidden');
         downloadBtn.style.display = 'flex';
         track('visualizer_generate', { item_id: selectedProductId });

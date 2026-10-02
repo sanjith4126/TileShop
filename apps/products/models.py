@@ -118,7 +118,7 @@ class Product(models.Model):
             parts.append(self.clear_size)
         parts.append(self.get_material_display().lower())
         parts.append(self.kind)
-        return " ".join(parts)
+        return " ".join(filter(None, parts))
 
     @property
     def all_categories(self):

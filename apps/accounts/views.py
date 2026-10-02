@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from apps.cart.models import Cart
 from apps.core.seo import NOINDEX_FOLLOW, NOINDEX_NOFOLLOW, page_meta
 from apps.orders.models import Order
 
@@ -25,6 +26,16 @@ def _safe_next_url(request):
     return reverse("accounts:dashboard")
 
 
+def _log_in(request, user):
+    """Log in without losing the cart. login() moves the session to a new key,
+    and carts are stored against the session key."""
+    old_key = request.session.session_key
+    login(request, user)
+    new_key = request.session.session_key
+    if old_key and new_key and old_key != new_key:
+        Cart.objects.filter(session_id=old_key).update(session_id=new_key)
+
+
 def login_view(request):
     """User login view."""
     if request.user.is_authenticated:
@@ -34,7 +45,7 @@ def login_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
+            _log_in(request, user)
             messages.success(request, f"Welcome back, {user.first_name or user.username}!")
             return redirect(_safe_next_url(request))
         messages.error(request, "Invalid username or password.")
@@ -58,7 +69,7 @@ def register_view(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            _log_in(request, user)
             messages.success(request, "Account created! Welcome to Suwasthick Tiles.")
             return redirect("accounts:dashboard")
         messages.error(request, "Please correct the errors below.")

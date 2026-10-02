@@ -73,6 +73,16 @@ def listing_summary(products, category=None):
     return text
 
 
+def mark_first_image(products):
+    """Flag the first product that has a photo. On phones it is the largest thing on
+    screen (the LCP element), so the card loads it eagerly instead of lazily."""
+    for product in products:
+        if product.image:
+            product.eager_image = True
+            break
+    return products
+
+
 def product_list(request):
     """All products. Old ?category=<id> links redirect to the category page."""
     if "category" in request.GET:
@@ -115,7 +125,7 @@ def _listing(request, category=None):
     if in_stock:
         products = products.filter(stock__gt=0)
     is_filtered = bool(material or in_stock)
-    products = list(products)
+    products = mark_first_image(list(products))
 
     summary = listing_summary(base, category)
     total = base.count()
@@ -262,6 +272,7 @@ def search(request):
     """Site search: /search/?q=. Results are never indexed."""
     query = " ".join(request.GET.get("q", "").split())[:100]
     results, exact = search_products(query) if query else ([], True)
+    mark_first_image(results)
     title = f"Search results for “{query}”" if query else "Search Tiles"
     context = {
         "query": query,
