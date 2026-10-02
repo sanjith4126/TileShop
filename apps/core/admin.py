@@ -3,7 +3,29 @@ Core app admin configuration.
 """
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Banner
+from .models import Category, Banner, Inquiry
+
+
+@admin.register(Inquiry)
+class InquiryAdmin(admin.ModelAdmin):
+    """Quote requests from the website. Update the status as you follow up."""
+    list_display = [
+        "created_at", "full_name", "phone", "email", "product", "area_sqft",
+        "project_type", "referrer_type", "status",
+    ]
+    list_display_links = ["full_name"]
+    list_editable = ["status"]
+    list_filter = ["status", "project_type", "referrer_type", "created_at"]
+    list_select_related = ["product"]
+    search_fields = ["full_name", "email", "phone", "message", "tile_interest", "referrer_name"]
+    date_hierarchy = "created_at"
+    readonly_fields = ["created_at", "updated_at"]
+    fieldsets = (
+        ("Customer", {"fields": ("full_name", "phone", "email", "address")}),
+        ("Project", {"fields": ("product", "tile_interest", "area_sqft", "project_type", "message")}),
+        ("Referred by", {"fields": ("referrer_type", "referrer_name")}),
+        ("Follow-up", {"fields": ("status", "created_at", "updated_at")}),
+    )
 
 
 @admin.register(Category)

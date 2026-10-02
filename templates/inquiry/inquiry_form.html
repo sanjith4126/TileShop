@@ -22,9 +22,15 @@
     </header>
 
     {% if success %}
-    <div class="mb-12 p-8 bg-green-50 border-l-4 border-green-700 space-y-2">
+    <div class="mb-12 p-8 bg-green-50 border-l-4 border-green-700 space-y-2" role="status" data-event-on-load="quote_request">
       <p class="font-headline text-xl text-green-900">Quote Request Submitted!</p>
       <p class="font-body text-green-800">We've received your inquiry and will contact you within 24 hours.</p>
+    </div>
+    {% endif %}
+
+    {% if form.errors %}
+    <div class="mb-12 p-6 bg-error-container border-l-4 border-error" role="alert">
+      <p class="font-body text-sm text-error">Please check the highlighted fields below.</p>
     </div>
     {% endif %}
 
@@ -34,42 +40,49 @@
       <!-- Pre-filled product info (hidden) -->
       {% if product %}
       <input type="hidden" name="product_id" value="{{ product.pk }}"/>
-      <input type="hidden" name="product_name" value="{{ product.name }}"/>
-      <input type="hidden" name="product_price" value="{{ product.price }}"/>
       {% endif %}
 
       <!-- Section 01: Your Details -->
       <section>
         <div class="flex items-baseline space-x-4 mb-8">
-          <span class="font-headline text-3xl text-primary-container/20">01</span>
+          <span class="font-headline text-3xl text-primary-container/20" aria-hidden="true">01</span>
           <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Your Details</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
           <div class="relative group">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Full Name *</label>
-            <input name="full_name" type="text" required
+            <label for="id_full_name" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Full Name *</label>
+            <input id="id_full_name" name="full_name" type="text" required autocomplete="name" maxlength="200"
                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
                    placeholder="Enter your full name"
-                   value="{% if user.is_authenticated %}{{ user.get_full_name }}{% endif %}"/>
+                   value="{{ form.full_name.value|default_if_none:'' }}"
+                   {% if form.full_name.errors %}aria-invalid="true" aria-describedby="err_full_name"{% endif %}/>
+            {% if form.full_name.errors %}<p id="err_full_name" class="mt-2 text-xs text-error font-body">{{ form.full_name.errors.0 }}</p>{% endif %}
           </div>
           <div class="relative group">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Email Address *</label>
-            <input name="email" type="email" required
+            <label for="id_email" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Email Address *</label>
+            <input id="id_email" name="email" type="email" required autocomplete="email" maxlength="254"
                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
                    placeholder="email@example.com"
-                   value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"/>
+                   value="{{ form.email.value|default_if_none:'' }}"
+                   {% if form.email.errors %}aria-invalid="true" aria-describedby="err_email"{% endif %}/>
+            {% if form.email.errors %}<p id="err_email" class="mt-2 text-xs text-error font-body">{{ form.email.errors.0 }}</p>{% endif %}
           </div>
           <div class="relative group">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Phone Number *</label>
-            <input name="phone" type="tel" required
+            <label for="id_phone" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Phone Number *</label>
+            <input id="id_phone" name="phone" type="tel" required autocomplete="tel" maxlength="20"
                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
-                   placeholder="+91 00000 00000"/>
+                   placeholder="+91 00000 00000"
+                   value="{{ form.phone.value|default_if_none:'' }}"
+                   {% if form.phone.errors %}aria-invalid="true" aria-describedby="err_phone"{% endif %}/>
+            {% if form.phone.errors %}<p id="err_phone" class="mt-2 text-xs text-error font-body">{{ form.phone.errors.0 }}</p>{% endif %}
           </div>
           <div class="relative group">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Address / Location</label>
-            <input name="address" type="text"
+            <label for="id_address" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Address / Location</label>
+            <input id="id_address" name="address" type="text" autocomplete="address-level2" maxlength="255"
                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
-                   placeholder="City, State"/>
+                   placeholder="City, State"
+                   value="{{ form.address.value|default_if_none:'' }}"/>
+            {% if form.address.errors %}<p class="mt-2 text-xs text-error font-body">{{ form.address.errors.0 }}</p>{% endif %}
           </div>
         </div>
       </section>
@@ -77,29 +90,28 @@
       <!-- Section 02: Referred By -->
       <section class="bg-surface-container-low p-10 -mx-4 md:-mx-10">
         <div class="flex items-baseline space-x-4 mb-8">
-          <span class="font-headline text-3xl text-primary-container/20">02</span>
+          <span class="font-headline text-3xl text-primary-container/20" aria-hidden="true">02</span>
           <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Referred By</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div class="relative">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional Capacity</label>
+            <label for="referrer-type" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional Capacity</label>
             <select name="referrer_type" id="referrer-type"
                     class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary transition-all appearance-none cursor-pointer"
                     onchange="toggleReferrerName(this.value)">
               <option value="">Select Option</option>
-              <option value="engineer" {% if request.GET.referrer_type == 'engineer' %}selected{% endif %}>Civil Engineer</option>
-              <option value="mason" {% if request.GET.referrer_type == 'mason' %}selected{% endif %}>Mason</option>
-              <option value="layer" {% if request.GET.referrer_type == 'layer' %}selected{% endif %}>Layer (Tile Fixer)</option>
-              <option value="architect" {% if request.GET.referrer_type == 'architect' %}selected{% endif %}>Architect</option>
-              <option value="others" {% if request.GET.referrer_type == 'others' %}selected{% endif %}>Others</option>
+              {% for value, label in form.fields.referrer_type.choices %}{% if value %}
+              <option value="{{ value }}" {% if form.referrer_type.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endif %}{% endfor %}
             </select>
             <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
           </div>
-          <div id="referrer-name-field" class="relative {% if not request.GET.referrer_type %}hidden{% endif %}">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional's Name</label>
-            <input name="referrer_name" type="text"
+          <div id="referrer-name-field" class="relative {% if not form.referrer_type.value %}hidden{% endif %}">
+            <label for="id_referrer_name" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional's Name</label>
+            <input id="id_referrer_name" name="referrer_name" type="text" maxlength="200"
                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
-                   placeholder="Enter name of the professional"/>
+                   placeholder="Enter name of the professional"
+                   value="{{ form.referrer_name.value|default_if_none:'' }}"/>
           </div>
         </div>
       </section>
@@ -107,49 +119,52 @@
       <!-- Section 03: Your Project -->
       <section>
         <div class="flex items-baseline space-x-4 mb-8">
-          <span class="font-headline text-3xl text-primary-container/20">03</span>
+          <span class="font-headline text-3xl text-primary-container/20" aria-hidden="true">03</span>
           <h2 class="font-headline text-2xl font-bold text-primary uppercase tracking-tight">Your Project</h2>
         </div>
         <div class="space-y-12">
 
           <!-- Tile Interest (pre-fill from product if available) -->
           <div>
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-4">Tiles Interested In</label>
             {% if product %}
+            <p class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-4">Tiles Interested In</p>
             <div class="p-4 bg-surface-container-low border-l-4 border-secondary flex items-center gap-4">
               {% if product.image %}
-              <img alt="{{ product.name }}" class="w-12 h-12 object-cover" src="{{ product.image.url }}"/>
+              <img alt="" class="w-12 h-12 object-cover" src="{{ product.image.url }}" width="48" height="48"/>
               {% endif %}
               <div>
                 <p class="font-label text-xs tracking-widest font-bold">{{ product.name }}</p>
-                <p class="font-body text-xs text-on-surface-variant">{% if product.category %}{{ product.category.name }}{% else %}Uncategorized{% endif %} &mdash; &#8377;{{ product.price }}/sq.ft</p>
+                <p class="font-body text-xs text-on-surface-variant">{% if product.category %}{{ product.category.name }} &mdash; {% endif %}&#8377;{{ product.price }} / {{ price_unit_label }}</p>
               </div>
               <input type="hidden" name="tile_interest" value="{{ product.name }}"/>
             </div>
             {% else %}
-            <input name="tile_interest" type="text"
+            <label for="id_tile_interest" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-4">Tiles Interested In</label>
+            <input id="id_tile_interest" name="tile_interest" type="text" maxlength="255"
                    class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
-                   placeholder="E.g. Marble for bathroom, Granite for kitchen..."/>
+                   placeholder="E.g. Matt floor tiles for a bathroom, 60×60 tiles for a living room..."
+                   value="{{ form.tile_interest.value|default_if_none:'' }}"/>
             {% endif %}
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div class="relative">
-              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Area Required (sq.ft)</label>
-              <input name="area_sqft" type="number" min="1"
+              <label for="id_area_sqft" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Area Required (sq.ft)</label>
+              <input id="id_area_sqft" name="area_sqft" type="number" min="1" inputmode="numeric"
                      class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all"
-                     placeholder="e.g. 500"/>
+                     placeholder="e.g. 500"
+                     value="{{ form.area_sqft.value|default_if_none:'' }}"
+                     {% if form.area_sqft.errors %}aria-invalid="true" aria-describedby="err_area_sqft"{% endif %}/>
+              {% if form.area_sqft.errors %}<p id="err_area_sqft" class="mt-2 text-xs text-error font-body">{{ form.area_sqft.errors.0 }}</p>{% endif %}
             </div>
             <div class="relative">
-              <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Project Type</label>
-              <select name="project_type"
+              <label for="id_project_type" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Project Type</label>
+              <select id="id_project_type" name="project_type"
                       class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface focus:ring-0 focus:border-secondary transition-all appearance-none cursor-pointer">
                 <option value="">Select Type</option>
-                <option value="residential">Residential</option>
-                <option value="commercial">Commercial</option>
-                <option value="hospitality">Hospitality / Hotel</option>
-                <option value="restoration">Heritage Restoration</option>
-                <option value="outdoor">Outdoor / Landscaping</option>
+                {% for value, label in form.fields.project_type.choices %}{% if value %}
+                <option value="{{ value }}" {% if form.project_type.value == value %}selected{% endif %}>{{ label }}</option>
+                {% endif %}{% endfor %}
               </select>
               <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
             </div>
@@ -157,10 +172,10 @@
 
           <!-- Message -->
           <div class="relative">
-            <label class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Special Requirements / Message</label>
-            <textarea name="message" rows="5"
+            <label for="id_message" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Special Requirements / Message</label>
+            <textarea id="id_message" name="message" rows="5"
                       class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/40 focus:ring-0 focus:border-secondary transition-all resize-none"
-                      placeholder="Describe your project, timeline, or any specific requirements..."></textarea>
+                      placeholder="Describe your project, timeline, or any specific requirements...">{{ form.message.value|default_if_none:'' }}</textarea>
           </div>
         </div>
       </section>

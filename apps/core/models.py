@@ -38,6 +38,63 @@ class Banner(models.Model):
         return self.title
 
 
+class Inquiry(models.Model):
+    """A quote / contact request submitted through the inquiry form."""
+
+    REFERRER_CHOICES = [
+        ("engineer", "Civil Engineer"),
+        ("mason", "Mason"),
+        ("layer", "Layer (Tile Fixer)"),
+        ("architect", "Architect"),
+        ("others", "Others"),
+    ]
+    PROJECT_TYPE_CHOICES = [
+        ("residential", "Residential"),
+        ("commercial", "Commercial"),
+        ("hospitality", "Hospitality / Hotel"),
+        ("restoration", "Heritage Restoration"),
+        ("outdoor", "Outdoor / Landscaping"),
+    ]
+    STATUS_CHOICES = [
+        ("new", "New"),
+        ("contacted", "Contacted"),
+        ("quoted", "Quote sent"),
+        ("closed", "Closed"),
+    ]
+
+    full_name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    address = models.CharField("address / location", max_length=255, blank=True)
+    referrer_type = models.CharField(
+        "referred by", max_length=20, choices=REFERRER_CHOICES, blank=True
+    )
+    referrer_name = models.CharField("professional's name", max_length=200, blank=True)
+    product = models.ForeignKey(
+        "products.Product",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inquiries",
+        help_text="The tile the customer was looking at when they asked for a quote.",
+    )
+    tile_interest = models.CharField("tiles interested in", max_length=255, blank=True)
+    area_sqft = models.PositiveIntegerField("area required (sq.ft)", null=True, blank=True)
+    project_type = models.CharField(max_length=20, choices=PROJECT_TYPE_CHOICES, blank=True)
+    message = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "quote request"
+        verbose_name_plural = "quote requests"
+
+    def __str__(self):
+        return f"Quote request from {self.full_name}"
+
+
 # ── File cleanup: remove image files from disk on delete / replace ──
 def _delete_file(filefield):
     if filefield and filefield.name:

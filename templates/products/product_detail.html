@@ -73,14 +73,14 @@
       <h1 class="font-headline text-4xl mb-2 text-primary">{{ product.name }}</h1>
       <div class="flex items-baseline gap-4 mb-6">
         <span class="text-3xl font-bold text-secondary">&#8377;{{ product.price }}</span>
-        <span class="text-xs font-label text-outline tracking-tighter">/ SQ. FT (Incl. Taxes)</span>
+        <span class="text-xs font-label text-outline tracking-tighter">/ {{ price_unit_label|upper }} (Incl. Taxes)</span>
       </div>
 
       <!-- Stock Status -->
       <div class="flex items-center gap-2 mb-8">
         {% if product.stock > 0 %}
         <span class="w-2 h-2 rounded-full bg-green-600"></span>
-        <span class="text-xs font-medium text-on-surface-variant uppercase tracking-widest">In Stock &mdash; {{ product.stock }} units available</span>
+        <span class="text-xs font-medium text-on-surface-variant uppercase tracking-widest">In Stock</span>
         {% else %}
         <span class="w-2 h-2 rounded-full bg-error"></span>
         <span class="text-xs font-medium text-error uppercase tracking-widest">Out of Stock</span>
@@ -109,8 +109,8 @@
           </div>
           {% endif %}
           <div class="flex justify-between py-2 border-b border-outline/10 text-sm">
-            <span class="text-on-surface-variant font-medium">Stock</span>
-            <span class="text-on-surface font-semibold">{{ product.stock }} units</span>
+            <span class="text-on-surface-variant font-medium">Availability</span>
+            <span class="text-on-surface font-semibold">{% if product.stock > 0 %}In stock{% else %}Out of stock{% endif %}</span>
           </div>
         </div>
       </div>
@@ -198,7 +198,7 @@
                 <span>Custom area calculations</span>
               </div>
             </div>
-            <a href="{% url 'core:inquiry' %}?product={{ product.pk }}&name={{ product.name|urlencode }}&price={{ product.price }}" class="block w-full bg-secondary text-on-secondary py-4 font-label text-[12px] tracking-[0.2em] uppercase text-center hover:bg-secondary-fixed transition-all">
+            <a href="{% url 'core:inquiry' %}?product={{ product.pk }}" class="block w-full bg-secondary text-on-secondary py-4 font-label text-[12px] tracking-[0.2em] uppercase text-center hover:bg-secondary-fixed transition-all">
               REQUEST A CUSTOM QUOTE
             </a>
           </div>
@@ -216,20 +216,18 @@
         <p class="font-cormorant italic text-xl text-outline max-w-2xl mx-auto">Experience the {{ product.name }} in your own curated environment.</p>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- Room Type Selector -->
+        <!-- How the visualizer works -->
         <div class="lg:col-span-1 space-y-3">
-          <h4 class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-6">Select Space</h4>
-          {% for room in rooms %}
-          <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}&room={{ room.key }}"
-             class="w-full text-left p-5 flex justify-between items-center group transition-all {% if forloop.first %}bg-surface-container-highest border-l-4 border-secondary{% else %}bg-surface/50 hover:bg-surface-container-highest{% endif %}">
-            <span class="font-label text-[11px] tracking-widest">{{ room.name|upper }}</span>
-            <span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
-          </a>
-          {% endfor %}
+          <h3 class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-6">How It Works</h3>
+          <ol class="space-y-3">
+            <li class="w-full p-5 bg-surface-container-highest border-l-4 border-secondary font-label text-[11px] tracking-widest">1. UPLOAD A PHOTO OF YOUR ROOM</li>
+            <li class="w-full p-5 bg-surface/50 font-label text-[11px] tracking-widest">2. THIS TILE IS ALREADY SELECTED</li>
+            <li class="w-full p-5 bg-surface/50 font-label text-[11px] tracking-widest">3. TAP "FIT TILES WITH AI"</li>
+          </ol>
 
           <div class="pt-6 mt-6 border-t border-outline/10">
             <div class="p-6 bg-primary-container text-white space-y-4">
-              <h5 class="font-headline italic text-lg">Upload Your Space</h5>
+              <h3 class="font-headline italic text-lg">Upload Your Space</h3>
               <p class="text-xs opacity-70 leading-relaxed">Visualize our tiles on your own room photographs.</p>
               <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="block w-full border border-white/30 py-3 text-[10px] font-label tracking-widest text-center hover:bg-white hover:text-primary transition-all">
                 OPEN VISUALIZER
@@ -240,9 +238,10 @@
 
         <!-- Room Preview Image -->
         <div class="lg:col-span-3 relative h-[500px] bg-black overflow-hidden shadow-2xl">
-          <img alt="Room visualization" class="w-full h-full object-cover opacity-90"
+          <img alt="" class="w-full h-full object-cover opacity-90" loading="lazy"
                src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=80"/>
           <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+          <p class="absolute top-6 left-6 glass-panel px-4 py-2 font-label text-[10px] tracking-widest uppercase text-on-surface">Sample room photo — upload yours to see this tile in it</p>
           <div class="absolute bottom-8 right-8">
             <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="px-6 h-12 bg-secondary text-white font-label text-[10px] tracking-widest shadow-lg flex items-center gap-2 hover:bg-secondary-fixed transition-all">
               <span class="material-symbols-outlined text-sm">open_in_new</span>

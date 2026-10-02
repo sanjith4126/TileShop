@@ -45,7 +45,7 @@
             <!-- Remove -->
             <form action="{% url 'cart:remove_from_cart' item.pk %}" method="post">
               {% csrf_token %}
-              <button type="submit" class="text-on-surface-variant hover:text-error transition-colors" aria-label="Remove item">
+              <button type="submit" class="text-on-surface-variant hover:text-error transition-colors" aria-label="Remove {{ item.product.name }} from cart">
                 <span class="material-symbols-outlined">close</span>
               </button>
             </form>
@@ -55,11 +55,11 @@
             <!-- Qty Control -->
             <form action="{% url 'cart:update_cart' item.pk %}" method="post" class="flex items-center border-b border-outline/30">
               {% csrf_token %}
-              <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="p-2 hover:text-secondary transition-colors">
+              <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="p-2 hover:text-secondary transition-colors" aria-label="Decrease quantity of {{ item.product.name }}">
                 <span class="material-symbols-outlined" style="font-size: 18px;">remove</span>
               </button>
               <span class="px-6 font-body font-bold text-sm">{{ item.quantity }}</span>
-              <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="p-2 hover:text-secondary transition-colors">
+              <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="p-2 hover:text-secondary transition-colors" aria-label="Increase quantity of {{ item.product.name }}">
                 <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
               </button>
               <span class="ml-3 font-label text-[10px] ls-luxury text-outline uppercase">Units</span>
@@ -92,18 +92,18 @@
         <div class="space-y-6 mb-8">
           <div class="flex justify-between items-center text-sm">
             <span class="font-body text-on-surface-variant uppercase tracking-wider">Cart Total</span>
-            <span class="font-label text-on-surface">&#8377;{{ cart.total_price }}</span>
+            <span class="font-label text-on-surface">&#8377;{{ cart_total }}</span>
           </div>
           <div class="flex justify-between items-center text-sm">
             <span class="font-body text-on-surface-variant uppercase tracking-wider">Items</span>
-            <span class="font-label text-on-surface">{{ cart.total_items }}</span>
+            <span class="font-label text-on-surface">{{ cart_items_count }}</span>
           </div>
         </div>
 
         <div class="pt-6 border-t border-outline/20 mb-10">
           <div class="flex justify-between items-baseline">
             <span class="font-headline text-lg uppercase text-primary">Grand Total</span>
-            <span class="font-label text-3xl text-secondary">&#8377;{{ cart.total_price }}</span>
+            <span class="font-label text-3xl text-secondary">&#8377;{{ cart_total }}</span>
           </div>
           <p class="text-[10px] font-body text-on-surface-variant mt-2 italic">*All prices include premium packaging and our 10-year quality warranty.</p>
         </div>

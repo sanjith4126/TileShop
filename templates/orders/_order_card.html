@@ -1,0 +1,54 @@
+<!-- Order card: items, total and delivery details (used by the confirmation and order-detail pages) -->
+<div class="bg-surface-container-low p-8 space-y-8">
+
+  <!-- Items -->
+  <div>
+    <h2 class="font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-4">Items Ordered</h2>
+    <div class="space-y-4">
+      {% for item in items %}
+      <div class="flex gap-4 items-center">
+        <div class="w-14 h-14 bg-surface-container-highest flex-shrink-0 overflow-hidden">
+          {% if item.product.image %}
+          <img alt="" class="w-full h-full object-cover" src="{{ item.product.image.url }}" width="56" height="56" loading="lazy"/>
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-outline text-sm">crop_square</span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="flex-grow min-w-0">
+          <p class="font-label text-sm uppercase tracking-wide truncate">{{ item.product.name }}</p>
+          <p class="text-[11px] text-on-surface-variant">Qty {{ item.quantity }} &times; &#8377;{{ item.unit_price }}</p>
+        </div>
+        <span class="font-label text-secondary">&#8377;{{ item.subtotal }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="flex justify-between items-baseline pt-6 border-t border-outline/20">
+    <span class="font-headline text-lg uppercase text-primary">Grand Total</span>
+    <span class="font-label text-3xl text-secondary">&#8377;{{ order.total_price }}</span>
+  </div>
+
+  <!-- Details grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-outline/20 text-sm">
+    <div>
+      <p class="font-label text-[10px] tracking-widest text-outline uppercase mb-1">Delivery Address</p>
+      <p class="font-body text-on-surface">{{ order.shipping_address|linebreaksbr }}</p>
+    </div>
+    <div>
+      <p class="font-label text-[10px] tracking-widest text-outline uppercase mb-1">Payment Method</p>
+      <p class="font-body text-on-surface">{{ order.get_payment_method_display }}</p>
+      <p class="font-label text-[10px] tracking-widest text-outline uppercase mb-1 mt-4">Status</p>
+      <p class="font-body text-on-surface capitalize">{{ order.get_status_display }}</p>
+    </div>
+    {% if order.notes %}
+    <div class="md:col-span-2">
+      <p class="font-label text-[10px] tracking-widest text-outline uppercase mb-1">Notes</p>
+      <p class="font-body text-on-surface">{{ order.notes|linebreaksbr }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>

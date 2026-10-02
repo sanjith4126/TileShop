@@ -19,9 +19,14 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ["id", "full_name", "phone", "status", "payment_method", "total_price", "created_at"]
+    list_display = ["order_number", "full_name", "phone", "status", "payment_method", "total_price", "created_at"]
+    list_display_links = ["order_number"]
     list_filter = ["status", "payment_method", "created_at"]
     search_fields = ["full_name", "email", "phone", "user__username", "user__email"]
     list_editable = ["status"]
     inlines = [OrderItemInline]
     readonly_fields = ["created_at", "updated_at"]
+
+    @admin.display(description="Order", ordering="pk")
+    def order_number(self, obj):
+        return obj.order_number

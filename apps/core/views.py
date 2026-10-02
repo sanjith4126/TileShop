@@ -1,61 +1,33 @@
 """
-Core app views — homepage, about, room visualizer, inquiry.
+Core app views — homepage, about, room visualizer, inquiry (quote requests).
 """
-import os
-import json
 import base64
-import mimetypes
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
+import logging
+import time
+
+from django.conf import settings
+from django.core.cache import cache
 from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import NoReverseMatch, reverse
 from django.views.decorators.http import require_POST
+
+from apps.core.models import Banner, Category, Inquiry
 from apps.products.models import Product
-from apps.core.models import Category, Banner
 
+from . import ai
+from .forms import InquiryForm
+from .notifications import notify_shop
+from .utils import parse_positive_int
 
-ROOM_TEMPLATES = [
-    {
-        "key": "bathroom",
-        "name": "Master Bathroom",
-        "description": "Wall & floor tiles",
-        "image": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=80",
-    },
-    {
-        "key": "kitchen",
-        "name": "Gourmet Kitchen",
-        "description": "Floor & backsplash",
-        "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80",
-    },
-    {
-        "key": "living",
-        "name": "Living Room",
-        "description": "Large format floors",
-        "image": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&q=80",
-    },
-    {
-        "key": "bedroom",
-        "name": "Bedroom",
-        "description": "Soft textured tiles",
-        "image": "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&q=80",
-    },
-    {
-        "key": "outdoor",
-        "name": "Outdoor Patio",
-        "description": "Non-slip outdoor tiles",
-        "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80",
-    },
-    {
-        "key": "commercial",
-        "name": "Commercial / Office",
-        "description": "High-traffic surfaces",
-        "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80",
-    },
-]
+logger = logging.getLogger(__name__)
 
 
 def home(request):
     """Homepage view."""
-    featured_products = Product.objects.filter(is_featured=True, is_active=True)[:8]
+    featured_products = (
+        Product.objects.filter(is_featured=True, is_active=True).select_related("category")[:8]
+    )
     categories = Category.objects.all()
     banners = Banner.objects.filter(is_active=True)
 
@@ -63,7 +35,6 @@ def home(request):
         "featured_products": featured_products,
         "categories": categories,
         "banners": banners,
-        "material_choices": Product.MATERIAL_CHOICES,
     }
     return render(request, "home.html", context)
 
@@ -74,158 +45,188 @@ def about(request):
 
 
 def room_visualizer(request):
-    """Room Visualizer page — upload a photo, mark the surface, fit tiles."""
+    """Room Visualizer page — upload a photo, pick a tile, let the AI fit it."""
     products = (
         Product.objects.filter(is_active=True, image__isnull=False)
         .exclude(image="")
-        .exclude(category__name="Sanitaryware")[:24]
+        .exclude(category__name="Sanitaryware")
+        .select_related("category")[:24]
     )
     selected_product = None
-    product_pk = request.GET.get("product")
+    product_pk = parse_positive_int(request.GET.get("product"))
     if product_pk:
-        try:
-            selected_product = Product.objects.get(pk=product_pk, is_active=True)
-        except Product.DoesNotExist:
-            pass
+        selected_product = (
+            Product.objects.filter(pk=product_pk, is_active=True).select_related("category").first()
+        )
 
     context = {
         "products": products,
         "selected_product": selected_product,
+        "ai_enabled": bool(settings.GEMINI_API_KEY),
     }
     return render(request, "room_visualizer.html", context)
 
 
 def inquiry(request):
-    """Quote / Inquiry request form."""
+    """Quote / inquiry request form. Every valid submission is saved."""
+    raw_product = request.POST.get("product_id") if request.method == "POST" else request.GET.get("product")
     product = None
-    product_pk = request.GET.get("product")
+    product_pk = parse_positive_int(raw_product)
     if product_pk:
-        try:
-            product = Product.objects.get(pk=product_pk, is_active=True)
-        except Product.DoesNotExist:
-            pass
+        product = Product.objects.filter(pk=product_pk, is_active=True).select_related("category").first()
 
-    success = False
     if request.method == "POST":
-        # Collect form data — store as a simple log for now
-        # In production, save to Inquiry model or send email
-        full_name = request.POST.get("full_name", "").strip()
-        email = request.POST.get("email", "").strip()
-        phone = request.POST.get("phone", "").strip()
-        if full_name and email and phone:
-            success = True
-            messages.success(request, f"Thank you {full_name}! We will contact you at {email} within 24 hours.")
-            # Reset to GET after successful submission
-            return redirect(request.path + "?submitted=1")
+        form = InquiryForm(request.POST)
+        if form.is_valid():
+            quote_request = form.save(commit=False)
+            quote_request.product = product
+            if product and not quote_request.tile_interest:
+                quote_request.tile_interest = product.name
+            quote_request.save()
+            _notify_new_inquiry(request, quote_request)
+            # Show the confirmation once, on the redirected page.
+            request.session["inquiry_submitted"] = True
+            return redirect("core:inquiry")
+    else:
+        initial = {}
+        if request.user.is_authenticated:
+            initial = {"full_name": request.user.get_full_name(), "email": request.user.email}
+        if request.GET.get("referrer_type") in dict(Inquiry.REFERRER_CHOICES):
+            initial["referrer_type"] = request.GET["referrer_type"]
+        form = InquiryForm(initial=initial)
 
     context = {
+        "form": form,
         "product": product,
-        "success": request.GET.get("submitted") == "1",
+        "success": request.session.pop("inquiry_submitted", False),
     }
     return render(request, "inquiry/inquiry_form.html", context)
 
 
+def _notify_new_inquiry(request, quote_request):
+    lines = [
+        f"Name: {quote_request.full_name}",
+        f"Phone: {quote_request.phone}",
+        f"Email: {quote_request.email}",
+    ]
+    optional = [
+        ("Location", quote_request.address),
+        ("Tiles", quote_request.tile_interest),
+        ("Area (sq.ft)", quote_request.area_sqft),
+        ("Project type", quote_request.get_project_type_display() if quote_request.project_type else ""),
+        ("Referred by", " ".join(filter(None, [
+            quote_request.get_referrer_type_display() if quote_request.referrer_type else "",
+            quote_request.referrer_name,
+        ]))),
+        ("Message", quote_request.message),
+    ]
+    lines += [f"{label}: {value}" for label, value in optional if value]
+    try:
+        lines.append("")
+        lines.append("Open in admin: " + request.build_absolute_uri(
+            reverse("admin:core_inquiry_change", args=[quote_request.pk])
+        ))
+    except NoReverseMatch:
+        pass
+    notify_shop(f"New quote request from {quote_request.full_name}", "\n".join(lines))
+
+
 # ── AI Room Visualizer (Gemini image editing) ──────────────────────
-GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image"
+
+def _client_ip(request):
+    # PythonAnywhere's proxy puts the visitor's address in X-Real-IP.
+    return (request.META.get("HTTP_X_REAL_IP") or request.META.get("REMOTE_ADDR") or "unknown").strip()
 
 
-def _surface_for_category(name):
-    """Decide whether a category's tiles go on the floor or the wall."""
-    n = (name or "").lower()
-    if "wall" in n or "bathroom" in n:
-        return "wall"
-    return "floor"
+def _recent_visualizer_uses(request, now):
+    window = settings.VISUALIZER_RATE_WINDOW
+    return [t for t in request.session.get("visualizer_uses", []) if now - t < window]
+
+
+def _visualizer_rate_limited(request):
+    """True if this visitor (session, or IP address) has used up the allowance."""
+    limit = settings.VISUALIZER_RATE_LIMIT
+    if limit <= 0:
+        return False
+    if len(_recent_visualizer_uses(request, time.time())) >= limit:
+        return True
+    # Mobile networks often share one IP address between many people, so the
+    # per-IP allowance is more generous than the per-visitor one.
+    return cache.get(f"visualizer:ip:{_client_ip(request)}", 0) >= limit * 4
+
+
+def _record_visualizer_use(request):
+    now = time.time()
+    uses = _recent_visualizer_uses(request, now)
+    uses.append(now)
+    request.session["visualizer_uses"] = uses
+    key = f"visualizer:ip:{_client_ip(request)}"
+    if not cache.add(key, 1, settings.VISUALIZER_RATE_WINDOW):
+        try:
+            cache.incr(key)
+        except ValueError:
+            cache.set(key, 1, settings.VISUALIZER_RATE_WINDOW)
+
+
+def _error(message, status):
+    return JsonResponse({"error": message}, status=status)
 
 
 @require_POST
 def ai_visualize(request):
     """
-    Take an uploaded room photo + a selected tile and use Gemini to
-    re-render the room's floor/wall with that tile. Returns JSON with a
-    base64 data-URL of the result image.
+    Take an uploaded room photo + a selected tile and use Gemini to re-render
+    the room's floor/wall with that tile. Returns JSON with a base64 data-URL.
     """
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = settings.GEMINI_API_KEY
     if not api_key:
-        return JsonResponse(
-            {"error": "AI is not configured. GEMINI_API_KEY is missing on the server."},
-            status=503,
-        )
+        return _error("The AI visualizer isn't available right now. Request a quote and we'll help you choose.", 503)
 
-    # Inputs
+    if _visualizer_rate_limited(request):
+        return _error("You've reached the limit for AI visualizations for now. Please try again later.", 429)
+
     photo = request.FILES.get("photo")
-    product_id = request.POST.get("product_id")
+    product_id = parse_positive_int(request.POST.get("product_id"))
     if not photo:
-        return JsonResponse({"error": "Please upload a room photo first."}, status=400)
+        return _error("Please upload a room photo first.", 400)
     if not product_id:
-        return JsonResponse({"error": "Please select a tile first."}, status=400)
+        return _error("Please select a tile first.", 400)
+    if photo.size > settings.VISUALIZER_MAX_UPLOAD_BYTES:
+        limit_mb = settings.VISUALIZER_MAX_UPLOAD_BYTES // (1024 * 1024)
+        return _error(f"That photo is too large. Please upload an image under {limit_mb} MB.", 413)
 
-    product = get_object_or_404(Product, pk=product_id, is_active=True)
-    if not product.image:
-        return JsonResponse({"error": "This tile has no image to apply."}, status=400)
+    product = Product.objects.filter(pk=product_id, is_active=True).select_related("category").first()
+    if not product or not product.image:
+        return _error("Please select a tile that has a photo.", 400)
 
-    # Read both images into memory
-    room_bytes = photo.read()
-    room_mime = photo.content_type or "image/jpeg"
+    try:
+        room_bytes, room_mime = ai.prepare_image(photo, settings.VISUALIZER_MAX_IMAGE_SIDE)
+    except ai.InvalidImage:
+        return _error("Please upload a JPG, PNG or WebP photo of your room.", 400)
 
     try:
         with product.image.open("rb") as fh:
-            tile_bytes = fh.read()
-    except Exception:
-        return JsonResponse({"error": "Could not read the tile image."}, status=500)
-    tile_mime = mimetypes.guess_type(product.image.name)[0] or "image/jpeg"
+            tile_bytes, tile_mime = ai.prepare_image(fh, 1024)
+    except (OSError, ai.InvalidImage):
+        logger.exception("Could not read the tile image for product %s", product.pk)
+        return _error("We couldn't prepare this tile. Please choose another tile.", 500)
 
-    surface = _surface_for_category(product.category.name if product.category else "")
-
-    prompt = (
-        f"You are an interior-design visualizer. The FIRST image is a photo of a real room. "
-        f"The SECOND image is a close-up of a ceramic tile texture/pattern. "
-        f"Re-render the FIRST image so that the {surface} is fully covered with the tile from the "
-        f"SECOND image, laid in a neat realistic grid with thin grout lines. "
-        f"Match the room's existing perspective, lighting, shadows and reflections so the tiles "
-        f"look naturally installed. Use physically accurate path-traced (ray-traced) lighting "
-        f"with global illumination, soft realistic shadows, ambient occlusion in corners, and "
-        f"correct light bounce and reflections on the tile surface so the result looks "
-        f"photorealistic. Keep everything else in the room (walls, furniture, fixtures, windows) "
-        f"exactly the same. Photorealistic result, same camera angle and framing."
-    )
+    surface = ai.surface_for_category(product.category.name if product.category else "")
+    _record_visualizer_use(request)
 
     try:
-        from google import genai
-        from google.genai import types
-
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=GEMINI_IMAGE_MODEL,
-            contents=[
-                prompt,
-                types.Part.from_bytes(data=room_bytes, mime_type=room_mime),
-                types.Part.from_bytes(data=tile_bytes, mime_type=tile_mime),
-            ],
+        image_bytes, mime = ai.render_room_with_tile(
+            api_key, ai.build_prompt(surface), room_bytes, room_mime, tile_bytes, tile_mime
         )
-    except Exception as e:
-        msg = str(e)
-        if "RESOURCE_EXHAUSTED" in msg or "429" in msg or "billing" in msg.lower():
-            return JsonResponse(
-                {
-                    "error": "Gemini quota/billing not active for this API key. "
-                    "Enable billing at aistudio.google.com, then try again.",
-                },
-                status=402,
-            )
-        return JsonResponse({"error": f"AI request failed: {msg[:300]}"}, status=502)
+    except ai.VisualizerBusy:
+        logger.warning("Gemini refused a visualizer request (quota, rate or billing limit).", exc_info=True)
+        return _error("The AI visualizer is busy right now. Please try again in a few minutes.", 503)
+    except ai.VisualizerError:
+        logger.exception("Gemini visualizer request failed")
+        return _error("The AI visualizer couldn't process this photo. Please try again or use a clearer photo.", 502)
 
-    # Extract the generated image
-    try:
-        for part in response.candidates[0].content.parts:
-            inline = getattr(part, "inline_data", None)
-            if inline and inline.data:
-                b64 = base64.b64encode(inline.data).decode("ascii")
-                mime = inline.mime_type or "image/png"
-                return JsonResponse({"image": f"data:{mime};base64,{b64}"})
-    except (IndexError, AttributeError):
-        pass
+    if not image_bytes:
+        return _error("The AI didn't return an image. Try a clearer, well-lit room photo.", 502)
 
-    return JsonResponse(
-        {"error": "The AI did not return an image. Try a clearer room photo."},
-        status=502,
-    )
+    b64 = base64.b64encode(image_bytes).decode("ascii")
+    return JsonResponse({"image": f"data:{mime};base64,{b64}"})

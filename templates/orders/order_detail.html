@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order #{{ order.order_number }}{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-6 min-h-screen">
+  <div class="max-w-2xl mx-auto">
+
+    <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-6 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
+      <a class="hover:text-secondary transition-colors" href="{% url 'accounts:dashboard' %}">My Dashboard</a>
+      <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+      <span class="text-secondary" aria-current="page">Order #{{ order.order_number }}</span>
+    </nav>
+
+    <div class="mb-10">
+      <h1 class="font-headline text-5xl text-primary mb-3">Order #{{ order.order_number }}</h1>
+      <p class="font-body text-sm text-on-surface-variant">
+        Placed on {{ order.created_at|date:"M d, Y, g:i A" }}. Payment is collected at delivery.
+      </p>
+    </div>
+
+    {% include "orders/_order_card.html" %}
+
+    <div class="flex flex-wrap gap-4 justify-center mt-10">
+      <a href="{% url 'accounts:dashboard' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
+        Back to My Orders
+      </a>
+      <a href="{% url 'core:inquiry' %}" class="border-b-2 border-secondary text-secondary px-8 py-4 font-label text-xs tracking-widest uppercase hover:opacity-80 transition-opacity">
+        Ask About This Order
+      </a>
+    </div>
+  </div>
+</main>
+{% endblock %}

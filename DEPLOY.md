@@ -55,13 +55,15 @@ nano .env
 Paste this (use YOUR username in ALLOWED_HOSTS):
 ```
 DEBUG=False
-DJANGO_SECRET_KEY=gwXbKvw2C7b_6KjMc2ihOVzpOB7PN__XEuehHF2WivFZi4LibtCb71jFqyB2f6X1Ei8
+DJANGO_SECRET_KEY=paste-a-newly-generated-key-here
 ALLOWED_HOSTS=YOURNAME.pythonanywhere.com
 ```
 Save: `Ctrl+O`, Enter, then `Ctrl+X`.
 
-> The secret key above was generated fresh for you. To make your own instead:
+> Generate a fresh secret key on the server and paste it in place of the placeholder:
 > `python -c "import secrets; print(secrets.token_urlsafe(50))"`
+> Never commit the real key to git. (An earlier version of this file contained a
+> key; if you ever used it, replace it with a new one.)
 
 ---
 

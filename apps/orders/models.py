@@ -51,7 +51,12 @@ class Order(models.Model):
 
     def __str__(self):
         who = self.full_name or (self.user.username if self.user else "Guest")
-        return f"Order #{self.pk} - {who}"
+        return f"Order #{self.order_number} - {who}"
+
+    @property
+    def order_number(self):
+        """The order number customers see, e.g. "ST-5"."""
+        return f"ST-{self.pk}" if self.pk else ""
 
     def calculate_total(self):
         self.total_price = sum(item.subtotal for item in self.items.all())

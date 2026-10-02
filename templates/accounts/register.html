@@ -21,7 +21,7 @@
     </div>
 
     <div class="mb-8 text-center">
-      <h2 class="font-headline text-3xl font-bold text-primary mb-2">Join the Gallery</h2>
+      <h1 class="font-headline text-3xl font-bold text-primary mb-2">Join the Gallery</h1>
       <p class="font-literary italic text-on-surface-variant">Create your patron account</p>
     </div>
 
@@ -46,12 +46,13 @@
                class="w-full bg-transparent border-0 border-b border-outline py-3 px-0 focus:ring-0 focus:border-secondary transition-all text-on-surface font-body"
                placeholder="{{ field.label }}"
                {% if field.field.required %}required{% endif %}
-               autocomplete="{{ field.html_name }}"/>
+               {% if 'password' in field.html_name %}autocomplete="new-password"{% else %}autocomplete="username" value="{{ field.value|default_if_none:'' }}"{% endif %}
+               {% if field.errors %}aria-invalid="true" aria-describedby="err_{{ field.html_name }}"{% elif field.help_text %}aria-describedby="help_{{ field.html_name }}"{% endif %}/>
         {% if field.errors %}
-        <p class="mt-1 text-xs text-error font-body">{{ field.errors.0 }}</p>
+        <p id="err_{{ field.html_name }}" class="mt-1 text-xs text-error font-body">{{ field.errors.0 }}</p>
         {% endif %}
         {% if field.help_text %}
-        <p class="mt-1 text-[10px] text-on-surface-variant font-body leading-relaxed">{{ field.help_text }}</p>
+        <div id="help_{{ field.html_name }}" class="mt-1 text-[10px] text-on-surface-variant font-body leading-relaxed">{{ field.help_text }}</div>
         {% endif %}
       </div>
       {% endfor %}
