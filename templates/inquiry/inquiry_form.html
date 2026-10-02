@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load image_tags %}
 {% load static %}
 
 {% block content %}
@@ -102,7 +103,7 @@
               <option value="{{ value }}" {% if form.referrer_type.value == value %}selected{% endif %}>{{ label }}</option>
               {% endif %}{% endfor %}
             </select>
-            <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+            <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none" data-icon="expand_more" aria-hidden="true"></span>
           </div>
           <div id="referrer-name-field" class="relative {% if not form.referrer_type.value %}hidden{% endif %}">
             <label for="id_referrer_name" class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-2">Professional's Name</label>
@@ -128,7 +129,7 @@
             <p class="block font-label text-[11px] tracking-[0.2em] text-outline uppercase mb-4">Tiles Interested In</p>
             <div class="p-4 bg-surface-container-low border-l-4 border-secondary flex items-center gap-4">
               {% if product.image %}
-              <img alt="" class="w-12 h-12 object-cover" src="{{ product.image.url }}" width="48" height="48"/>
+              {% responsive_img product.image sizes="48px" css="w-12 h-12 object-cover" %}
               {% endif %}
               <div>
                 <p class="font-label text-xs tracking-widest font-bold">{{ product.name }}</p>
@@ -164,7 +165,7 @@
                 <option value="{{ value }}" {% if form.project_type.value == value %}selected{% endif %}>{{ label }}</option>
                 {% endif %}{% endfor %}
               </select>
-              <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+              <span class="absolute right-0 bottom-4 material-symbols-outlined text-outline pointer-events-none" data-icon="expand_more" aria-hidden="true"></span>
             </div>
           </div>
 
@@ -182,7 +183,7 @@
       <div class="flex flex-col md:flex-row items-start gap-6 pt-4">
         <button type="submit"
                 class="bg-primary-container text-on-primary px-16 py-5 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors flex items-center gap-3">
-          <span class="material-symbols-outlined text-sm">send</span>
+          <span class="material-symbols-outlined text-sm" data-icon="send" aria-hidden="true"></span>
           SUBMIT INQUIRY
         </button>
         <p class="font-body text-xs text-on-surface-variant italic self-center">

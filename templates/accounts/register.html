@@ -10,7 +10,7 @@
     <!-- Logo -->
     <div class="flex flex-col items-center mb-8">
       <div class="w-14 h-14 bg-primary-container flex items-center justify-center mb-4">
-        <span class="material-symbols-outlined text-on-primary text-3xl">person_add</span>
+        <span class="material-symbols-outlined text-on-primary text-3xl" data-icon="person_add" aria-hidden="true"></span>
       </div>
       <div class="flex flex-col items-center text-[#610000] uppercase">
         <span class="font-headline text-lg tracking-widest font-bold">Suwasthick</span>
@@ -57,7 +57,7 @@
 
       <div class="pt-4 space-y-4">
         <button type="submit" class="w-full bg-primary-container text-on-primary py-4 px-6 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-sm">person_add</span>
+          <span class="material-symbols-outlined text-sm" data-icon="person_add" aria-hidden="true"></span>
           CREATE ACCOUNT
         </button>
         <a href="{% url 'accounts:login' %}" class="block w-full text-center text-secondary py-4 px-6 font-label text-xs tracking-[0.2em] uppercase border-b border-transparent hover:border-secondary transition-all">

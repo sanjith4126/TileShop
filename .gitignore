@@ -49,3 +49,6 @@ build/
 # Local agent/tool config
 .claude/
 .agent/
+
+# Frontend build tooling (CSS is built locally and committed)
+node_modules/

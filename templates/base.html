@@ -31,115 +31,11 @@
   <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}"/>
   <meta name="theme-color" content="#610000"/>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Serif:wght@400;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Fonts are self-hosted (static/fonts, see scripts/update_fonts.py); preload the above-the-fold ones -->
+  {% include "partials/font_preloads.html" %}
 
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "secondary-fixed": "#ffdf90",
-            "on-secondary": "#ffffff",
-            "secondary": "#755b00",
-            "tertiary-container": "#4f1a25",
-            "surface": "#fff8f2",
-            "outline": "#8b716d",
-            "on-secondary-container": "#785d03",
-            "primary-fixed": "#ffdad4",
-            "surface-container-low": "#f9f2ec",
-            "surface-container-highest": "#e8e1db",
-            "inverse-on-surface": "#f6f0e9",
-            "on-primary": "#ffffff",
-            "on-tertiary-container": "#ca7e89",
-            "on-surface-variant": "#58413e",
-            "on-secondary-fixed-variant": "#584400",
-            "on-tertiary": "#ffffff",
-            "on-surface": "#1e1b17",
-            "surface-dim": "#dfd9d2",
-            "on-error-container": "#93000a",
-            "surface-bright": "#fff8f2",
-            "primary-container": "#610000",
-            "primary": "#3a0000",
-            "surface-container": "#f4ede6",
-            "background": "#fff8f2",
-            "inverse-surface": "#33302c",
-            "on-tertiary-fixed": "#390915",
-            "outline-variant": "#dfbfba",
-            "surface-tint": "#a93729",
-            "on-primary-fixed-variant": "#881f14",
-            "surface-container-high": "#eee7e0",
-            "secondary-container": "#fed979",
-            "on-primary-container": "#ef6a58",
-            "on-error": "#ffffff",
-            "on-primary-fixed": "#410000",
-            "inverse-primary": "#ffb4a8",
-            "tertiary-fixed": "#ffd9dd",
-            "tertiary": "#340511",
-            "primary-fixed-dim": "#ffb4a8",
-            "on-secondary-fixed": "#241a00",
-            "surface-container-lowest": "#ffffff",
-            "on-tertiary-fixed-variant": "#70343e",
-            "error": "#ba1a1a",
-            "secondary-fixed-dim": "#e6c366",
-            "error-container": "#ffdad6",
-            "tertiary-fixed-dim": "#ffb2bc",
-            "surface-variant": "#e8e1db",
-            "on-background": "#1e1b17"
-          },
-          borderRadius: {
-            "DEFAULT": "0px",
-            "none": "0px",
-            "sm": "0px",
-            "md": "0px",
-            "lg": "0px",
-            "xl": "0px",
-            "2xl": "0px",
-            "full": "9999px"
-          },
-          fontFamily: {
-            "headline": ["Noto Serif", "serif"],
-            "body": ["Inter", "sans-serif"],
-            "label": ["Montserrat", "sans-serif"],
-            "playfair": ["Playfair Display", "serif"],
-            "cormorant": ["Cormorant Garamond", "serif"],
-            "serif": ["Noto Serif", "serif"],
-            "display": ["Playfair Display", "serif"],
-            "literary": ["Cormorant Garamond", "serif"],
-            "serif-alt": ["Cormorant Garamond", "serif"],
-            "serif-display": ["Playfair Display", "serif"],
-            "serif-light": ["Cormorant Garamond", "serif"]
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
-    }
-    .luxury-shadow { box-shadow: 0 40px 60px -15px rgba(30, 27, 23, 0.04); }
-    .glass-panel { background: rgba(255,248,242,0.85); backdrop-filter: blur(12px); }
-    .gradient-crimson { background: linear-gradient(to bottom, #3a0000, #610000); }
-    .ls-luxury { letter-spacing: 0.2em; }
-    .stamp { font-family: 'Montserrat', sans-serif; letter-spacing: 0.2em; text-transform: uppercase; }
-    .hero-title { font-family: 'Playfair Display', serif; font-style: italic; }
-    .literary-text { font-family: 'Cormorant Garamond', serif; font-style: italic; }
-    @media print { .no-print { display: none !important; } }
-    /* Owner-written HTML in guides and policy pages */
-    .guide-body h2 { font-family: 'Noto Serif', serif; font-size: 1.6rem; line-height: 1.3; color: #3a0000; margin-top: 2.5rem; }
-    .guide-body h3 { font-family: 'Noto Serif', serif; font-size: 1.25rem; color: #3a0000; margin-top: 1.5rem; }
-    .guide-body ul { list-style: disc; padding-left: 1.5rem; }
-    .guide-body ol { list-style: decimal; padding-left: 1.5rem; }
-    .guide-body li + li { margin-top: .5rem; }
-    .guide-body a { color: #755b00; text-decoration: underline; text-underline-offset: 3px; }
-    .guide-body strong { color: #1e1b17; }
-  </style>
+  <!-- Styles: compiled Tailwind (see frontend/site.css and tailwind.config.js) -->
+  <link rel="stylesheet" href="{% static 'css/site.css' %}"/>
 
   {% json_ld %}
 
@@ -156,6 +52,7 @@
 </head>
 
 <body class="bg-surface text-on-surface font-body selection:bg-secondary-container selection:text-on-secondary-container">
+<a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-primary focus:px-4 focus:py-3 font-label text-xs tracking-widest uppercase">Skip to content</a>
 
 <!-- Top Navigation Bar -->
 <nav id="main-nav" class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-xl shadow-black/5 transition-all duration-300">
@@ -180,11 +77,11 @@
     <div class="flex items-center gap-6">
       <!-- Search -->
       <a href="{% url 'core:search' %}" class="text-[#58413e] hover:text-[#755b00] transition-colors duration-200" aria-label="Search tiles">
-        <span class="material-symbols-outlined">search</span>
+        <span class="material-symbols-outlined" data-icon="search" aria-hidden="true"></span>
       </a>
       <!-- Cart -->
       <a href="{% url 'cart:cart_detail' %}" class="relative text-[#58413e] hover:text-[#755b00] transition-colors duration-200" aria-label="Shopping cart">
-        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="material-symbols-outlined" data-icon="shopping_cart" aria-hidden="true"></span>
         {% if cart_count > 0 %}
         <span class="absolute -top-2 -right-2 bg-primary-container text-on-primary text-[9px] font-label font-bold w-4 h-4 flex items-center justify-center rounded-full">{{ cart_count }}</span>
         {% endif %}
@@ -192,26 +89,26 @@
       <!-- Account -->
       {% if user.is_authenticated %}
       <a href="{% url 'accounts:dashboard' %}" class="w-8 h-8 flex items-center justify-center border border-secondary text-secondary hover:bg-secondary hover:text-white transition-all duration-200" aria-label="My account">
-        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">person</span>
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;" data-icon="person" aria-hidden="true"></span>
       </a>
       {% else %}
       <a href="{% url 'accounts:login' %}" class="text-[#58413e] hover:text-[#755b00] transition-colors duration-200" aria-label="Sign in">
-        <span class="material-symbols-outlined">person</span>
+        <span class="material-symbols-outlined" data-icon="person" aria-hidden="true"></span>
       </a>
       {% endif %}
       <!-- Mobile Hamburger -->
       <button id="mobile-menu-btn" class="md:hidden text-[#58413e] hover:text-[#755b00]" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
-        <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
+        <span class="material-symbols-outlined" id="hamburger-icon" data-icon="menu" aria-hidden="true"></span>
       </button>
     </div>
   </div>
 
   <!-- Mobile Menu Overlay -->
-  <div id="mobile-menu" class="hidden md:hidden fixed inset-0 top-[68px] bg-white/97 backdrop-blur-md z-40 flex flex-col items-center justify-center gap-8 pb-16">
+  <div id="mobile-menu" class="hidden md:hidden fixed inset-0 top-[68px] bg-white/95 backdrop-blur-md z-40 flex flex-col items-center justify-center gap-8 pb-16">
     <form method="get" action="{% url 'core:search' %}" role="search" class="w-64 flex border-b border-[#58413e]/40">
       <label for="mobile-search" class="sr-only">Search tiles</label>
       <input id="mobile-search" type="search" name="q" maxlength="100" placeholder="Search tiles" class="flex-1 min-w-0 bg-transparent border-0 py-2 px-0 text-sm focus:ring-0"/>
-      <button type="submit" class="text-[#58413e] px-2" aria-label="Search"><span class="material-symbols-outlined">search</span></button>
+      <button type="submit" class="text-[#58413e] px-2" aria-label="Search"><span class="material-symbols-outlined" data-icon="search" aria-hidden="true"></span></button>
     </form>
     <a href="{% url 'core:home' %}" class="text-[#58413e] font-bold text-sm tracking-[0.3em] font-label hover:text-[#755b00] transition-colors">HOME</a>
     <a href="{% url 'products:product_list' %}" class="text-[#58413e] font-bold text-sm tracking-[0.3em] font-label hover:text-[#755b00] transition-colors">PRODUCTS</a>
@@ -238,12 +135,10 @@
     {% if 'success' in message.tags %}bg-surface-container-lowest border-l-4 border-green-700 text-green-900
     {% elif 'error' in message.tags %}bg-surface-container-lowest border-l-4 border-error text-error
     {% else %}bg-surface-container-lowest border-l-4 border-secondary text-on-surface{% endif %}">
-    <span class="material-symbols-outlined text-sm {% if 'success' in message.tags %}text-green-700{% elif 'error' in message.tags %}text-error{% else %}text-secondary{% endif %}">
-      {% if 'success' in message.tags %}check_circle{% elif 'error' in message.tags %}error{% else %}info{% endif %}
-    </span>
+    <span class="material-symbols-outlined text-sm {% if 'success' in message.tags %}text-green-700{% elif 'error' in message.tags %}text-error{% else %}text-secondary{% endif %}" data-icon="{% if 'success' in message.tags %}check_circle{% elif 'error' in message.tags %}error{% else %}info{% endif %}" aria-hidden="true"></span>
     <span class="font-body text-sm flex-1">{{ message }}</span>
     <button onclick="this.parentElement.remove()" class="text-on-surface-variant hover:text-on-surface ml-2" aria-label="Dismiss">
-      <span class="material-symbols-outlined text-sm">close</span>
+      <span class="material-symbols-outlined text-sm" data-icon="close" aria-hidden="true"></span>
     </button>
   </div>
   {% endfor %}
@@ -251,14 +146,16 @@
 {% endif %}
 
 <!-- Main Content -->
+<div id="content" tabindex="-1">
 {% block content %}{% endblock %}
+</div>
 
 <!-- Footer -->
 <footer class="bg-[#1a1a1a] text-stone-400">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 py-16 w-full max-w-screen-2xl mx-auto">
     <div class="space-y-6">
       <div class="text-white font-headline text-xl uppercase tracking-tighter">
-        Suwasthick<br/><span class="text-xs tracking-[0.4em] font-label text-secondary">TILES</span>
+        Suwasthick<br/><span class="text-xs tracking-[0.4em] font-label text-secondary-fixed-dim">TILES</span>
       </div>
       <p class="text-stone-400 text-xs leading-loose font-body">
         {{ business_summary }}
@@ -298,19 +195,19 @@
       <h2 class="text-white font-label text-xs tracking-[0.2em] uppercase font-bold">Contact</h2>
       <ul class="space-y-3 text-xs font-body">
         {% if business.address %}
-        <li class="flex gap-2 items-start"><span class="material-symbols-outlined text-sm text-secondary mt-0.5">location_on</span>{{ business.address }}</li>
+        <li class="flex gap-2 items-start"><span class="material-symbols-outlined text-sm text-secondary mt-0.5" data-icon="location_on" aria-hidden="true"></span>{{ business.address }}</li>
         {% endif %}
         {% if business.phone %}
-        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary">call</span>{% if business.details_confirmed and business.phone_href %}<a class="hover:text-secondary transition-colors" href="{{ business.phone_href }}" data-event="contact_click" data-event-params='{"method": "phone"}'>{{ business.phone }}</a>{% else %}{{ business.phone }}{% endif %}</li>
+        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary" data-icon="call" aria-hidden="true"></span>{% if business.details_confirmed and business.phone_href %}<a class="hover:text-secondary transition-colors" href="{{ business.phone_href }}" data-event="contact_click" data-event-params='{"method": "phone"}'>{{ business.phone }}</a>{% else %}{{ business.phone }}{% endif %}</li>
         {% endif %}
         {% if business.email %}
-        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary">alternate_email</span>{% if business.details_confirmed %}<a class="hover:text-secondary transition-colors" href="mailto:{{ business.email }}" data-event="contact_click" data-event-params='{"method": "email"}'>{{ business.email }}</a>{% else %}{{ business.email }}{% endif %}</li>
+        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary" data-icon="alternate_email" aria-hidden="true"></span>{% if business.details_confirmed %}<a class="hover:text-secondary transition-colors" href="mailto:{{ business.email }}" data-event="contact_click" data-event-params='{"method": "email"}'>{{ business.email }}</a>{% else %}{{ business.email }}{% endif %}</li>
         {% endif %}
         {% if business.whatsapp_href %}
-        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary">chat</span><a class="hover:text-secondary transition-colors" href="{{ business.whatsapp_href }}" rel="noopener" data-event="contact_click" data-event-params='{"method": "whatsapp"}'>WhatsApp us</a></li>
+        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary" data-icon="chat" aria-hidden="true"></span><a class="hover:text-secondary transition-colors" href="{{ business.whatsapp_href }}" rel="noopener" data-event="contact_click" data-event-params='{"method": "whatsapp"}'>WhatsApp us</a></li>
         {% endif %}
         {% if business.maps_url %}
-        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary">directions</span><a class="hover:text-secondary transition-colors" href="{{ business.maps_url }}" rel="noopener" data-event="showroom_direction_click">Get directions</a></li>
+        <li class="flex gap-2 items-center"><span class="material-symbols-outlined text-sm text-secondary" data-icon="directions" aria-hidden="true"></span><a class="hover:text-secondary transition-colors" href="{{ business.maps_url }}" rel="noopener" data-event="showroom_direction_click">Get directions</a></li>
         {% endif %}
         <li class="mt-4">
           <span class="bg-secondary-container text-on-secondary-container text-[10px] font-label font-bold tracking-widest px-3 py-1 rounded-full">10-YEAR WARRANTY</span>
@@ -332,7 +229,7 @@
 
 <!-- Scroll To Top -->
 <button id="scroll-top" class="hidden fixed bottom-8 right-8 w-12 h-12 bg-primary-container text-on-primary items-center justify-center shadow-lg hover:opacity-90 transition-all z-40 no-print" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">
-  <span class="material-symbols-outlined">keyboard_arrow_up</span>
+  <span class="material-symbols-outlined" data-icon="keyboard_arrow_up" aria-hidden="true"></span>
 </button>
 
 <script>
@@ -343,13 +240,13 @@
   if (mBtn) {
     mBtn.addEventListener('click', () => {
       const open = mMenu.classList.toggle('hidden') === false;
-      mIcon.textContent = open ? 'close' : 'menu';
+      mIcon.dataset.icon = open ? 'close' : 'menu';
       mBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
       mBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     });
     mMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
       mMenu.classList.add('hidden');
-      mIcon.textContent = 'menu';
+      mIcon.dataset.icon = 'menu';
       mBtn.setAttribute('aria-expanded', 'false');
       mBtn.setAttribute('aria-label', 'Open menu');
     }));

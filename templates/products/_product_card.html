@@ -1,12 +1,13 @@
 {# One product in a grid. Expects `product`. The product name is an <h2> (grid pages have one <h1>). #}
+{% load image_tags %}
 <article class="group transform transition-all duration-500 hover:-translate-y-1">
   <a href="{{ product.get_absolute_url }}" class="block" tabindex="-1" aria-hidden="true">
     <div class="relative overflow-hidden aspect-[4/5] mb-4 bg-surface-container">
       {% if product.image %}
-      <img alt="{{ product.descriptive_name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}" loading="lazy"/>
+      {% responsive_img product.image alt=product.descriptive_name sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" css="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" %}
       {% else %}
       <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
-        <span class="material-symbols-outlined text-6xl text-outline">crop_square</span>
+        <span class="material-symbols-outlined text-6xl text-outline" data-icon="crop_square" aria-hidden="true"></span>
       </div>
       {% endif %}
       {% if product.is_featured %}
@@ -43,7 +44,7 @@
     </button>
     {% endif %}
     <a href="{{ product.get_absolute_url }}" class="flex-none aspect-square bg-surface-container border border-outline/20 flex items-center justify-center p-3 hover:bg-surface-container-high transition-colors" aria-label="View details of {{ product.name }}">
-      <span class="material-symbols-outlined text-sm">info</span>
+      <span class="material-symbols-outlined text-sm" data-icon="info" aria-hidden="true"></span>
     </a>
   </div>
 </article>

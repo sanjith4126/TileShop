@@ -1,0 +1,14 @@
+{
+  "name": "suwasthick-tiles-frontend",
+  "private": true,
+  "description": "Builds static/css/site.css from frontend/site.css with Tailwind. The built file is committed, so the server never needs Node.",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i frontend/site.css -o static/css/site.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i frontend/site.css -o static/css/site.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/container-queries": "0.1.1",
+    "@tailwindcss/forms": "0.5.11",
+    "tailwindcss": "3.4.19"
+  }
+}

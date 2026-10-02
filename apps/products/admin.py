@@ -3,6 +3,8 @@ Products admin configuration.
 """
 from django.contrib import admin
 from django.utils.html import format_html
+
+from apps.core.images import delete_renditions
 from .models import Product, ProductImage
 
 
@@ -85,6 +87,7 @@ class ProductAdmin(admin.ModelAdmin):
         count = 0
         for product in queryset:
             if product.image:
+                delete_renditions(product.image.name, storage=product.image.storage)
                 product.image.delete(save=False)
                 product.image = None
                 product.save(update_fields=["image"])

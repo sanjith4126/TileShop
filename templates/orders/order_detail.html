@@ -7,7 +7,7 @@
 
     <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-6 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
       <a class="hover:text-secondary transition-colors" href="{% url 'accounts:dashboard' %}">My Dashboard</a>
-      <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+      <span class="material-symbols-outlined text-[12px]" data-icon="chevron_right" aria-hidden="true"></span>
       <span class="text-secondary" aria-current="page">Order #{{ order.order_number }}</span>
     </nav>
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load image_tags %}
 {% load static %}
 
 {% block content %}
@@ -9,7 +10,7 @@
     <header class="mb-12">
       <nav aria-label="Breadcrumb" class="flex items-center gap-2 mb-4 text-[10px] font-label tracking-[0.2em] text-on-surface-variant uppercase">
         <a class="hover:text-secondary transition-colors" href="{% url 'cart:cart_detail' %}">Cart</a>
-        <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+        <span class="material-symbols-outlined text-[12px]" data-icon="chevron_right" aria-hidden="true"></span>
         <span class="text-secondary" aria-current="page">Place Order</span>
       </nav>
       <span class="font-label text-[10px] tracking-[0.2em] text-secondary uppercase block mb-2">Order Portal</span>
@@ -125,10 +126,10 @@
             <div class="flex gap-4 items-center">
               <div class="w-14 h-14 bg-surface-container-highest flex-shrink-0 overflow-hidden">
                 {% if item.product.image %}
-                <img alt="" class="w-full h-full object-cover" src="{{ item.product.image.url }}" width="56" height="56" loading="lazy"/>
+                {% responsive_img item.product.image sizes="56px" css="w-full h-full object-cover" %}
                 {% else %}
                 <div class="w-full h-full flex items-center justify-center">
-                  <span class="material-symbols-outlined text-outline text-sm">crop_square</span>
+                  <span class="material-symbols-outlined text-outline text-sm" data-icon="crop_square" aria-hidden="true"></span>
                 </div>
                 {% endif %}
               </div>
@@ -154,12 +155,12 @@
 
           <button type="submit"
                   class="mt-8 bg-primary-container text-on-primary font-label text-sm tracking-[0.2em] py-5 w-full uppercase text-center hover:bg-primary transition-colors flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-base">check_circle</span>
+            <span class="material-symbols-outlined text-base" data-icon="check_circle" aria-hidden="true"></span>
             Place Order
           </button>
 
           <div class="mt-6 flex items-center gap-3 bg-surface-container-lowest p-4">
-            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+            <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;" data-icon="local_shipping" aria-hidden="true"></span>
             <p class="text-[10px] text-on-surface-variant leading-tight">
               Pay on delivery via UPI, Card, Cheque or Cash. We'll call to confirm your order.
             </p>

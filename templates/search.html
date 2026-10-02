@@ -12,7 +12,7 @@
              placeholder="Try “60x60”, “matt bathroom” or “grey floor”"
              class="flex-1 min-w-0 bg-transparent border-x-0 border-t-0 border-b border-outline py-3 px-0 font-body text-on-surface placeholder:text-outline/60 focus:ring-0 focus:border-secondary"/>
       <button type="submit" class="bg-primary-container text-on-primary px-8 py-3 font-label text-[11px] tracking-[0.2em] uppercase hover:bg-primary transition-colors flex items-center gap-2">
-        <span class="material-symbols-outlined text-sm">search</span>
+        <span class="material-symbols-outlined text-sm" data-icon="search" aria-hidden="true"></span>
         Search
       </button>
     </form>
@@ -30,7 +30,7 @@
       </div>
     {% else %}
       <div class="flex flex-col items-center justify-center py-20 px-6 text-center space-y-6 bg-surface-container-low">
-        <span class="material-symbols-outlined text-6xl text-outline">search_off</span>
+        <span class="material-symbols-outlined text-6xl text-outline" data-icon="search_off" aria-hidden="true"></span>
         <h2 class="font-headline text-3xl text-on-surface-variant">Nothing matched “{{ query }}”</h2>
         <p class="font-cormorant italic text-xl text-on-surface-variant max-w-xl">
           Try a size such as 60x60, a room such as bathroom, or browse by category below.

@@ -87,7 +87,7 @@
       <!-- Mobile Filter Toggle -->
       <button type="button" id="mobile-filter-btn" aria-expanded="false" aria-controls="mobile-filters"
               class="md:hidden flex items-center gap-2 border-b border-outline pb-1 font-label text-xs tracking-widest uppercase text-on-surface-variant hover:text-secondary transition-colors">
-        <span class="material-symbols-outlined text-sm">tune</span>
+        <span class="material-symbols-outlined text-sm" data-icon="tune" aria-hidden="true"></span>
         Filters
       </button>
     </div>
@@ -132,7 +132,7 @@
     {% elif category and not total %}
     <!-- The showroom stocks this category but nothing is listed online yet -->
     <div class="flex flex-col items-center justify-center py-24 px-6 text-center space-y-6 bg-surface-container-low">
-      <span class="material-symbols-outlined text-6xl text-outline">storefront</span>
+      <span class="material-symbols-outlined text-6xl text-outline" data-icon="storefront" aria-hidden="true"></span>
       <h2 class="font-headline text-3xl text-on-surface-variant">We stock {{ category.name|lower }} at our Bhavani showroom</h2>
       <p class="font-cormorant italic text-xl text-on-surface-variant max-w-xl">
         They aren't listed online yet. Ask us for the current range, sizes and prices, and we'll help you choose.
@@ -148,7 +148,7 @@
     </div>
     {% elif is_filtered %}
     <div class="flex flex-col items-center justify-center py-24 text-center space-y-6">
-      <span class="material-symbols-outlined text-6xl text-outline">filter_alt_off</span>
+      <span class="material-symbols-outlined text-6xl text-outline" data-icon="filter_alt_off" aria-hidden="true"></span>
       <h2 class="font-headline text-3xl text-on-surface-variant">No tiles match these filters</h2>
       <a href="{{ clean_url }}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
         Clear Filters
@@ -156,7 +156,7 @@
     </div>
     {% else %}
     <div class="flex flex-col items-center justify-center py-32 text-center space-y-6">
-      <span class="material-symbols-outlined text-6xl text-outline">grid_off</span>
+      <span class="material-symbols-outlined text-6xl text-outline" data-icon="grid_off" aria-hidden="true"></span>
       <h2 class="font-headline text-3xl text-on-surface-variant">No tiles found</h2>
       <p class="font-cormorant italic text-xl text-on-surface-variant">Our collection is being curated — check back soon.</p>
       <a href="{% url 'core:inquiry' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">

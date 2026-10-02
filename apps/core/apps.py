@@ -22,3 +22,8 @@ class CoreConfig(AppConfig):
             dispatch_uid="nav-cache-m2m",
         )
         post_save.connect(clear_business_cache, sender="core.BusinessInfo", dispatch_uid="business-cache-save")
+
+        # WebP renditions for uploaded images.
+        from apps.core import signals as image_signals
+
+        image_signals.connect()

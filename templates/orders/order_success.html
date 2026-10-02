@@ -8,7 +8,7 @@
     <!-- Confirmation header -->
     <div class="text-center mb-12" data-event-on-load="purchase" data-event-params='{"transaction_id": "{{ order.order_number }}", "currency": "INR", "value": {{ order.total_price }}}'>
       <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
-        <span class="material-symbols-outlined text-green-700 text-5xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        <span class="material-symbols-outlined text-green-700 text-5xl" style="font-variation-settings: 'FILL' 1;" data-icon="check_circle" aria-hidden="true"></span>
       </div>
       <h1 class="font-playfair italic text-5xl text-primary mb-3">Order Confirmed!</h1>
       <p class="font-cormorant italic text-xl text-on-surface-variant">

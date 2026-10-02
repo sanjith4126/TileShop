@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load image_tags %}
 {% load static %}
 
 {% block content %}
@@ -8,20 +9,20 @@
 <header class="relative h-screen w-full flex items-center overflow-hidden">
   <div class="absolute inset-0 z-0">
     {% if hero and hero.image %}
-    <img alt="{{ hero.title }}" class="w-full h-full object-cover" src="{{ hero.image.url }}"/>
+    {% responsive_img hero.image alt="" sizes="100vw" css="w-full h-full object-cover" loading="eager" fetchpriority="high" %}
     {% else %}
     <img alt="" class="w-full h-full object-cover" fetchpriority="high"
-         src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=80"
-         srcset="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=768&q=75 768w,
-                 https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1280&q=80 1280w,
-                 https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=80 1920w"
+         src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=80&auto=format"
+         srcset="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=768&q=75&auto=format 768w,
+                 https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1280&q=80&auto=format 1280w,
+                 https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=80&auto=format 1920w"
          sizes="100vw"/>
     {% endif %}
     <div class="absolute inset-0 bg-gradient-to-r from-primary via-primary/60 to-transparent"></div>
   </div>
   <div class="relative z-10 container mx-auto px-8 md:px-16">
     <div class="max-w-3xl space-y-6">
-      <span class="inline-block text-secondary font-label text-xs tracking-[0.3em] font-bold py-2 border-b border-secondary/30 uppercase">
+      <span class="inline-block text-secondary-fixed-dim font-label text-xs tracking-[0.3em] font-bold py-2 border-b border-secondary/30 uppercase">
         Bhavani's Finest Tile Atelier
       </span>
       <h1 class="text-white font-playfair italic text-6xl md:text-8xl leading-tight">
@@ -80,11 +81,10 @@
       <a href="{{ category.get_absolute_url }}"
          class="group relative overflow-hidden {% cycle 'mt-12' '-mt-6' 'mt-6' '-mt-12' %} aspect-[3/4] bg-surface-container block">
         {% if category.image %}
-        <img alt="{{ category.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-             src="{{ category.image.url }}"/>
+        {% responsive_img category.image alt="" sizes="(min-width: 768px) 24vw, 48vw" css="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" %}
         {% else %}
         <div class="w-full h-full bg-gradient-to-b from-surface-container to-surface-container-high flex items-center justify-center">
-          <span class="material-symbols-outlined text-5xl text-outline">grid_view</span>
+          <span class="material-symbols-outlined text-5xl text-outline" data-icon="grid_view" aria-hidden="true"></span>
         </div>
         {% endif %}
         <div class="absolute bottom-0 left-0 p-6 bg-white w-full transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
@@ -98,7 +98,7 @@
     <div class="text-center mt-16">
       <a href="{% url 'products:product_list' %}" class="inline-flex items-center gap-4 text-primary font-label text-xs tracking-widest font-bold group">
         VIEW ALL CATEGORIES
-        <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_right_alt</span>
+        <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform" data-icon="arrow_right_alt" aria-hidden="true"></span>
       </a>
     </div>
   </div>
@@ -116,7 +116,7 @@
         </p>
         <a href="{% url 'products:product_list' %}" class="inline-flex items-center gap-4 text-primary font-label text-xs tracking-widest font-bold group">
           VIEW FULL COLLECTION
-          <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_right_alt</span>
+          <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform" data-icon="arrow_right_alt" aria-hidden="true"></span>
         </a>
       </div>
       <div class="md:col-span-8">
@@ -127,10 +127,10 @@
             <div class="relative group bg-white p-4">
               <a href="{{ fp.0.get_absolute_url }}">
                 {% if fp.0.image %}
-                <img alt="{{ fp.0.name }}" class="w-full h-[500px] object-cover" src="{{ fp.0.image.url }}"/>
+                {% responsive_img fp.0.image alt=fp.0.descriptive_name sizes="(min-width: 768px) 32vw, 90vw" css="w-full h-[500px] object-cover" %}
                 {% else %}
                 <div class="w-full h-[500px] bg-surface-container-high flex items-center justify-center">
-                  <span class="material-symbols-outlined text-6xl text-outline">crop_square</span>
+                  <span class="material-symbols-outlined text-6xl text-outline" data-icon="crop_square" aria-hidden="true"></span>
                 </div>
                 {% endif %}
                 <div class="mt-6">
@@ -144,10 +144,10 @@
               <div class="relative group bg-white p-4">
                 <a href="{{ product.get_absolute_url }}">
                   {% if product.image %}
-                  <img alt="{{ product.name }}" class="w-full h-[280px] object-cover" src="{{ product.image.url }}"/>
+                  {% responsive_img product.image alt=product.descriptive_name sizes="(min-width: 768px) 32vw, 90vw" css="w-full h-[280px] object-cover" %}
                   {% else %}
                   <div class="w-full h-[280px] bg-surface-container-high flex items-center justify-center">
-                    <span class="material-symbols-outlined text-4xl text-outline">crop_square</span>
+                    <span class="material-symbols-outlined text-4xl text-outline" data-icon="crop_square" aria-hidden="true"></span>
                   </div>
                   {% endif %}
                   <div class="mt-6">
@@ -185,7 +185,7 @@
   </div>
   <div class="w-full md:w-1/2 h-[400px] md:h-auto relative overflow-hidden">
     <img alt="" loading="lazy" class="w-full h-full object-cover"
-         src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80"/>
+         src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80&auto=format"/>
     <div class="absolute inset-0 bg-black/20"></div>
   </div>
 </section>
@@ -195,11 +195,11 @@
   <div class="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
     <div class="relative">
       <div class="absolute -top-12 -left-12 w-64 h-64 bg-surface-container-high -z-10"></div>
-      <img alt="" loading="lazy" class="w-full grayscale"
-           src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"/>
+      <img alt="" loading="lazy" width="800" height="530" class="w-full h-auto grayscale"
+           src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80&auto=format"/>
       <div class="absolute -bottom-8 -right-8 bg-white p-8 shadow-2xl">
         <span class="font-headline text-3xl text-primary block">10-Yr</span>
-        <span class="font-label text-[10px] tracking-widest text-stone-400">QUALITY WARRANTY</span>
+        <span class="font-label text-[10px] tracking-widest text-stone-500">QUALITY WARRANTY</span>
       </div>
     </div>
     <div class="space-y-8">
@@ -232,7 +232,7 @@
         <p class="font-cormorant italic text-2xl text-on-surface">"The glossy ceramic floor tiles from Suwasthick transformed our living room. The finish and colour are unlike anything we found in Erode."</p>
         <div>
           <p class="font-label text-xs font-bold tracking-widest">RAHUL VISHWANATH</p>
-          <p class="text-stone-400 text-xs mt-1">Erode, TN</p>
+          <p class="text-stone-500 text-xs mt-1">Erode, TN</p>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-12 space-y-8 shadow-sm">
@@ -240,7 +240,7 @@
         <p class="font-cormorant italic text-2xl text-on-surface">"We did our entire bathroom with their wall tiles and sanitaryware. Premium quality, perfect colour match, and delivered on time."</p>
         <div>
           <p class="font-label text-xs font-bold tracking-widest">MEERA IYER</p>
-          <p class="text-stone-400 text-xs mt-1">Coimbatore, TN</p>
+          <p class="text-stone-500 text-xs mt-1">Coimbatore, TN</p>
         </div>
       </div>
       <div class="bg-surface-container-lowest p-12 space-y-8 shadow-sm">
@@ -248,7 +248,7 @@
         <p class="font-cormorant italic text-2xl text-on-surface">"From kitchen wall tiles to the floor, everything came from Suwasthick. Their guidance on choosing the right tile made all the difference."</p>
         <div>
           <p class="font-label text-xs font-bold tracking-widest">S. KARTHIKEYAN</p>
-          <p class="text-stone-400 text-xs mt-1">Salem, TN</p>
+          <p class="text-stone-500 text-xs mt-1">Salem, TN</p>
         </div>
       </div>
     </div>
@@ -258,7 +258,7 @@
 <!-- Inquiry CTA -->
 <section class="py-32 relative bg-primary-container overflow-hidden">
   <div class="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
-    <span class="material-symbols-outlined text-white" style="font-size: 600px; font-variation-settings: 'FILL' 1;">grid_view</span>
+    <span class="material-symbols-outlined text-white" style="font-size: 600px; font-variation-settings: 'FILL' 1;" data-icon="grid_view" aria-hidden="true"></span>
   </div>
   <div class="relative z-10 max-w-4xl mx-auto text-center space-y-10 px-8">
     <h2 class="text-white font-playfair italic text-5xl md:text-7xl">Have a Project in Mind?</h2>

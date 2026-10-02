@@ -5,7 +5,7 @@
     {% for crumb in breadcrumbs %}
     {% if not forloop.last %}
     <li><a class="hover:text-secondary transition-colors" href="{{ crumb.url }}">{{ crumb.name }}</a></li>
-    <li aria-hidden="true"><span class="material-symbols-outlined text-[12px]">chevron_right</span></li>
+    <li aria-hidden="true"><span class="material-symbols-outlined text-[12px]" data-icon="chevron_right" aria-hidden="true"></span></li>
     {% else %}
     <li><span class="text-secondary" aria-current="page">{{ crumb.name }}</span></li>
     {% endif %}

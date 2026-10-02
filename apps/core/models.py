@@ -7,6 +7,8 @@ from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
 
+from .images import delete_renditions
+
 # Category pages live at /products/<slug>/ and product pages at /products/<id>/...,
 # so a slug made only of digits would collide with product URLs.
 not_only_digits = RegexValidator(
@@ -215,6 +217,7 @@ class BusinessInfo(models.Model):
 # ── File cleanup: remove image files from disk on delete / replace ──
 def _delete_file(filefield):
     if filefield and filefield.name:
+        delete_renditions(filefield.name, storage=filefield.storage)
         filefield.delete(save=False)
 
 

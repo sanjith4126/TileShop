@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load image_tags %}
 {% load static %}
 
 {% block content %}
@@ -20,10 +21,10 @@
         <!-- Product Image -->
         <div class="w-36 h-36 md:w-48 md:h-48 flex-shrink-0 bg-surface-container-highest">
           {% if item.product.image %}
-          <img alt="{{ item.product.name }}" class="w-full h-full object-cover" src="{{ item.product.image.url }}"/>
+          {% responsive_img item.product.image sizes="192px" css="w-full h-full object-cover" %}
           {% else %}
           <div class="w-full h-full flex items-center justify-center">
-            <span class="material-symbols-outlined text-4xl text-outline">crop_square</span>
+            <span class="material-symbols-outlined text-4xl text-outline" data-icon="crop_square" aria-hidden="true"></span>
           </div>
           {% endif %}
         </div>
@@ -44,7 +45,7 @@
             <form action="{% url 'cart:remove_from_cart' item.pk %}" method="post">
               {% csrf_token %}
               <button type="submit" class="text-on-surface-variant hover:text-error transition-colors" aria-label="Remove {{ item.product.name }} from cart">
-                <span class="material-symbols-outlined">close</span>
+                <span class="material-symbols-outlined" data-icon="close" aria-hidden="true"></span>
               </button>
             </form>
           </div>
@@ -54,11 +55,11 @@
             <form action="{% url 'cart:update_cart' item.pk %}" method="post" class="flex items-center border-b border-outline/30">
               {% csrf_token %}
               <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="p-2 hover:text-secondary transition-colors" aria-label="Decrease quantity of {{ item.product.name }}">
-                <span class="material-symbols-outlined" style="font-size: 18px;">remove</span>
+                <span class="material-symbols-outlined" style="font-size: 18px;" data-icon="remove" aria-hidden="true"></span>
               </button>
               <span class="px-6 font-body font-bold text-sm">{{ item.quantity }}</span>
               <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="p-2 hover:text-secondary transition-colors" aria-label="Increase quantity of {{ item.product.name }}">
-                <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+                <span class="material-symbols-outlined" style="font-size: 18px;" data-icon="add" aria-hidden="true"></span>
               </button>
               <span class="ml-3 font-label text-[10px] ls-luxury text-outline uppercase">Units</span>
             </form>
@@ -76,7 +77,7 @@
       <!-- Cart Actions -->
       <div class="mt-8 flex justify-between items-center px-4 py-4">
         <a href="{% url 'products:product_list' %}" class="flex items-center gap-2 group text-on-surface-variant hover:text-primary transition-colors">
-          <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform" data-icon="arrow_back" aria-hidden="true"></span>
           <span class="font-label text-xs ls-luxury uppercase">Continue Exploring</span>
         </a>
       </div>
@@ -120,7 +121,7 @@
 
         <!-- Trust Badge -->
         <div class="mt-10 flex items-center gap-4 bg-surface-container-lowest p-4">
-          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;" data-icon="local_shipping" aria-hidden="true"></span>
           <div>
             <p class="font-label text-[10px] ls-luxury uppercase text-on-surface">Pay on Delivery</p>
             <p class="text-[10px] text-on-surface-variant leading-tight">UPI, Card, Cheque or Cash accepted at delivery. Backed by our 10-year warranty.</p>
@@ -134,7 +135,7 @@
   {% else %}
   <!-- Empty Cart -->
   <div class="flex flex-col items-center justify-center py-32 text-center space-y-8">
-    <span class="material-symbols-outlined text-8xl text-outline">shopping_cart</span>
+    <span class="material-symbols-outlined text-8xl text-outline" data-icon="shopping_cart" aria-hidden="true"></span>
     <h2 class="font-headline text-4xl text-on-surface-variant">Your selection is empty</h2>
     <p class="font-cormorant italic text-2xl text-on-surface-variant max-w-md">
       Begin curating your architectural vision from our sovereign gallery of tiles.

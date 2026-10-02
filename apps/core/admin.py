@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.html import format_html
+
+from .images import delete_renditions
 from .models import Category, Banner, BusinessInfo, Inquiry
 
 
@@ -93,6 +95,7 @@ class CategoryAdmin(admin.ModelAdmin):
         count = 0
         for obj in queryset:
             if obj.image:
+                delete_renditions(obj.image.name, storage=obj.image.storage)
                 obj.image.delete(save=False)
                 obj.image = None
                 obj.save(update_fields=["image"])
@@ -127,6 +130,7 @@ class BannerAdmin(admin.ModelAdmin):
         count = 0
         for obj in queryset:
             if obj.image:
+                delete_renditions(obj.image.name, storage=obj.image.storage)
                 obj.image.delete(save=False)
                 obj.image = None
                 obj.save(update_fields=["image"])

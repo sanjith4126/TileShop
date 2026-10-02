@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load image_tags %}
 {% load static %}
 
 {% block content %}
@@ -15,14 +16,14 @@
       <!-- Main Image -->
       <div class="aspect-[4/3] bg-surface-container relative group overflow-hidden">
         {% if product.image %}
-        <img alt="{{ product.descriptive_name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}" id="main-product-img" fetchpriority="high"/>
+        {% responsive_img product.image alt=product.descriptive_name sizes="(min-width: 1024px) 55vw, 95vw" css="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="eager" fetchpriority="high" img_id="main-product-img" %}
         {% else %}
         <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
-          <span class="material-symbols-outlined text-8xl text-outline">crop_square</span>
+          <span class="material-symbols-outlined text-8xl text-outline" data-icon="crop_square" aria-hidden="true"></span>
         </div>
         {% endif %}
         <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="absolute bottom-6 left-6 bg-surface/90 backdrop-blur-sm px-6 py-3 flex items-center gap-3 font-label text-[10px] tracking-[0.2em] border-b-2 border-secondary hover:bg-secondary hover:text-white transition-all">
-          <span class="material-symbols-outlined text-sm">view_in_ar</span>
+          <span class="material-symbols-outlined text-sm" data-icon="view_in_ar" aria-hidden="true"></span>
           TRY IN ROOM VISUALIZER
         </a>
       </div>
@@ -30,7 +31,7 @@
       {% if product.image %}
       <a id="full-size-link" href="{{ product.image.url }}" target="_blank" rel="noopener"
          class="self-start inline-flex items-center gap-2 font-label text-[10px] tracking-widest text-secondary uppercase border-b border-secondary pb-0.5 hover:opacity-80 transition-opacity">
-        <span class="material-symbols-outlined text-sm">zoom_in</span>
+        <span class="material-symbols-outlined text-sm" data-icon="zoom_in" aria-hidden="true"></span>
         View full-size image
       </a>
       {% endif %}
@@ -39,15 +40,15 @@
       {% if gallery %}
       <div class="grid grid-cols-4 gap-4">
         {% if product.image %}
-        <button type="button" data-full="{{ product.image.url }}" data-alt="{{ product.descriptive_name }}" aria-label="Show photo 1: {{ product.name }} tile" aria-pressed="true"
+        <button type="button" data-full="{{ product.image.url }}" data-src="{% rendition_src product.image %}" data-srcset="{% rendition_srcset product.image %}" data-alt="{{ product.descriptive_name }}" aria-label="Show photo 1: {{ product.name }} tile" aria-pressed="true"
                 class="thumb aspect-square bg-surface-container border-2 border-secondary overflow-hidden cursor-pointer">
-          <img alt="" class="w-full h-full object-cover" src="{{ product.image.url }}" loading="lazy"/>
+          {% responsive_img product.image sizes="160px" css="w-full h-full object-cover" %}
         </button>
         {% endif %}
         {% for img in gallery %}
-        <button type="button" data-full="{{ img.image.url }}" data-alt="{{ img.caption|default:product.descriptive_name }}" aria-label="Show photo {{ forloop.counter|add:1 }}{% if img.caption %}: {{ img.caption }}{% endif %}" aria-pressed="false"
+        <button type="button" data-full="{{ img.image.url }}" data-src="{% rendition_src img.image %}" data-srcset="{% rendition_srcset img.image %}" data-alt="{{ img.caption|default:product.descriptive_name }}" aria-label="Show photo {{ forloop.counter|add:1 }}{% if img.caption %}: {{ img.caption }}{% endif %}" aria-pressed="false"
                 class="thumb aspect-square bg-surface-container border-2 border-transparent overflow-hidden cursor-pointer hover:border-outline-variant">
-          <img alt="" class="w-full h-full object-cover" src="{{ img.image.url }}" loading="lazy"/>
+          {% responsive_img img.image sizes="160px" css="w-full h-full object-cover" %}
         </button>
         {% endfor %}
       </div>
@@ -149,17 +150,17 @@
             <h3 class="font-label text-[10px] tracking-widest text-outline uppercase">Tile Area Calculator</h3>
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1">
-                <label class="block font-label text-[10px] tracking-widest text-outline">LENGTH (FT)</label>
+                <label for="calc-length" class="block font-label text-[10px] tracking-widest text-outline">LENGTH (FT)</label>
                 <input id="calc-length" class="w-full bg-transparent border-b border-outline py-2 focus:outline-none focus:border-secondary" type="number" value="10" min="1" oninput="calcTiles()"/>
               </div>
               <div class="space-y-1">
-                <label class="block font-label text-[10px] tracking-widest text-outline">WIDTH (FT)</label>
+                <label for="calc-width" class="block font-label text-[10px] tracking-widest text-outline">WIDTH (FT)</label>
                 <input id="calc-width" class="w-full bg-transparent border-b border-outline py-2 focus:outline-none focus:border-secondary" type="number" value="12" min="1" oninput="calcTiles()"/>
               </div>
             </div>
             <div class="space-y-2">
               <div class="flex justify-between text-[10px] font-label tracking-widest text-outline">
-                <span>WASTAGE ALLOWANCE</span>
+                <label for="wastage-range">WASTAGE ALLOWANCE</label>
                 <span id="wastage-pct" class="text-secondary">10%</span>
               </div>
               <input id="wastage-range" class="w-full accent-secondary" max="20" min="0" type="range" value="10" oninput="updateWastage(this.value)"/>
@@ -182,9 +183,9 @@
             {% csrf_token %}
             <div class="flex gap-4">
               <div class="flex border border-outline items-center px-4 gap-4">
-                <button type="button" onclick="changeQty(-1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors">-</button>
-                <input type="number" id="qty-input" name="quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold text-base"/>
-                <button type="button" onclick="changeQty(1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors">+</button>
+                <button type="button" onclick="changeQty(-1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors" aria-label="Decrease quantity">-</button>
+                <input type="number" id="qty-input" name="quantity" aria-label="Quantity" value="1" min="1" max="{{ product.stock }}" class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold text-base"/>
+                <button type="button" onclick="changeQty(1)" class="text-lg font-bold py-3 hover:text-secondary transition-colors" aria-label="Increase quantity">+</button>
               </div>
               <button type="submit" id="cart-btn" data-event="add_to_cart" data-event-params='{"item_id": "{{ product.pk }}", "item_name": "{{ product.name|escapejs }}", "price": {{ product.price }}, "currency": "INR"}' class="flex-1 bg-primary-container text-white py-4 font-label text-[12px] tracking-[0.2em] hover:bg-primary transition-all uppercase">
                 ADD TO CART
@@ -206,15 +207,15 @@
             </p>
             <div class="space-y-2 text-sm text-on-surface-variant">
               <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary text-base">check_circle</span>
+                <span class="material-symbols-outlined text-secondary text-base" data-icon="check_circle" aria-hidden="true"></span>
                 <span>Bulk order discounts</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary text-base">check_circle</span>
+                <span class="material-symbols-outlined text-secondary text-base" data-icon="check_circle" aria-hidden="true"></span>
                 <span>Referrer tracking (Engineer / Architect / Mason)</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary text-base">check_circle</span>
+                <span class="material-symbols-outlined text-secondary text-base" data-icon="check_circle" aria-hidden="true"></span>
                 <span>Custom area calculations</span>
               </div>
             </div>
@@ -259,12 +260,12 @@
         <!-- Room Preview Image -->
         <div class="lg:col-span-3 relative h-[500px] bg-black overflow-hidden shadow-2xl">
           <img alt="" class="w-full h-full object-cover opacity-90" loading="lazy"
-               src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=80"/>
+               src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=80&auto=format"/>
           <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
           <p class="absolute top-6 left-6 glass-panel px-4 py-2 font-label text-[10px] tracking-widest uppercase text-on-surface">Sample room photo — upload yours to see this tile in it</p>
           <div class="absolute bottom-8 right-8">
             <a href="{% url 'core:room_visualizer' %}?product={{ product.pk }}" class="px-6 h-12 bg-secondary text-white font-label text-[10px] tracking-widest shadow-lg flex items-center gap-2 hover:bg-secondary-fixed transition-all">
-              <span class="material-symbols-outlined text-sm">open_in_new</span>
+              <span class="material-symbols-outlined text-sm" data-icon="open_in_new" aria-hidden="true"></span>
               OPEN VISUALIZER
             </a>
           </div>
@@ -292,10 +293,10 @@
           <a href="{{ related.get_absolute_url }}">
             <div class="aspect-[3/4] bg-surface-container overflow-hidden relative mb-4">
               {% if related.image %}
-              <img alt="{{ related.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ related.image.url }}"/>
+              {% responsive_img related.image alt=related.descriptive_name sizes="(min-width: 1024px) 22vw, (min-width: 768px) 45vw, 90vw" css="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" %}
               {% else %}
               <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
-                <span class="material-symbols-outlined text-5xl text-outline">crop_square</span>
+                <span class="material-symbols-outlined text-5xl text-outline" data-icon="crop_square" aria-hidden="true"></span>
               </div>
               {% endif %}
               {% if related.is_featured %}
@@ -334,7 +335,11 @@
   function swapMainImage(btn) {
     const main = document.getElementById('main-product-img');
     const full = document.getElementById('full-size-link');
-    if (main) { main.src = btn.dataset.full; main.alt = btn.dataset.alt; }
+    if (main) {
+      main.srcset = btn.dataset.srcset || '';
+      main.src = btn.dataset.src || btn.dataset.full;
+      main.alt = btn.dataset.alt;
+    }
     if (full) full.href = btn.dataset.full;
     document.querySelectorAll('.thumb').forEach(t => {
       t.classList.remove('border-secondary');

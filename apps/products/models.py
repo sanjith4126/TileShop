@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 
+from apps.core.images import delete_renditions
 from apps.core.models import Category
 
 from .sizes import display_size
@@ -150,6 +151,7 @@ class ProductImage(models.Model):
 # ── File cleanup: remove image files from disk on delete / replace ──
 def _delete_file(filefield):
     if filefield and filefield.name:
+        delete_renditions(filefield.name, storage=filefield.storage)
         filefield.delete(save=False)
 
 
