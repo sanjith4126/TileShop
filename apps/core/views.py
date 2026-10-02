@@ -7,17 +7,20 @@ import time
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.templatetags.static import static
 from django.urls import NoReverseMatch, reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from apps.core.models import Banner, Category, Inquiry
 from apps.products.models import Product
 
 from . import ai
+from .context_processors import DEFAULT_DESCRIPTION, DEFAULT_TITLE
 from .forms import InquiryForm
 from .notifications import notify_shop
+from .seo import absolute_url, page_meta
 from .utils import parse_positive_int
 
 logger = logging.getLogger(__name__)
@@ -35,13 +38,43 @@ def home(request):
         "featured_products": featured_products,
         "categories": categories,
         "banners": banners,
+        "seo": page_meta(request, DEFAULT_TITLE, DEFAULT_DESCRIPTION, full_title=True),
     }
     return render(request, "home.html", context)
 
 
 def about(request):
     """About / Our Story page."""
-    return render(request, "about.html", {})
+    context = {
+        "seo": page_meta(
+            request,
+            "About Us – Our Showroom in Bhavani",
+            "Suwasthick Tiles is a tile and sanitaryware showroom opposite Kalyana Mandabam in Bhavani, "
+            "Erode district, Tamil Nadu. Learn about our range, our showroom and how to order.",
+        ),
+    }
+    return render(request, "about.html", context)
+
+
+@require_GET
+def robots_txt(request):
+    """robots.txt: keep crawlers out of carts and orders; point them to the sitemap."""
+    lines = [
+        "User-agent: *",
+        "Disallow: /cart/",
+        "Disallow: /orders/",
+        "Disallow: /room-visualizer/generate/",
+        "",
+        f"Sitemap: {absolute_url(reverse('sitemap'), request)}",
+    ]
+    return HttpResponse("\n".join(lines) + "\n", content_type="text/plain; charset=utf-8")
+
+
+@require_GET
+def favicon(request, name="favicon.ico"):
+    """Browsers ask for /favicon.ico and /apple-touch-icon.png at the site root."""
+    target = {"favicon.ico": "favicon.ico", "apple-touch-icon.png": "icons/apple-touch-icon.png"}[name]
+    return redirect(static(target))
 
 
 def room_visualizer(request):
@@ -63,6 +96,12 @@ def room_visualizer(request):
         "products": products,
         "selected_product": selected_product,
         "ai_enabled": bool(settings.GEMINI_API_KEY),
+        "seo": page_meta(
+            request,
+            "AI Room Visualizer – See Tiles in Your Room",
+            "Upload a photo of your room, choose a tile from the Suwasthick Tiles collection and see it "
+            "fitted on your floor or wall with our AI room visualizer.",
+        ),
     }
     return render(request, "room_visualizer.html", context)
 
@@ -99,6 +138,12 @@ def inquiry(request):
         "form": form,
         "product": product,
         "success": request.session.pop("inquiry_submitted", False),
+        "seo": page_meta(
+            request,
+            "Request a Quote – Contact Us",
+            "Ask Suwasthick Tiles in Bhavani for a quote on floor, wall, bathroom, kitchen and parking tiles "
+            "or sanitaryware. Tell us about your project and we'll get back to you.",
+        ),
     }
     return render(request, "inquiry/inquiry_form.html", context)
 

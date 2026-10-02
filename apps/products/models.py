@@ -1,10 +1,15 @@
 """
-Product model for TileShop Premium.
+Product models for the Suwasthick Tiles catalog.
 """
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
+from django.urls import reverse
+from django.utils.text import slugify
+
 from apps.core.models import Category
+
+from .sizes import display_size
 
 
 class Product(models.Model):
@@ -57,9 +62,33 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def slug(self):
+        """URL slug from the name: 'MAC VERDE-CV' -> 'mac-verde-cv'."""
+        return slugify(self.name) or "product"
+
     def get_absolute_url(self):
-        from django.urls import reverse
-        return reverse("products:product_detail", kwargs={"pk": self.pk})
+        return reverse("products:product_detail", kwargs={"pk": self.pk, "slug": self.slug})
+
+    @property
+    def clear_size(self):
+        """Normalised size like '60×60 cm', or None when the size is unclear (e.g. '4/2')."""
+        return display_size(self.size)
+
+    @property
+    def kind(self):
+        """'floor tile', 'bathroom tile', 'sanitaryware' or just 'tile'."""
+        return self.category.singular_name.lower() if self.category else "tile"
+
+    @property
+    def descriptive_name(self):
+        """Readable description for alt text, e.g. 'Myglamm Grey 60×60 cm porcelain floor tile'."""
+        parts = [self.name]
+        if self.clear_size:
+            parts.append(self.clear_size)
+        parts.append(self.get_material_display().lower())
+        parts.append(self.kind)
+        return " ".join(parts)
 
     @property
     def all_categories(self):

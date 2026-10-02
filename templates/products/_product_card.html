@@ -1,0 +1,49 @@
+{# One product in a grid. Expects `product`. The product name is an <h2> (grid pages have one <h1>). #}
+<article class="group transform transition-all duration-500 hover:-translate-y-1">
+  <a href="{{ product.get_absolute_url }}" class="block" tabindex="-1" aria-hidden="true">
+    <div class="relative overflow-hidden aspect-[4/5] mb-4 bg-surface-container">
+      {% if product.image %}
+      <img alt="{{ product.descriptive_name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}" loading="lazy"/>
+      {% else %}
+      <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
+        <span class="material-symbols-outlined text-6xl text-outline">crop_square</span>
+      </div>
+      {% endif %}
+      {% if product.is_featured %}
+      <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-1 font-label text-[9px] tracking-[0.2em] uppercase">Featured</div>
+      {% endif %}
+      {% if product.stock == 0 %}
+      <div class="absolute inset-0 bg-white/60 flex items-center justify-center">
+        <span class="font-label text-xs tracking-widest uppercase text-on-surface-variant">Out of Stock</span>
+      </div>
+      {% endif %}
+    </div>
+  </a>
+  <span class="inline-block px-3 py-0.5 bg-secondary/10 text-secondary font-label text-[10px] tracking-widest uppercase mb-2">{% if product.category %}{{ product.category.name }}{% else %}{{ product.get_material_display }}{% endif %}</span>
+  <h2 class="font-headline text-lg text-primary leading-tight mb-1">
+    <a href="{{ product.get_absolute_url }}" class="hover:text-primary-container transition-colors">{{ product.name }}</a>
+  </h2>
+  <p class="font-label text-secondary font-bold text-sm tracking-widest mb-4">
+    ₹{{ product.price }} <span class="font-normal text-outline text-[10px]">/ {{ price_unit_label }}</span>
+  </p>
+  {# Always visible on touch screens; fades in on hover only where a mouse is used. #}
+  <div class="flex gap-2 transition-opacity duration-300 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100">
+    {% if product.stock > 0 %}
+    <form action="{% url 'cart:add_to_cart' product.pk %}" method="post" class="flex-1">
+      {% csrf_token %}
+      <input type="hidden" name="quantity" value="1"/>
+      <button type="submit" class="w-full bg-primary-container text-white py-3 text-[10px] font-label tracking-[0.2em] uppercase hover:bg-primary transition-colors"
+              data-event="add_to_cart" data-event-params='{"item_id": "{{ product.pk }}", "item_name": "{{ product.name|escapejs }}", "price": {{ product.price }}, "currency": "INR"}'>
+        Add to Cart<span class="sr-only">: {{ product.name }}</span>
+      </button>
+    </form>
+    {% else %}
+    <button type="button" disabled class="flex-1 bg-surface-container-high text-on-surface-variant py-3 text-[10px] font-label tracking-[0.2em] uppercase cursor-not-allowed">
+      Out of Stock
+    </button>
+    {% endif %}
+    <a href="{{ product.get_absolute_url }}" class="flex-none aspect-square bg-surface-container border border-outline/20 flex items-center justify-center p-3 hover:bg-surface-container-high transition-colors" aria-label="View details of {{ product.name }}">
+      <span class="material-symbols-outlined text-sm">info</span>
+    </a>
+  </div>
+</article>

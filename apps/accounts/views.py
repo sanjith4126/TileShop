@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from apps.core.seo import NOINDEX_FOLLOW, NOINDEX_NOFOLLOW, page_meta
 from apps.orders.models import Order
 
 
@@ -43,7 +44,7 @@ def login_view(request):
     context = {
         "form": form,
         "next": request.POST.get("next") or request.GET.get("next", ""),
-        "meta_robots": "noindex,follow",
+        "seo": page_meta(request, "Sign In", robots=NOINDEX_FOLLOW),
     }
     return render(request, "accounts/login.html", context)
 
@@ -64,7 +65,7 @@ def register_view(request):
     else:
         form = UserCreationForm()
 
-    return render(request, "accounts/register.html", {"form": form, "meta_robots": "noindex,follow"})
+    return render(request, "accounts/register.html", {"form": form, "seo": page_meta(request, "Create Account", robots=NOINDEX_FOLLOW)})
 
 
 def logout_view(request):
@@ -81,6 +82,6 @@ def dashboard_view(request):
     orders = Order.objects.filter(user=request.user).order_by("-created_at")
     context = {
         "orders": orders,
-        "meta_robots": "noindex,nofollow",
+        "seo": page_meta(request, "My Dashboard", robots=NOINDEX_NOFOLLOW),
     }
     return render(request, "accounts/dashboard.html", context)

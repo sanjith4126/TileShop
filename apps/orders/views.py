@@ -14,6 +14,7 @@ from django.urls import NoReverseMatch, reverse
 
 from apps.cart.views import cart_summary, get_cart
 from apps.core.notifications import notify_shop
+from apps.core.seo import NOINDEX_NOFOLLOW, page_meta
 from apps.products.models import Product
 
 from .forms import CheckoutForm
@@ -76,7 +77,7 @@ def checkout(request):
         "form": form,
         "payment_methods": Order.PAYMENT_METHOD_CHOICES,
         **cart_summary(items),
-        "meta_robots": "noindex,nofollow",
+        "seo": page_meta(request, "Place Your Order", robots=NOINDEX_NOFOLLOW),
     }
     return render(request, "orders/checkout.html", context)
 
@@ -148,7 +149,7 @@ def order_success(request, order_id):
     context = {
         "order": order,
         "items": order.items.select_related("product").all(),
-        "meta_robots": "noindex,nofollow",
+        "seo": page_meta(request, "Order Confirmed", robots=NOINDEX_NOFOLLOW),
     }
     return render(request, "orders/order_success.html", context)
 
@@ -160,6 +161,6 @@ def order_detail(request, order_id):
     context = {
         "order": order,
         "items": order.items.select_related("product").all(),
-        "meta_robots": "noindex,nofollow",
+        "seo": page_meta(request, f"Order #{order.order_number}", robots=NOINDEX_NOFOLLOW),
     }
     return render(request, "orders/order_detail.html", context)

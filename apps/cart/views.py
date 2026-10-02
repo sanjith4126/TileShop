@@ -8,6 +8,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from apps.core.seo import NOINDEX_NOFOLLOW, page_meta
 from apps.core.utils import parse_positive_int
 from apps.products.models import Product
 
@@ -55,7 +56,7 @@ def cart_detail(request):
         "cart": cart,
         "items": items,
         **cart_summary(items),
-        "meta_robots": "noindex,nofollow",
+        "seo": page_meta(request, "Your Cart", robots=NOINDEX_NOFOLLOW),
     }
     return render(request, "cart/cart.html", context)
 

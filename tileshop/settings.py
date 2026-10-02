@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
     "apps.core.apps.CoreConfig",
     "apps.products.apps.ProductsConfig",
     "apps.cart.apps.CartConfig",
@@ -162,7 +163,7 @@ WHITENOISE_MANIFEST_STRICT = False
 if TESTING:
     import warnings
     # Tests don't run collectstatic, so STATIC_ROOT doesn't exist.
-    warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base")
+    warnings.filterwarnings("ignore", message="No directory at")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -229,9 +230,25 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 SHOP_NOTIFICATION_EMAIL = os.environ.get("SHOP_NOTIFICATION_EMAIL", "").strip()
 
 # ─────────────────────────────────────────────────────────────────────
-# Shop settings
+# SEO and measurement (all optional, from the environment)
 # ─────────────────────────────────────────────────────────────────────
 SITE_NAME = "Suwasthick Tiles"
+# The site's public address, used for canonical URLs, the sitemap and
+# structured data, e.g. https://yourname.pythonanywhere.com (no trailing slash).
+# Without it, the address of the incoming request is used.
+SITE_URL = os.environ.get("SITE_URL", "").strip().rstrip("/")
+# Verification codes from Google Search Console / Bing Webmaster Tools
+# (only the content="..." value of their meta tag).
+GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()
+BING_SITE_VERIFICATION = os.environ.get("BING_SITE_VERIFICATION", "").strip()
+# Analytics: ANALYTICS_PROVIDER is "ga4" (ANALYTICS_ID = G-XXXXXXX) or
+# "plausible" (ANALYTICS_ID = your domain). Nothing loads unless both are set.
+ANALYTICS_PROVIDER = os.environ.get("ANALYTICS_PROVIDER", "").strip().lower()
+ANALYTICS_ID = os.environ.get("ANALYTICS_ID", "").strip()
+
+# ─────────────────────────────────────────────────────────────────────
+# Shop settings
+# ─────────────────────────────────────────────────────────────────────
 PRICE_CURRENCY = "INR"
 # The unit every product price refers to. Shown after prices ("₹54 / sq. ft")
 # and used in Product structured data. Change both lines together if the

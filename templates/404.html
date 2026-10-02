@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block head_title %}Page not found | {{ site_name }}{% endblock %}
+{% block head_robots %}noindex,follow{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-24 px-6 min-h-screen">
+  <div class="max-w-3xl mx-auto text-center space-y-8">
+    <span class="font-label text-[10px] tracking-[0.3em] text-secondary uppercase">Error 404</span>
+    <h1 class="font-playfair italic text-5xl md:text-6xl text-primary">We couldn't find that page</h1>
+    <p class="font-cormorant italic text-xl text-on-surface-variant">
+      The page may have moved, or the link may be mistyped. These might help:
+    </p>
+
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="{% url 'core:home' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">Home</a>
+      <a href="{% url 'products:product_list' %}" class="border border-outline/40 text-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:border-secondary transition-colors">All Tiles</a>
+      <a href="{% url 'core:inquiry' %}" class="border-b-2 border-secondary text-secondary px-8 py-4 font-label text-xs tracking-widest uppercase hover:opacity-80 transition-opacity">Request a Quote</a>
+    </div>
+
+    {% if nav_categories %}
+    <section class="pt-10 border-t border-outline/10" aria-labelledby="popular-categories">
+      <h2 id="popular-categories" class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-6">Shop by Category</h2>
+      <ul class="flex flex-wrap gap-3 justify-center">
+        {% for cat in nav_categories %}{% if cat.count %}
+        <li><a href="{{ cat.url }}" class="inline-block px-5 py-3 bg-surface-container hover:bg-surface-container-high font-label text-[11px] tracking-widest uppercase transition-colors">{{ cat.name }}</a></li>
+        {% endif %}{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

@@ -60,7 +60,7 @@
       <!-- Category Badges (primary + additional) -->
       <div class="mb-4 flex flex-wrap gap-2">
         {% for cat in product.all_categories %}
-        <a href="{% url 'products:product_list' %}?category={{ cat.id }}"
+        <a href="{{ cat.get_absolute_url }}"
            class="inline-block rounded-full bg-tertiary-container px-4 py-1 text-[10px] font-label tracking-widest text-on-tertiary-container hover:opacity-80 transition-opacity">
           {{ cat.name|upper }}
         </a>
@@ -262,7 +262,7 @@
           <h4 class="font-label text-[11px] tracking-[0.3em] text-outline uppercase mb-2">Curated Pairings</h4>
           <h2 class="font-headline text-3xl text-primary">You Might Also Like</h2>
         </div>
-        {% if product.category %}<a href="{% url 'products:product_list' %}?category={{ product.category.id }}" class="font-label text-[11px] tracking-widest text-secondary border-b border-secondary pb-1 hover:opacity-80 transition-opacity">
+        {% if product.category %}<a href="{{ product.category.get_absolute_url }}" class="font-label text-[11px] tracking-widest text-secondary border-b border-secondary pb-1 hover:opacity-80 transition-opacity">
           VIEW ALL {{ product.category.name|upper }}
         </a>{% endif %}
       </div>

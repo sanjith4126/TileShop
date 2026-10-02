@@ -2,8 +2,46 @@
 Core app admin configuration.
 """
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.html import format_html
-from .models import Category, Banner, Inquiry
+from .models import Category, Banner, BusinessInfo, Inquiry
+
+
+@admin.register(BusinessInfo)
+class BusinessInfoAdmin(admin.ModelAdmin):
+    """One record with the shop's contact details. Opens straight to the edit form."""
+    fieldsets = (
+        ("Shown on the website", {
+            "fields": ("address", "phone", "email", "opening_hours", "whatsapp", "maps_url"),
+            "description": "These appear in the footer, the About page and the contact page.",
+        }),
+        ("For Google (structured data)", {
+            "fields": ("street_address", "locality", "region", "postal_code", "country",
+                       "latitude", "longitude", "opening_hours_spec", "service_areas"),
+        }),
+        ("Profiles and images", {
+            "fields": ("facebook_url", "instagram_url", "youtube_url", "google_business_url", "logo", "share_image"),
+        }),
+        ("Publish", {
+            "fields": ("details_confirmed", "updated_at"),
+            "description": (
+                "Until this is ticked, the phone and email are shown as plain text and nothing "
+                "but the business name is sent to Google."
+            ),
+        }),
+    )
+    readonly_fields = ["updated_at"]
+
+    def has_add_permission(self, request):
+        return not BusinessInfo.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        obj = BusinessInfo.get_solo()
+        return redirect(reverse("admin:core_businessinfo_change", args=[obj.pk]))
 
 
 @admin.register(Inquiry)

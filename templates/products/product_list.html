@@ -1,56 +1,71 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Our Tile Collection{% endblock %}
-
 {% block content %}
 <main class="pt-24 pb-20 px-8 max-w-screen-2xl mx-auto flex gap-12">
 
   <!-- Sidebar Filters -->
-  <aside class="w-72 flex-shrink-0 sticky top-28 self-start overflow-y-auto max-h-[calc(100vh-8rem)] pr-4 hidden md:block">
-    <form method="get" id="filter-form">
-      <div class="space-y-10">
+  <aside class="w-72 flex-shrink-0 sticky top-28 self-start overflow-y-auto max-h-[calc(100vh-8rem)] pr-4 hidden md:block" aria-label="Filters">
+    <div class="space-y-10">
 
-        <!-- Filter: Category -->
-        <section>
-          <h3 class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-6">Category</h3>
-          <div class="grid grid-cols-2 gap-3">
-            <a href="{% url 'products:product_list' %}"
-               class="flex items-center gap-3 p-2 transition-colors group {% if not selected_category %}bg-secondary-container border border-secondary{% else %}bg-surface-container hover:bg-surface-container-high{% endif %}">
-              <div class="w-8 h-8 bg-surface-container-high"></div>
-              <span class="text-xs font-medium uppercase tracking-tight">All</span>
-            </a>
-            {% for category in categories %}
-            <a href="?category={{ category.id }}"
-               class="flex items-center gap-3 p-2 transition-colors group {% if selected_category|add:'0'|stringformat:'d' == category.id|stringformat:'d' %}bg-secondary-container border border-secondary{% else %}bg-surface-container hover:bg-surface-container-high{% endif %}">
-              <div class="w-8 h-8 bg-surface-container-high"></div>
-              <span class="text-xs font-medium uppercase tracking-tight">{{ category.name }}</span>
-            </a>
+      <!-- Filter: Category -->
+      <nav aria-label="Categories">
+        <h2 class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-6">Category</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <a href="{% url 'products:product_list' %}" {% if not category %}aria-current="page"{% endif %}
+             class="flex items-center gap-3 p-2 transition-colors group {% if not category %}bg-secondary-container border border-secondary{% else %}bg-surface-container hover:bg-surface-container-high{% endif %}">
+            <span class="w-8 h-8 bg-surface-container-high flex-shrink-0" aria-hidden="true"></span>
+            <span class="text-xs font-medium uppercase tracking-tight">All</span>
+          </a>
+          {% for cat in nav_categories %}
+          <a href="{{ cat.url }}" {% if category and category.id == cat.id %}aria-current="page"{% endif %}
+             class="flex items-center gap-3 p-2 transition-colors group {% if category and category.id == cat.id %}bg-secondary-container border border-secondary{% else %}bg-surface-container hover:bg-surface-container-high{% endif %}">
+            <span class="w-8 h-8 bg-surface-container-high flex-shrink-0" aria-hidden="true"></span>
+            <span class="text-xs font-medium uppercase tracking-tight">{{ cat.name }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </nav>
+
+      <!-- Filters keep the current category: the form submits to this page's address. -->
+      <form method="get" action="{{ clean_url }}" id="filter-form" class="space-y-10">
+        {% if materials_available|length > 1 %}
+        <fieldset>
+          <legend class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-4">Material</legend>
+          <div class="space-y-3">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="radio" name="material" value="" class="w-4 h-4 border-outline text-primary focus:ring-0" {% if not selected_material %}checked{% endif %}/>
+              <span class="text-xs uppercase tracking-wider group-hover:text-secondary transition-colors">Any</span>
+            </label>
+            {% for value, label in materials_available %}
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="radio" name="material" value="{{ value }}" class="w-4 h-4 border-outline text-primary focus:ring-0" {% if selected_material == value %}checked{% endif %}/>
+              <span class="text-xs uppercase tracking-wider group-hover:text-secondary transition-colors">{{ label }}</span>
+            </label>
             {% endfor %}
           </div>
-        </section>
+        </fieldset>
+        {% endif %}
 
-        <!-- Filter: In Stock Only -->
-        <section>
-          <h3 class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-4">Availability</h3>
+        <fieldset>
+          <legend class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-4">Availability</legend>
           <label class="flex items-center gap-3 cursor-pointer group">
-            <input type="checkbox" name="in_stock" class="w-4 h-4 border-outline text-primary focus:ring-0" {% if request.GET.in_stock %}checked{% endif %}/>
+            <input type="checkbox" name="in_stock" value="1" class="w-4 h-4 border-outline text-primary focus:ring-0" {% if in_stock %}checked{% endif %}/>
             <span class="text-xs uppercase tracking-wider group-hover:text-secondary transition-colors">In Stock Only</span>
           </label>
-        </section>
+        </fieldset>
 
         <!-- Apply / Clear -->
         <div class="space-y-3">
           <button type="submit" class="w-full bg-primary-container text-on-primary py-3 font-label text-[11px] tracking-[0.2em] uppercase hover:bg-primary transition-colors">
             Apply Filters
           </button>
-          <a href="{% url 'products:product_list' %}" class="block w-full text-center py-3 border-b border-outline/30 text-on-surface-variant font-label text-[11px] tracking-widest uppercase hover:text-secondary transition-colors">
+          <a href="{{ clean_url }}" class="block w-full text-center py-3 border-b border-outline/30 text-on-surface-variant font-label text-[11px] tracking-widest uppercase hover:text-secondary transition-colors">
             Clear All
           </a>
         </div>
-
-      </div>
-    </form>
+      </form>
+    </div>
   </aside>
 
   <!-- Main Content -->
@@ -58,17 +73,19 @@
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-      <div>
+      <div {% if category %}data-event-on-load="category_view" data-event-params='{"item_list_name": "{{ category.name|escapejs }}"}'{% endif %}>
         <span class="font-cormorant italic text-secondary text-xl block mb-2">The Sovereign Gallery</span>
-        <h1 class="text-5xl font-headline text-primary-container">
-          {% if selected_category %}{% for category in categories %}{% if category.id|stringformat:'d' == selected_category|add:'0'|stringformat:'d' %}{{ category.name }}{% endif %}{% endfor %}{% else %}Our Tile Collection{% endif %}
-        </h1>
-        <p class="text-on-surface-variant mt-4 font-body text-sm max-w-lg">
-          {{ products|length }} specimen{{ products|length|pluralize }} of architectural surface design — from the heart of Tamil Nadu.
-        </p>
+        <h1 class="text-5xl font-headline text-primary-container">{% if category %}{{ category.name }}{% else %}Our Tile Collection{% endif %}</h1>
+        {% if category.description %}
+        <p class="text-on-surface-variant mt-4 font-body text-sm max-w-lg">{{ category.description }}</p>
+        {% endif %}
+        {% if summary %}
+        <p class="text-on-surface-variant {% if category.description %}mt-2{% else %}mt-4{% endif %} font-body text-sm max-w-lg">{{ summary }}</p>
+        {% endif %}
       </div>
       <!-- Mobile Filter Toggle -->
-      <button type="button" id="mobile-filter-btn" class="md:hidden flex items-center gap-2 border-b border-outline pb-1 font-label text-xs tracking-widest uppercase text-on-surface-variant hover:text-secondary transition-colors">
+      <button type="button" id="mobile-filter-btn" aria-expanded="false" aria-controls="mobile-filters"
+              class="md:hidden flex items-center gap-2 border-b border-outline pb-1 font-label text-xs tracking-widest uppercase text-on-surface-variant hover:text-secondary transition-colors">
         <span class="material-symbols-outlined text-sm">tune</span>
         Filters
       </button>
@@ -76,79 +93,86 @@
 
     <!-- Mobile Filter Panel -->
     <div id="mobile-filters" class="hidden md:hidden mb-8 p-6 bg-surface-container-low space-y-6">
-      <h3 class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase">Filter by Category</h3>
+      <h2 class="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase">Filter by Category</h2>
       <div class="flex flex-wrap gap-2">
-        <a href="{% url 'products:product_list' %}" class="px-4 py-2 font-label text-[10px] tracking-widest uppercase {% if not selected_category %}bg-primary-container text-on-primary{% else %}bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest{% endif %} transition-colors">All</a>
-        {% for category in categories %}
-        <a href="?category={{ category.id }}" class="px-4 py-2 font-label text-[10px] tracking-widest uppercase {% if selected_category|add:'0'|stringformat:'d' == category.id|stringformat:'d' %}bg-primary-container text-on-primary{% else %}bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest{% endif %} transition-colors">{{ category.name }}</a>
+        <a href="{% url 'products:product_list' %}" class="px-4 py-2 font-label text-[10px] tracking-widest uppercase {% if not category %}bg-primary-container text-on-primary{% else %}bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest{% endif %} transition-colors">All</a>
+        {% for cat in nav_categories %}
+        <a href="{{ cat.url }}" class="px-4 py-2 font-label text-[10px] tracking-widest uppercase {% if category and category.id == cat.id %}bg-primary-container text-on-primary{% else %}bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest{% endif %} transition-colors">{{ cat.name }}</a>
         {% endfor %}
       </div>
+      <form method="get" action="{{ clean_url }}" class="flex flex-wrap items-end gap-4">
+        {% if materials_available|length > 1 %}
+        <div>
+          <label for="m-material" class="block font-label text-[10px] tracking-widest text-on-surface-variant uppercase mb-1">Material</label>
+          <select id="m-material" name="material" class="bg-transparent border-outline/40 text-xs py-2">
+            <option value="">Any</option>
+            {% for value, label in materials_available %}
+            <option value="{{ value }}" {% if selected_material == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+        <label class="flex items-center gap-2 py-2">
+          <input type="checkbox" name="in_stock" value="1" class="w-4 h-4 border-outline text-primary focus:ring-0" {% if in_stock %}checked{% endif %}/>
+          <span class="text-xs uppercase tracking-wider">In Stock Only</span>
+        </label>
+        <button type="submit" class="bg-primary-container text-on-primary px-6 py-2 font-label text-[10px] tracking-[0.2em] uppercase">Apply</button>
+      </form>
     </div>
 
     <!-- Product Grid -->
     {% if products %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12"
+         {% if is_filtered %}data-event-on-load="filter_used" data-event-params='{"material": "{{ selected_material }}", "in_stock": {{ in_stock|yesno:"true,false" }}}'{% endif %}>
       {% for product in products %}
-      <div class="group cursor-pointer transform transition-all duration-500 hover:-translate-y-1">
-        <a href="{{ product.get_absolute_url }}">
-          <div class="relative overflow-hidden aspect-[4/5] mb-4 bg-surface-container">
-            {% if product.image %}
-            <img alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ product.image.url }}"/>
-            {% else %}
-            <div class="w-full h-full flex items-center justify-center bg-surface-container-high">
-              <span class="material-symbols-outlined text-6xl text-outline">crop_square</span>
-            </div>
-            {% endif %}
-            {% if product.is_featured %}
-            <div class="absolute top-0 right-0 bg-secondary text-white px-3 py-1 font-label text-[9px] tracking-[0.2em] uppercase">Featured</div>
-            {% endif %}
-            {% if product.stock == 0 %}
-            <div class="absolute inset-0 bg-white/60 flex items-center justify-center">
-              <span class="font-label text-xs tracking-widest uppercase text-on-surface-variant">Out of Stock</span>
-            </div>
-            {% endif %}
-          </div>
-        </a>
-        <span class="inline-block px-3 py-0.5 bg-secondary/10 text-secondary font-label text-[10px] tracking-widest uppercase mb-2">{% if product.category %}{{ product.category.name }}{% else %}Uncategorized{% endif %}</span>
-        <h3 class="font-headline text-lg text-primary leading-tight mb-1">
-          <a href="{{ product.get_absolute_url }}" class="hover:text-primary-container transition-colors">{{ product.name }}</a>
-        </h3>
-        <p class="font-label text-secondary font-bold text-sm tracking-widest mb-4">
-          ₹{{ product.price }} <span class="font-normal text-outline text-[10px]">/ sq. ft</span>
-        </p>
-        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {% if product.stock > 0 %}
-          <form action="{% url 'cart:add_to_cart' product.pk %}" method="post" class="flex-1">
-            {% csrf_token %}
-            <input type="hidden" name="quantity" value="1"/>
-            <button type="submit" class="w-full bg-primary-container text-white py-3 text-[10px] font-label tracking-[0.2em] uppercase hover:bg-primary transition-colors">
-              Add to Cart
-            </button>
-          </form>
-          {% else %}
-          <button type="button" disabled class="flex-1 bg-surface-container-high text-on-surface-variant py-3 text-[10px] font-label tracking-[0.2em] uppercase cursor-not-allowed">
-            Out of Stock
-          </button>
-          {% endif %}
-          <a href="{{ product.get_absolute_url }}" class="flex-none aspect-square bg-surface-container border border-outline/20 flex items-center justify-center p-3 hover:bg-surface-container-high transition-colors" aria-label="View details">
-            <span class="material-symbols-outlined text-sm">info</span>
-          </a>
-        </div>
-      </div>
+      {% include "products/_product_card.html" %}
       {% endfor %}
     </div>
-    {% else %}
-    <!-- Empty State -->
-    <div class="flex flex-col items-center justify-center py-32 text-center space-y-6">
-      <span class="material-symbols-outlined text-6xl text-outline">grid_off</span>
-      <h3 class="font-headline text-3xl text-on-surface-variant">No tiles found</h3>
-      <p class="font-cormorant italic text-xl text-on-surface-variant">
-        {% if selected_category %}{% for category in categories %}{% if category.id|stringformat:'d' == selected_category|add:'0'|stringformat:'d' %}No {{ category.name }} tiles available at the moment.{% endif %}{% endfor %}{% else %}Our collection is being curated — check back soon.{% endif %}
+    {% elif category and not total %}
+    <!-- The showroom stocks this category but nothing is listed online yet -->
+    <div class="flex flex-col items-center justify-center py-24 px-6 text-center space-y-6 bg-surface-container-low">
+      <span class="material-symbols-outlined text-6xl text-outline">storefront</span>
+      <h2 class="font-headline text-3xl text-on-surface-variant">We stock {{ category.name|lower }} at our Bhavani showroom</h2>
+      <p class="font-cormorant italic text-xl text-on-surface-variant max-w-xl">
+        They aren't listed online yet. Ask us for the current range, sizes and prices, and we'll help you choose.
       </p>
-      <a href="{% url 'products:product_list' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
-        View All Tiles
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href="{% url 'core:inquiry' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
+          Request a Quote
+        </a>
+        <a href="{% url 'core:inquiry' %}#showroom" class="border-b-2 border-secondary text-secondary px-6 py-4 font-label text-xs tracking-widest uppercase hover:opacity-80 transition-opacity">
+          Visit the Showroom
+        </a>
+      </div>
+    </div>
+    {% elif is_filtered %}
+    <div class="flex flex-col items-center justify-center py-24 text-center space-y-6">
+      <span class="material-symbols-outlined text-6xl text-outline">filter_alt_off</span>
+      <h2 class="font-headline text-3xl text-on-surface-variant">No tiles match these filters</h2>
+      <a href="{{ clean_url }}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
+        Clear Filters
       </a>
     </div>
+    {% else %}
+    <div class="flex flex-col items-center justify-center py-32 text-center space-y-6">
+      <span class="material-symbols-outlined text-6xl text-outline">grid_off</span>
+      <h2 class="font-headline text-3xl text-on-surface-variant">No tiles found</h2>
+      <p class="font-cormorant italic text-xl text-on-surface-variant">Our collection is being curated — check back soon.</p>
+      <a href="{% url 'core:inquiry' %}" class="bg-primary-container text-on-primary px-10 py-4 font-label text-xs tracking-[0.2em] uppercase hover:bg-primary transition-colors">
+        Request a Quote
+      </a>
+    </div>
+    {% endif %}
+
+    {% if related_categories %}
+    <section class="mt-24 pt-12 border-t border-outline/10" aria-labelledby="more-categories">
+      <h2 id="more-categories" class="font-headline text-3xl text-primary mb-8">{% if category %}Explore Other Categories{% else %}Shop by Category{% endif %}</h2>
+      <ul class="flex flex-wrap gap-3">
+        {% for cat in related_categories %}
+        <li><a href="{{ cat.get_absolute_url }}" class="inline-block px-5 py-3 bg-surface-container hover:bg-surface-container-high font-label text-[11px] tracking-widest uppercase transition-colors">{{ cat.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
     {% endif %}
 
   </section>
@@ -159,7 +183,10 @@
   const mfBtn = document.getElementById('mobile-filter-btn');
   const mfPanel = document.getElementById('mobile-filters');
   if (mfBtn) {
-    mfBtn.addEventListener('click', () => mfPanel.classList.toggle('hidden'));
+    mfBtn.addEventListener('click', () => {
+      const open = mfPanel.classList.toggle('hidden') === false;
+      mfBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
   }
 </script>
 {% endblock %}
