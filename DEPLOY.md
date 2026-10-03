@@ -39,8 +39,11 @@ database and uploaded tile images between visits. No credit card is needed.
 **Bash console** (Consoles tab):
 
 ```bash
-git clone https://github.com/YOURNAME/tileshop.git ~/tileshop
+git clone https://github.com/sanjith4126/TileShop.git ~/tileshop
 ```
+
+The repository is public, so no password is needed. That also means the old
+secret key in its history is public: always use a new key (step 4).
 
 **Option B: upload a zip.**
 
