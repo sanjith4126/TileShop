@@ -21,7 +21,9 @@ except Exception:
 
 
 def _env_bool(name, default="False"):
-    return os.environ.get(name, default).strip().lower() in ("1", "true", "yes", "on")
+    # An empty value (e.g. "EMAIL_USE_TLS=" copied from .env.example) means the default.
+    value = os.environ.get(name, "").strip() or default
+    return value.lower() in ("1", "true", "yes", "on")
 
 
 def _env_int(name, default):

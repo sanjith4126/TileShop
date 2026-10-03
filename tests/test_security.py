@@ -2,11 +2,15 @@
 Security fixes: order privacy (A2), open redirect (A5), POST-only logout (A18),
 no admin link for customers (A8), brand name (A16).
 """
+import os
 from decimal import Decimal
+from unittest import mock
 
 from django.contrib.auth.models import User
+from django.test import SimpleTestCase
 
 from apps.orders.models import Order, OrderItem
+from tileshop.settings import _env_bool
 
 from .base import ShopTestCase
 
@@ -118,3 +122,15 @@ class BrandTests(ShopTestCase):
         }, follow=True)
         self.assertContains(response, "Welcome to Suwasthick Tiles")
         self.assertNotContains(response, "TileShop Premium")
+
+
+class EnvironmentSettingTests(SimpleTestCase):
+    def test_empty_boolean_variables_use_the_default(self):
+        """'EMAIL_USE_TLS=' copied empty from .env.example must not switch TLS off."""
+        with mock.patch.dict(os.environ, {"TILESHOP_TEST_FLAG": ""}):
+            self.assertTrue(_env_bool("TILESHOP_TEST_FLAG", "True"))
+            self.assertFalse(_env_bool("TILESHOP_TEST_FLAG", "False"))
+        with mock.patch.dict(os.environ, {"TILESHOP_TEST_FLAG": "off"}):
+            self.assertFalse(_env_bool("TILESHOP_TEST_FLAG", "True"))
+        with mock.patch.dict(os.environ, {"TILESHOP_TEST_FLAG": " yes "}):
+            self.assertTrue(_env_bool("TILESHOP_TEST_FLAG", "False"))

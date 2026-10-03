@@ -53,7 +53,9 @@ def listing_summary(products, category=None):
     A factual sentence built from the data, e.g.
     "12 floor tiles in ceramic and porcelain, including 60×60 cm and 120×60 cm, from ₹54 per sq. ft."
     """
-    rows = list(products.order_by().values_list("material", "size", "price"))
+    # The primary key keeps products with the same material, size and price from
+    # being merged by the DISTINCT that category querysets use.
+    rows = [row[1:] for row in products.order_by().values_list("pk", "material", "size", "price")]
     if not rows:
         return ""
     labels = dict(Product.MATERIAL_CHOICES)
@@ -133,7 +135,12 @@ def _listing(request, category=None):
 
     if category:
         if total:
-            description = f"{summary} {category.description} Order online and pay on delivery, or visit our Bhavani showroom."
+            intro = (category.description or "").strip()
+            if intro and intro[-1] not in ".!?":
+                intro += "."
+            description = " ".join(filter(None, [
+                summary, intro, "Order online and pay on delivery, or visit our Bhavani showroom.",
+            ]))
         else:
             description = (
                 f"Ask Suwasthick Tiles in Bhavani about our {category.name.lower()} range — "

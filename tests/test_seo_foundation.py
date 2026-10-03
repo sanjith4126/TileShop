@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.test import override_settings
 
 from apps.core.models import BusinessInfo, Category
+from apps.products.models import Product
 
 from .base import ShopTestCase
 
@@ -152,7 +153,18 @@ class MetadataTests(ShopTestCase):
         self.assertEqual(title(html), "Floor Tiles | Suwasthick Tiles, Bhavani")
         self.assertIn("3 floor tiles in ceramic and porcelain, including 60×60 cm, from ₹54 per sq. ft.", html)
         self.assertIn("Tiles designed for flooring applications", html)
+        self.assertIn("Tiles designed for flooring applications. Order online",
+                      meta_content(html, "name", "description"))
         self.assertEqual(canonical(html), f"{SITE}/products/floor-tiles/")
+
+    def test_category_summary_counts_identical_products(self):
+        """Ten real products share material, size and price; each one must be counted."""
+        for name in ("ALTROZ BLUE", "ALTROZ GREEN"):
+            Product.objects.create(name=name, description="x", price=self.unclear_size.price,
+                                   material=self.unclear_size.material, size=self.unclear_size.size,
+                                   category=self.floor)
+        html = self.client.get("/products/floor-tiles/").content.decode()
+        self.assertIn("5 floor tiles in ceramic and porcelain", html)
 
     def test_filtered_listing_is_noindex_with_clean_canonical(self):
         html = self.client.get("/products/floor-tiles/?material=ceramic").content.decode()
