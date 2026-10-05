@@ -1,6 +1,6 @@
-# Suwasthick Tiles — SEO enhancement plan
+# Suwasthik Tiles — SEO enhancement plan
 
-An implementation-ready plan for the Suwasthick Tiles website (Django project `tileshop`). It covers every search signal Google, Bing and AI answer engines evaluate. Each item is tied to the code that implements it, or to the owner decision it waits on.
+An implementation-ready plan for the Suwasthik Tiles website (Django project `tileshop`). It covers every search signal Google, Bing and AI answer engines evaluate. Each item is tied to the code that implements it, or to the owner decision it waits on.
 
 - **Impact:** H = high, M = medium, L = low effect on visibility, trust or conversions.
 - **Effort:** S = under an hour, M = a few hours, L = a day or more.
@@ -41,7 +41,7 @@ Section numbers such as "A1" or "§9" refer to the specification, `suwasthick-ti
 | T1.8 | JSON-LD: Organization/Store, WebSite, BreadcrumbList, Product + Offer (INR, unit price), ItemList — §9 | Rich results and machine understanding | H | M | ✋ confirm address/phone/hours to publish them | ✅ code · ⏳ owner |
 | T1.9 | Open Graph and Twitter cards (product images on product pages) — §24 | Good WhatsApp and social previews | M | S | ✋ logo and 1200×630 image | ✅ code · ⏳ owner |
 | T1.10 | One clear H1 per page and a logical heading order — §5 | Clear topic signals and screen-reader navigation | M | S | | ✅ |
-| T1.11 | Brand consistency ("Suwasthick Tiles" everywhere), time zone `Asia/Kolkata` — A16, A17 | Entity consistency for Google and AI systems | M | S | | ✅ |
+| T1.11 | Brand consistency ("Suwasthik Tiles" everywhere), time zone `Asia/Kolkata` — A16, A17 | Entity consistency for Google and AI systems | M | S | | ✅ |
 | T1.12 | Empty categories: helpful showroom message, `noindex` until products exist — A12 | No dead ends; no thin pages in the index | H | S | ✋ add those products | ✅ code · ⏳ owner |
 | T1.13 | Touch-friendly UI: no hover-only buttons or labels — A13 | Mobile-first indexing and mobile conversions | H | S | | ✅ |
 
@@ -97,7 +97,7 @@ Section numbers such as "A1" or "§9" refer to the specification, `suwasthick-ti
 
 | Search intent (examples) | Target page | Notes |
 | --- | --- | --- |
-| Brand: "Suwasthick Tiles", "Suwasthick Tiles Bhavani" | `/` (and `/about/`) | Organization schema, consistent name |
+| Brand: "Suwasthik Tiles", "Suwasthik Tiles Bhavani" | `/` (and `/about/`) | Organization schema, consistent name |
 | Local: "tiles shop in Bhavani", "tile showroom near me" | `/` + Google Business Profile | No town doorway pages |
 | "floor tiles", "floor tiles price per sq ft", "60x60 floor tiles" | `/products/floor-tiles/` | Data-driven summary with sizes and price range |
 | "bathroom tiles", "bathroom tiles price", "matt bathroom tiles" | `/products/bathroom-tiles/` | |
@@ -109,7 +109,7 @@ Section numbers such as "A1" or "§9" refer to the specification, `suwasthick-ti
 | "what size floor tile for my room" | `/guides/choosing-floor-tile-size/` (draft) | Publish after owner review |
 | "matt vs glossy bathroom tiles" | `/guides/matt-vs-glossy-bathroom-tiles/` (draft) | Publish after owner review |
 | "tile visualizer", "see tiles in my room" | `/room-visualizer/` | Unique tool; works once Gemini billing is active |
-| "tile quote", "contact Suwasthick Tiles" | `/inquiry/` | Showroom block plus the quote form |
+| "tile quote", "contact Suwasthik Tiles" | `/inquiry/` | Showroom block plus the quote form |
 
 Not targeted, because the shop doesn't sell them: outdoor tiles, marble, granite, slate, terracotta. "Vitrified" and "anti-skid" are used only after the owner confirms them.
 

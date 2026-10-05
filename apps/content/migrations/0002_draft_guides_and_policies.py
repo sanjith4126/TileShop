@@ -95,9 +95,9 @@ PAGES = [
     {
         "slug": "privacy-policy",
         "title": "Privacy Policy",
-        "meta": "How Suwasthick Tiles collects and uses the details you give us when you order, ask for a quote or use the room visualizer.",
+        "meta": "How Suwasthik Tiles collects and uses the details you give us when you order, ask for a quote or use the room visualizer.",
         "body": DRAFT_NOTE + """<h2>Who we are</h2>
-<p>This website is run by Suwasthick Tiles, Bhavani, Tamil Nadu. For privacy questions, contact us at [OWNER TO CONFIRM: email and phone].</p>
+<p>This website is run by Suwasthik Tiles, Bhavani, Tamil Nadu. For privacy questions, contact us at [OWNER TO CONFIRM: email and phone].</p>
 <h2>What we collect</h2>
 <ul>
 <li><strong>Orders:</strong> your name, email address, phone number, delivery address, any notes you add, and the payment method you choose. We do not take card or UPI details online; payment is collected at delivery.</li>
@@ -118,7 +118,7 @@ PAGES = [
     {
         "slug": "terms-of-sale",
         "title": "Terms of Sale",
-        "meta": "Terms for orders placed with Suwasthick Tiles: prices, order confirmation and payment on delivery.",
+        "meta": "Terms for orders placed with Suwasthik Tiles: prices, order confirmation and payment on delivery.",
         "body": DRAFT_NOTE + """<h2>Prices</h2>
 <p>Prices are shown in Indian rupees (₹) per square foot on each product page. [OWNER TO CONFIRM: whether prices include GST, and the selling unit — square foot, box or piece — for each product.]</p>
 <h2>Placing an order</h2>
@@ -135,7 +135,7 @@ PAGES = [
     {
         "slug": "delivery-policy",
         "title": "Delivery Policy",
-        "meta": "Where and how Suwasthick Tiles delivers tile and sanitaryware orders.",
+        "meta": "Where and how Suwasthik Tiles delivers tile and sanitaryware orders.",
         "body": DRAFT_NOTE + """<h2>Where we deliver</h2>
 <p>[OWNER TO CONFIRM: towns and districts you deliver to.]</p>
 <h2>Delivery time</h2>
@@ -150,7 +150,7 @@ PAGES = [
     {
         "slug": "returns-and-breakage",
         "title": "Returns & Breakage Policy",
-        "meta": "How Suwasthick Tiles handles returns and tiles damaged in delivery.",
+        "meta": "How Suwasthik Tiles handles returns and tiles damaged in delivery.",
         "body": DRAFT_NOTE + """<h2>Damaged on delivery</h2>
 <p>[OWNER TO CONFIRM: how breakage found on delivery is handled.]</p>
 <h2>Returning unused tiles</h2>
@@ -161,9 +161,9 @@ PAGES = [
     {
         "slug": "warranty",
         "title": "Warranty",
-        "meta": "What the Suwasthick Tiles quality warranty covers and how to make a claim.",
+        "meta": "What the Suwasthik Tiles quality warranty covers and how to make a claim.",
         "body": DRAFT_NOTE + """<h2>What is covered</h2>
-<p>[OWNER TO CONFIRM: what the 10-year quality warranty covers, and whether it is provided by Suwasthick Tiles or by the manufacturer.]</p>
+<p>[OWNER TO CONFIRM: what the 10-year quality warranty covers, and whether it is provided by Suwasthik Tiles or by the manufacturer.]</p>
 <h2>What is not covered</h2>
 <p>[OWNER TO CONFIRM]</p>
 <h2>How to make a claim</h2>

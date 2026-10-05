@@ -1,4 +1,4 @@
-# Suwasthick Tiles — SEO implementation report
+# Suwasthik Tiles — SEO implementation report
 
 What was changed on the `seo-optimization` branch of the `tileshop` repository,
 why, how it was tested, and what only the owner can do next. Work followed the
@@ -33,7 +33,7 @@ that specification.
 | A13 | Hover-only interface on phones | Product-card buttons, homepage category names and visualizer tile names visible on touch screens; hover effects kept for mouse users | `templates/products/_product_card.html`, `templates/home.html`, `templates/room_visualizer.html` |
 | A14 | Unverified and contradictory claims | Kept out of titles, meta tags, structured data and links. Contradictions removed ("natural stone", "100% Natural Materials", marble/granite links). Other claims left visible and listed in section 15 | templates, `apps/core/context_processors.py` |
 | A15 | Tailwind Play CDN in production | Tailwind 3.4.19 + forms + container-queries compiled to `static/css/site.css` (pinned, lockfile, built CSS committed); screenshots compared before/after; `bg-white/97` (no CSS generated) fixed | `package.json`, `tailwind.config.js`, `frontend/site.css`, `static/css/site.css` |
-| A16 | "TileShop Premium" brand | Admin header/title and the registration message say "Suwasthick Tiles" | `tileshop/urls.py`, `apps/accounts/views.py` |
+| A16 | "TileShop Premium" brand | Admin header/title and the registration message say "Suwasthik Tiles" | `tileshop/urls.py`, `apps/accounts/views.py` |
 | A17 | UTC time zone | `Asia/Kolkata` | `tileshop/settings.py` |
 | A18 | Logout by plain GET | POST-only with CSRF; the logout links are small forms (there were two, not three) | `apps/accounts/views.py`, `templates/base.html`, `templates/accounts/dashboard.html` |
 | A19 | Form problems | Labels connected; checkout and contact `autocomplete`; register keeps the username and uses valid autocomplete values; login and register have an H1 | `templates/inquiry/inquiry_form.html`, `templates/orders/checkout.html`, `templates/accounts/*` |
@@ -226,14 +226,14 @@ New modules worth knowing about:
 ## 5. On-page SEO
 
 - **Titles and descriptions** are unique and built from real data, for example:
-  - Home: "Suwasthick Tiles – Tiles & Sanitaryware Showroom in Bhavani, Tamil Nadu"
-  - Category: "Floor Tiles | Suwasthick Tiles, Bhavani"
-  - Product: "Myglamm Grey – 60×60 cm Porcelain Floor Tile | Suwasthick Tiles"
+  - Home: "Suwasthik Tiles – Tiles & Sanitaryware Showroom in Bhavani, Tamil Nadu"
+  - Category: "Floor Tiles | Suwasthik Tiles, Bhavani"
+  - Product: "Myglamm Grey – 60×60 cm Porcelain Floor Tile | Suwasthik Tiles"
     (unclear sizes such as "4/2" are left out)
-  - Calculator: "Tile Calculator – How Many Tiles Do I Need? | Suwasthick Tiles"
+  - Calculator: "Tile Calculator – How Many Tiles Do I Need? | Suwasthik Tiles"
 
   Product descriptions state the size, material, kind, price per sq. ft,
-  "from Suwasthick Tiles in Bhavani" and "Order online and pay on delivery".
+  "from Suwasthik Tiles in Bhavani" and "Order online and pay on delivery".
 - **Headings:** one H1 per page and a logical order (tested).
 - **Breadcrumbs:** visible trails matching the BreadcrumbList markup on
   products (Home › Products › Floor Tiles › Myglamm Grey), categories, the
@@ -299,7 +299,7 @@ the answers; the visible FAQ is what serves visitors.
 
 - Server-rendered HTML; nothing important needs JavaScript.
 - One plain who/what/where/how statement is used in the footer, the About page
-  and the Organization description: "Suwasthick Tiles is a tile and
+  and the Organization description: "Suwasthik Tiles is a tile and
   sanitaryware showroom in Bhavani, Erode district, Tamil Nadu. It sells
   floor, wall, bathroom, kitchen and parking tiles and sanitaryware, takes
   orders online with payment on delivery, and gives quotes on request."
@@ -469,7 +469,7 @@ section 15, reads exactly as before.
 
 | Where | Before | After |
 | --- | --- | --- |
-| Browser tab / search result title | "(page name) \| Bhavani's Finest Tile Atelier" | A specific title per page, ending "\| Suwasthick Tiles" (examples in section 5) |
+| Browser tab / search result title | "(page name) \| Bhavani's Finest Tile Atelier" | A specific title per page, ending "\| Suwasthik Tiles" (examples in section 5) |
 | Header | — | Search icon; search box at the top of the mobile menu |
 | Keyboard focus only | — | "Skip to content" link |
 | Footer description | "Specializing in high-performance architectural materials for luxury residences and commercial projects. Bhavani, Tamil Nadu." | The business statement quoted in section 7 |
@@ -535,7 +535,7 @@ per-field errors; order number "#5" → "#ST-5" on the confirmation page
 and were removed from your cart. Please review your order."
 
 **Accounts:** "Admin Panel →" link removed from the login page; after
-registering "Welcome to TileShop Premium." → "Welcome to Suwasthick Tiles.";
+registering "Welcome to TileShop Premium." → "Welcome to Suwasthik Tiles.";
 dashboard "Details" opens the order.
 
 **Cart:** "Please enter a valid quantity." and "Quantity limited to (number)."

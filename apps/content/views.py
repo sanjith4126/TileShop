@@ -32,7 +32,7 @@ def guide_list(request):
         "seo": page_meta(
             request,
             "Tile Buying Guides",
-            "Practical advice on choosing tiles: materials, sizes and finishes for each room, from Suwasthick Tiles in Bhavani.",
+            "Practical advice on choosing tiles: materials, sizes and finishes for each room, from Suwasthik Tiles in Bhavani.",
             robots=INDEX if guides else NOINDEX_FOLLOW,
         ),
     }
@@ -75,7 +75,7 @@ def page_detail(request, slug):
         "seo": page_meta(
             request,
             page.title,
-            page.meta_description or f"{page.title} for Suwasthick Tiles, Bhavani.",
+            page.meta_description or f"{page.title} for Suwasthik Tiles, Bhavani.",
             robots=NOINDEX_NOFOLLOW if preview else INDEX,
         ),
     }

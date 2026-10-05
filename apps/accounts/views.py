@@ -70,7 +70,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             _log_in(request, user)
-            messages.success(request, "Account created! Welcome to Suwasthick Tiles.")
+            messages.success(request, "Account created! Welcome to Suwasthik Tiles.")
             return redirect("accounts:dashboard")
         messages.error(request, "Please correct the errors below.")
     else:

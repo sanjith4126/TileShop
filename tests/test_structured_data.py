@@ -60,7 +60,7 @@ class StructuredDataTests(ShopTestCase):
         nodes = graph(self.client.get("/").content.decode())
         org = nodes_of(nodes, "Organization")[0]
         self.assertEqual(org["@id"], f"{SITE}/#organization")
-        self.assertEqual(org["name"], "Suwasthick Tiles")
+        self.assertEqual(org["name"], "Suwasthik Tiles")
         self.assertIn("Bhavani", org["description"])
         for unconfirmed in ("address", "telephone", "email", "openingHours"):
             self.assertNotIn(unconfirmed, org)

@@ -143,7 +143,7 @@ def _listing(request, category=None):
             ]))
         else:
             description = (
-                f"Ask Suwasthick Tiles in Bhavani about our {category.name.lower()} range — "
+                f"Ask Suwasthik Tiles in Bhavani about our {category.name.lower()} range — "
                 "visit the showroom or request a quote."
             )
         seo = page_meta(
@@ -160,7 +160,7 @@ def _listing(request, category=None):
         seo = page_meta(
             request,
             "Tile Collection – Buy Tiles Online",
-            f"{summary} Order online with payment on delivery or request a quote from Suwasthick Tiles in Bhavani.",
+            f"{summary} Order online with payment on delivery or request a quote from Suwasthik Tiles in Bhavani.",
             robots=NOINDEX_FOLLOW if is_filtered else INDEX,
             canonical=clean_url if is_filtered else None,
         )
@@ -221,7 +221,7 @@ def product_description(product):
     spec = " ".join(filter(None, [product.clear_size, product.get_material_display().lower(), product.kind]))
     lead = (
         f"{product.name} – {spec} at ₹{format_price(product.price)} per {settings.PRICE_UNIT_LABEL}, "
-        f"from Suwasthick Tiles in Bhavani."
+        f"from Suwasthik Tiles in Bhavani."
     )
     return " ".join(filter(None, [lead, body, "Order online and pay on delivery."]))
 
@@ -288,7 +288,7 @@ def search(request):
         "seo": page_meta(
             request,
             title,
-            "Search the Suwasthick Tiles collection by name, size, material or room.",
+            "Search the Suwasthik Tiles collection by name, size, material or room.",
             robots=NOINDEX_FOLLOW,
         ),
     }

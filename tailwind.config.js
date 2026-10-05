@@ -1,5 +1,5 @@
 /*
- * Tailwind build for the Suwasthick Tiles site.
+ * Tailwind build for the Suwasthik Tiles site.
  * Rebuild after changing template classes:  npm run build:css
  * The theme below is the design system that used to be inlined in base.html.
  */

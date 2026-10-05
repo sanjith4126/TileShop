@@ -1,5 +1,5 @@
 """
-Django settings for the Suwasthick Tiles website (project package: tileshop).
+Django settings for the Suwasthik Tiles website (project package: tileshop).
 Production-ready configuration with SQLite default, PostgreSQL compatible.
 
 All secrets and environment-specific values are read from environment
@@ -237,7 +237,7 @@ SHOP_NOTIFICATION_EMAIL = os.environ.get("SHOP_NOTIFICATION_EMAIL", "").strip()
 # ─────────────────────────────────────────────────────────────────────
 # SEO and measurement (all optional, from the environment)
 # ─────────────────────────────────────────────────────────────────────
-SITE_NAME = "Suwasthick Tiles"
+SITE_NAME = "Suwasthik Tiles"
 # The site's public address, used for canonical URLs, the sitemap and
 # structured data, e.g. https://yourname.pythonanywhere.com (no trailing slash).
 # Without it, the address of the incoming request is used.

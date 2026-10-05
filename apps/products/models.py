@@ -1,5 +1,5 @@
 """
-Product models for the Suwasthick Tiles catalog.
+Product models for the Suwasthik Tiles catalog.
 """
 from django.db import models
 from django.db.models.signals import post_delete, pre_save

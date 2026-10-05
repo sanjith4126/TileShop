@@ -121,7 +121,7 @@ class UrlTests(ShopTestCase):
 class MetadataTests(ShopTestCase):
     def test_homepage(self):
         html = self.client.get("/").content.decode()
-        self.assertEqual(title(html), "Suwasthick Tiles – Tiles &amp; Sanitaryware Showroom in Bhavani, Tamil Nadu")
+        self.assertEqual(title(html), "Suwasthik Tiles – Tiles &amp; Sanitaryware Showroom in Bhavani, Tamil Nadu")
         self.assertNotIn("Finest Tile Atelier", title(html))
         self.assertEqual(canonical(html), f"{SITE}/")
         self.assertTrue(meta_content(html, "name", "description"))
@@ -131,7 +131,7 @@ class MetadataTests(ShopTestCase):
 
     def test_product_page(self):
         html = self.client.get(self.product.get_absolute_url()).content.decode()
-        self.assertEqual(title(html), "Myglamm Grey – 60×60 cm Porcelain Floor Tile | Suwasthick Tiles")
+        self.assertEqual(title(html), "Myglamm Grey – 60×60 cm Porcelain Floor Tile | Suwasthik Tiles")
         description = meta_content(html, "name", "description")
         self.assertIn("₹520", description)
         self.assertLessEqual(len(description), 160)
@@ -141,16 +141,16 @@ class MetadataTests(ShopTestCase):
 
     def test_unclear_size_and_missing_category_are_handled(self):
         altroz = title(self.client.get(self.unclear_size.get_absolute_url()).content.decode())
-        self.assertEqual(altroz, "ALTROZ GREY – Ceramic Floor Tile | Suwasthick Tiles")
+        self.assertEqual(altroz, "ALTROZ GREY – Ceramic Floor Tile | Suwasthik Tiles")
         html = self.client.get(self.no_category.get_absolute_url()).content.decode()
-        self.assertEqual(title(html), "LUXE GREY – Ceramic Tile | Suwasthick Tiles")
+        self.assertEqual(title(html), "LUXE GREY – Ceramic Tile | Suwasthik Tiles")
         head = html.split("</head>")[0]
         for bad in ("None", "Uncategorized", "4/2", "undefined"):
             self.assertNotIn(bad, head)
 
     def test_category_page(self):
         html = self.client.get("/products/floor-tiles/").content.decode()
-        self.assertEqual(title(html), "Floor Tiles | Suwasthick Tiles, Bhavani")
+        self.assertEqual(title(html), "Floor Tiles | Suwasthik Tiles, Bhavani")
         self.assertIn("3 floor tiles in ceramic and porcelain, including 60×60 cm, from ₹54 per sq. ft.", html)
         self.assertIn("Tiles designed for flooring applications", html)
         self.assertIn("Tiles designed for flooring applications. Order online",
@@ -244,7 +244,7 @@ class BusinessInfoTests(ShopTestCase):
         self.assertNotIn("Get directions", html)
         info = BusinessInfo.get_solo()
         info.whatsapp = "91 98765 00000"
-        info.maps_url = "https://maps.google.com/?q=Suwasthick+Tiles"
+        info.maps_url = "https://maps.google.com/?q=Suwasthik+Tiles"
         info.instagram_url = "https://instagram.com/suwasthick"
         info.save()
         html = self.client.get("/").content.decode()

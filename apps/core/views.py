@@ -50,7 +50,7 @@ def about(request):
         "seo": page_meta(
             request,
             "About Us – Our Showroom in Bhavani",
-            "Suwasthick Tiles is a tile and sanitaryware showroom opposite Kalyana Mandabam in Bhavani, "
+            "Suwasthik Tiles is a tile and sanitaryware showroom opposite Kalyana Mandabam in Bhavani, "
             "Erode district, Tamil Nadu. Learn about our range, our showroom and how to order.",
         ),
     }
@@ -80,7 +80,7 @@ CALCULATOR_FAQS = [
         "large openings such as doors and windows.",
     ),
     (
-        "How do I pay for tiles from Suwasthick Tiles?",
+        "How do I pay for tiles from Suwasthik Tiles?",
         "Order online and pay at the time of delivery by UPI, credit or debit card, cheque or cash. "
         "For larger projects you can also request a quote.",
     ),
@@ -101,7 +101,7 @@ def tile_calculator(request):
             request,
             "Tile Calculator – How Many Tiles Do I Need?",
             "Work out how many tiles you need for a room: enter its size, pick a tile size and add wastage. "
-            "Free tile calculator from Suwasthick Tiles, Bhavani.",
+            "Free tile calculator from Suwasthik Tiles, Bhavani.",
         ),
     }
     return render(request, "tile_calculator.html", context)
@@ -154,7 +154,7 @@ def room_visualizer(request):
         "seo": page_meta(
             request,
             "AI Room Visualizer – See Tiles in Your Room",
-            "Upload a photo of your room, choose a tile from the Suwasthick Tiles collection and see it "
+            "Upload a photo of your room, choose a tile from the Suwasthik Tiles collection and see it "
             "fitted on your floor or wall with our AI room visualizer.",
         ),
     }
@@ -196,7 +196,7 @@ def inquiry(request):
         "seo": page_meta(
             request,
             "Request a Quote – Contact Us",
-            "Ask Suwasthick Tiles in Bhavani for a quote on floor, wall, bathroom, kitchen and parking tiles "
+            "Ask Suwasthik Tiles in Bhavani for a quote on floor, wall, bathroom, kitchen and parking tiles "
             "or sanitaryware. Tell us about your project and we'll get back to you.",
         ),
     }

@@ -1,5 +1,5 @@
 /*
- * Suwasthick Tiles — privacy-friendly analytics events.
+ * Suwasthik Tiles — privacy-friendly analytics events.
  *
  * Elements declare events in HTML:
  *   data-event="add_to_cart"            sent when the element is clicked

@@ -1,5 +1,5 @@
 """
-URL configuration for the Suwasthick Tiles website.
+URL configuration for the Suwasthik Tiles website.
 """
 
 from django.contrib import admin
@@ -31,6 +31,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Admin site customization
-admin.site.site_header = "Suwasthick Tiles Admin"
-admin.site.site_title = "Suwasthick Tiles"
+admin.site.site_header = "Suwasthik Tiles Admin"
+admin.site.site_title = "Suwasthik Tiles"
 admin.site.index_title = "Store Administration"

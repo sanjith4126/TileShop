@@ -61,7 +61,7 @@ def page_meta(request, title, description="", *, robots=INDEX, canonical=None,
     """
     Metadata for one page.
 
-    - ``title`` gets " | Suwasthick Tiles" appended unless ``full_title`` is True.
+    - ``title`` gets " | Suwasthik Tiles" appended unless ``full_title`` is True.
     - Indexable pages get a canonical URL (this path, no query string) unless
       one is given; non-indexable pages only get one if it is passed explicitly.
     """

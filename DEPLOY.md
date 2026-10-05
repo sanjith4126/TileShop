@@ -1,4 +1,4 @@
-# Deploying Suwasthick Tiles on PythonAnywhere
+# Deploying Suwasthik Tiles on PythonAnywhere
 
 This puts the site online on PythonAnywhere's free plan, keeping the SQLite
 database and uploaded tile images between visits. No credit card is needed.

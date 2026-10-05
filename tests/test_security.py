@@ -120,7 +120,7 @@ class BrandTests(ShopTestCase):
         response = self.client.post("/accounts/register/", {
             "username": "newbuyer", "password1": "Tiles-Bhavani-2026", "password2": "Tiles-Bhavani-2026",
         }, follow=True)
-        self.assertContains(response, "Welcome to Suwasthick Tiles")
+        self.assertContains(response, "Welcome to Suwasthik Tiles")
         self.assertNotContains(response, "TileShop Premium")
 
 

@@ -122,7 +122,7 @@ class GeoAndLocalTests(ShopTestCase):
 
         info = BusinessInfo.get_solo()
         info.details_confirmed = True
-        info.maps_url = "https://maps.google.com/?q=Suwasthick"
+        info.maps_url = "https://maps.google.com/?q=Suwasthik"
         info.save()
         html = self.client.get("/inquiry/").content.decode()
         showroom = html.split('id="showroom"', 1)[1].split("</section>", 1)[0]
